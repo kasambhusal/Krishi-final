@@ -118,11 +118,11 @@ const CategoryPage = ({ categoryName, isValidCategory }) => {
                 id={filteredNews[0].id}
                 title={filteredNews[0].news_title}
                 sub_title={filteredNews[0].news_sub_title}
-                image={filteredNews[0].image}
+                image={filteredNews[0].image || filteredNews[0].gallery_image}
                 created_date_ad={filteredNews[0].created_date_ad}
                 created_date_bs={filteredNews[0].created_date_bs}
               />
-              <div className="flex flex-wrap justify-evenly gap-[15px] sm:gap-[30px] mys-4">
+              <div className="flex flex-wrap justify-evenly gap-[15px] sm:gap-[30px] my-4">
                 {filteredNews.slice(1, visibleCount).map((item) => (
                   <div
                     key={item.id}
@@ -139,7 +139,7 @@ const CategoryPage = ({ categoryName, isValidCategory }) => {
                       showDate={false}
                       title={item.news_title}
                       sub_title={item.news_sub_title}
-                      image={item.image}
+                      image={item.image || item.gallery_image}
                       id={item.id}
                       created_date_ad={item.created_date_ad}
                       created_date_bs={item.created_date_bs}

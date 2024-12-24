@@ -5,6 +5,7 @@ import { Get } from "../../Redux/API";
 import { useCount } from "../../Context/CountContext";
 import { useNavigation } from "../../Context/NavigationContext";
 import { formatNumber } from "../../JS/formatNumber";
+import { useRouter } from "next/navigation";
 
 export default function Review() {
   const [visitorCount, setVisitorCount] = useState(0);
@@ -12,7 +13,7 @@ export default function Review() {
   const [loading, setLoading] = useState(true);
   const { count } = useCount();
   const { lge } = useNavigation();
-
+  const router = useRouter();
   const columns = [
     {
       title: "Title",
@@ -103,6 +104,7 @@ export default function Review() {
         if (error?.response?.data?.code === "token_not_valid") {
           localStorage.removeItem("Token");
           message.error(error.response?.data?.code);
+          router.push("/dashboard/login");
         }
       } finally {
         setLoading(false);

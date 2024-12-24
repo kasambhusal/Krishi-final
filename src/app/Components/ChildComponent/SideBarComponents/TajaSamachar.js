@@ -6,6 +6,7 @@ import Breadcrumb from "../Others/Breadcrumb";
 import { useTheme } from "../../Context/ThemeContext";
 import { Skeleton } from "@mui/material";
 import { usePathname } from "next/navigation";
+import { useNavigation } from "../../Context/NavigationContext";
 
 const nepaliNumbers = ["०", "१", "२", "३", "४", "५", "६", "७", "८", "९"];
 
@@ -21,7 +22,7 @@ export default function TajaSamachar() {
   const pathname = usePathname();
   const { wholeNews, loading: newsLoading } = useNews(); // Fetch news and loading state from context
   const [filteredNews, setFilteredNews] = useState([]);
-  const [lge, setLge] = useState(pathname.includes("/en") ? "en" : "np");
+  const { lge } = useNavigation();
 
   useEffect(() => {
     const filteredResponse = wholeNews;

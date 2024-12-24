@@ -109,7 +109,10 @@ const SearchPage = () => {
                     <SmallCardContentRight
                       title={blog.news_title}
                       sub_title={blog.news_sub_title}
-                      image={`https://cms.krishisanjal.com${blog.image}`}
+                      image={
+                        `https://cms.krishisanjal.com${blog.image}` ||
+                        blog.gallery_image
+                      }
                       id={blog.id}
                       textBlack="true"
                       created_date_ad={blog.created_date_ad}

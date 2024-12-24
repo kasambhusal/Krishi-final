@@ -6,7 +6,7 @@ import { Get } from "../../Redux/API"; // Adjust this import path as needed
 import { useNewsSearch } from "../../Context/searchNewsContext"; // Adjust this import path as needed
 import { Download, Plus } from "lucide-react";
 
-const Gallery = () => {
+const Gallery = ({ handleGalleryUpload, handleCancel }) => {
   const [images, setImages] = useState([]);
   const [displayedImages, setDisplayedImages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,6 +15,11 @@ const Gallery = () => {
   const [page, setPage] = useState(1);
   const [hasSearchContent, setHasSearchContent] = useState(false);
   const imagesPerPage = 20;
+
+  const handleImageSelect = (imageUrl) => {
+    handleGalleryUpload(imageUrl);
+    handleCancel();
+  };
 
   useEffect(() => {
     fetchImages();
@@ -33,17 +38,18 @@ const Gallery = () => {
       setHasSearchContent(hasContent);
       const url = hasContent
         ? `/search/search/?q=${searchValue}`
-        : "/news/news";
+        : "/gallery/image-gallery";
       const response = await Get({
         url,
         headers: hasContent ? null : headers,
       });
-
+      console.log("Gallery :" + response);
       const imageData = hasContent ? response.news : response;
       const sortedImages = imageData
         .sort((a, b) => b.id - a.id)
         .filter((myImage) => myImage.image != null);
       setImages(sortedImages);
+      console.log("Gallery :" + sortedImages);
       setPage(1);
     } catch (err) {
       console.error("Error fetching images:", err);
@@ -96,7 +102,7 @@ const Gallery = () => {
   }
 
   return (
-    <div className="min-h-screen bg-green-900 text-white p-4 sm:p-8">
+    <div className="min-h-screen w-full bg-green-900 text-white p-4 sm:p-8">
       <h1 className="text-4xl font-bold mb-8 text-center">Image Gallery</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
         {displayedImages.map((image) => (
@@ -124,13 +130,10 @@ const Gallery = () => {
                 {new Date(image.created_date_ad).toLocaleDateString()}
               </p>
               <button
-                onClick={() =>
-                  handleDownload(image.image, `image_${image.id}.jpg`)
-                }
+                onClick={() => handleImageSelect(image.image)}
                 className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out flex items-center justify-center"
               >
-                <Download className="mr-2" size={18} />
-                Download
+                Select Image
               </button>
             </div>
           </div>

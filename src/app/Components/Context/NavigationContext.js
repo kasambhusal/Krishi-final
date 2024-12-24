@@ -1,19 +1,19 @@
-'use client';
+"use client";
+import { usePathname } from "next/navigation";
 import { createContext, useState, useContext } from "react";
 // Create a Context
 const NavigationContext = createContext();
 
 // Create a Provider component
 export const NavigationProvider = ({ children }) => {
-    const [lge, setLge] = useState("np");
+  const pathname = usePathname();
+  const [lge, setLge] = useState(pathname.includes("/en") ? "en" : "np");
 
-    const setLanguage = (value) => setLge(value);
-
-    return (
-        <NavigationContext.Provider value={{ lge, setLge }}>
-            {children}
-        </NavigationContext.Provider>
-    );
+  return (
+    <NavigationContext.Provider value={{ lge }}>
+      {children}
+    </NavigationContext.Provider>
+  );
 };
 
 // Custom hook for using the context

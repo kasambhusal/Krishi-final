@@ -145,7 +145,7 @@ const Hero = ({ lge = "np", order }) => {
                       // overflowWrap: "break-word", // Ensure long words are wrapped only when necessary
                       // wordBreak: "normal", // Prevent breaking words like "book"
                       // whiteSpace: "normal", // Ensure proper line wrapping
-                      lineHeight: "1.5",  
+                      lineHeight: "1.5",
                     }}
                   >
                     {news_title}
@@ -189,7 +189,14 @@ const Hero = ({ lge = "np", order }) => {
               </Link>
             </div>
           ) : (
-            <div className="text-center py-4"></div>
+            <div className="w-full h-[100vh] gap-[20px] flex flex-col justify-center items-center">
+              <div className="w-[90%] flex gap-[10px] flex-col items-center">
+                <Skeleton variant="rectangular" width="80%" height={60} />
+                <Skeleton variant="rectangular" width="30%" height={40} />
+                <Skeleton variant="rectangular" width="40%" height={50} />
+              </div>
+              <Skeleton variant="rectangular" width="90%" height="80vh" />
+            </div>
           )}
         </>
       )}

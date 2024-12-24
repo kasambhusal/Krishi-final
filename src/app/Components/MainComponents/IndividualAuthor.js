@@ -137,11 +137,11 @@ export default function IndividualAuthor() {
                   <div className="h-[120px] w-full">
                     <SmallCardContentRight
                       showParagraph={false}
-                      textBlack={true}
+                      textBlack={true}s
                       id={item.id}
                       title={item.news_title}
                       sub_title={item.news_sub_title}
-                      image={item.image}
+                      image={item.image || item.gallery_image}
                       created_date_ad={item.created_date_ad}
                       created_date_bs={item.created_date_bs}
                     />

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Form, Input, Button, Select, Checkbox, message } from "antd";
+import { Form, Input, Button, Modal, Select, Checkbox, message } from "antd";
 import dayjs from "dayjs";
 import { useNavigation } from "../../Context/NavigationContext";
 import { Get, Post } from "../../Redux/API";
@@ -8,9 +8,10 @@ import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Gallery from "./Gallery";
 const { Option } = Select;
 
-export default function NewsAdd({ handleCancel, setReload }) {
+export default function NewsAdd({ handleCancel2, setReload }) {
   const { lge } = useNavigation();
   const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
@@ -27,6 +28,8 @@ export default function NewsAdd({ handleCancel, setReload }) {
   const [subCategoryData, setSubCategoryData] = useState([]);
   const [authorData, setAuthorData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [galleryImage, setGalleryImage] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const token = localStorage.getItem("Token");
   const headers = { Authorization: `Bearer ${token}` };
@@ -62,9 +65,25 @@ export default function NewsAdd({ handleCancel, setReload }) {
     if (file) {
       setSelectedImage(file);
       setImagePreview(URL.createObjectURL(file));
+      setGalleryImage(null);
     }
   };
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
 
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+  const handleGalleryUpload = (myurl) => {
+    setGalleryImage(myurl);
+    setImagePreview(myurl);
+    setSelectedImage(null);
+  };
   const handleSubmit = async () => {
     setLoading(true);
 
@@ -82,6 +101,9 @@ export default function NewsAdd({ handleCancel, setReload }) {
     if (selectedImage) {
       formData.append("image", selectedImage);
     }
+    if (galleryImage) {
+      formData.append("gallery_image", galleryImage);
+    }
 
     try {
       const response = await Post({
@@ -91,6 +113,7 @@ export default function NewsAdd({ handleCancel, setReload }) {
       });
 
       if (response) {
+        console.log(response);
         const sharePayload = {
           title: response.id.toString(),
           visit_count: 0,
@@ -120,11 +143,25 @@ export default function NewsAdd({ handleCancel, setReload }) {
 
         toast.success(response.message);
         resetForm();
-        handleCancel();
+        handleCancel2();
         setReload(true);
       }
     } catch (error) {
-      toast.error(error.message);
+      if (error.response && error.response.data) {
+        Object.entries(error.response.data).forEach(([key, value]) => {
+          const messages = Array.isArray(value) ? value : [value];
+          messages.forEach((message) => {
+            toast.error(`${key}: ${message}`, {
+              autoClose: 5000,
+              closeOnClick: true,
+              draggable: true,
+              closeButton: true,
+            });
+          });
+        });
+      } else {
+        toast.error(error.message || "An error occurred");
+      }
       console.error("Error submitting form:", error);
     } finally {
       setLoading(false);
@@ -156,13 +193,21 @@ export default function NewsAdd({ handleCancel, setReload }) {
   return (
     <Form onFinish={handleSubmit}>
       <ToastContainer position="top-right" autoClose={5000} />
-      <Form.Item label="Title">
+      <Form.Item
+        label="Title"
+        name="title"
+        rules={[{ required: true, message: "Please select Title!" }]}
+      >
         <Input value={title} onChange={(e) => setTitle(e.target.value)} />
       </Form.Item>
-      <Form.Item label="Subtitle">
+      <Form.Item label="Subtitle" name="subtitle">
         <Input value={subtitle} onChange={(e) => setSubtitle(e.target.value)} />
       </Form.Item>
-      <Form.Item label="Author">
+      <Form.Item
+        label="Author"
+        name="author"
+        rules={[{ required: true, message: "Please select a Author!" }]}
+      >
         <Select
           showSearch
           onChange={setAuthor}
@@ -178,7 +223,11 @@ export default function NewsAdd({ handleCancel, setReload }) {
           ))}
         </Select>
       </Form.Item>
-      <Form.Item label="Category">
+      <Form.Item
+        label="Category"
+        name="category"
+        rules={[{ required: true, message: "Please select a Category!" }]}
+      >
         <Select onChange={categoryChange} value={category}>
           {categoryData.map((cat) => (
             <Option key={cat.id} value={cat.id}>
@@ -217,7 +266,11 @@ export default function NewsAdd({ handleCancel, setReload }) {
           />
         </Form.Item>
       </div>
-      <Form.Item label="Content">
+      <Form.Item
+        label="Content"
+        name="content"
+        rules={[{ required: true, message: "This field can't be empty" }]}
+      >
         <CKEditor
           editor={ClassicEditor}
           data={disData}
@@ -241,16 +294,32 @@ export default function NewsAdd({ handleCancel, setReload }) {
       </Form.Item>
       <Form.Item label="Upload Image">
         <input type="file" onChange={handleUpload} />
-        {imagePreview && (
-          <div style={{ marginTop: "10px" }}>
-            <img
-              src={imagePreview}
-              alt="Preview"
-              style={{ maxWidth: "100%", maxHeight: "200px" }}
-            />
-          </div>
-        )}
       </Form.Item>
+      <Form.Item>
+        <Button onClick={showModal}>Upload Image from Server</Button>
+        <Modal
+          title="Upload Image from Server"
+          open={isModalOpen}
+          onOk={handleOk}
+          onCancel={handleCancel}
+          footer={null}
+          style={{ minWidth: "90vw" }}
+        >
+          <Gallery
+            handleGalleryUpload={handleGalleryUpload}
+            handleCancel={handleCancel}
+          />
+        </Modal>
+      </Form.Item>
+      {imagePreview && (
+        <div style={{ marginTop: "10px" }}>
+          <img
+            src={imagePreview}
+            alt="Preview"
+            style={{ maxWidth: "100%", maxHeight: "200px" }}
+          />
+        </div>
+      )}
       <Form.Item>
         <Button
           type="primary"

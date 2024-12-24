@@ -50,7 +50,7 @@ const Card9 = ({ myWord }) => {
                   <div key={item.id} className="w-[90%] lg:w-[32%] ">
                     <SmallCardContentBottom
                       id={item.id}
-                      image={item.image}
+                      image={item.image || item.gallery_image}
                       lineClampTitle={2}
                       lineClampDes={2}
                       textBlack={true}

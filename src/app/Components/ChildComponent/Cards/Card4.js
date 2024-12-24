@@ -78,7 +78,7 @@ export default function Card4({ myWord }) {
                   id={item.id}
                   title={item.news_title}
                   sub_title={item.news_sub_title}
-                  image={item.image}
+                  image={item.image || item.gallery_image}
                   lineClampTitle={2}
                   lineClampDes={2}
                   textBlack={true}

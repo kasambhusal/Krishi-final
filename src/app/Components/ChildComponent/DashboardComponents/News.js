@@ -56,7 +56,7 @@ export default function News() {
             style={{ minWidth: "60vw" }}
             footer={null}
           >
-            <NewsAdd handleCancel={handleCancel} setReload={setReload} />
+            <NewsAdd handleCancel2={handleCancel} setReload={setReload} />
           </Modal>
         </h2>
         <NewsTable reload={reload} setReload={setReload} />

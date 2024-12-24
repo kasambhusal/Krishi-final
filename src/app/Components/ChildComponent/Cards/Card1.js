@@ -34,7 +34,6 @@ const Card1 = ({ myWord }) => {
         style={{
           backgroundColor: themeColor,
           borderRadius: "5px",
-          boxShadow: "0 0 10px black inset",
         }}
       >
         <div className="w-full md:w-1/2 h-[250px] sm:h-auto">
@@ -47,7 +46,7 @@ const Card1 = ({ myWord }) => {
               id={news[0].id}
               title={news[0].news_title}
               sub_title={news[0].news_sub_title}
-              image={news[0].image}
+              image={news[0].image || news[0].gallery_image}
               created_date_ad={news[0].created_date_ad}
               created_date_bs={news[0].created_date_bs}
             />
@@ -69,7 +68,7 @@ const Card1 = ({ myWord }) => {
                   id={item.id}
                   title={item.news_title}
                   sub_title={item.news_sub_title}
-                  image={item.image}
+                  image={item.image || item.gallery_image}
                   created_date_ad={item.created_date_ad}
                   created_date_bs={item.created_date_bs}
                 />

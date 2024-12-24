@@ -44,7 +44,6 @@ const NewsTable = ({ reload, setReload }) => {
           }
           return b.id - a.id;
         });
-      console.log(requiredData);
       const transformedData = requiredData.map((item) => ({
         key: item.id,
         language: item.language,

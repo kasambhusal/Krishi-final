@@ -90,7 +90,7 @@ const VideoTable = ({ reload, setReload }) => {
       setDataSource((prev) =>
         prev.filter((item) => item.key !== contactToDelete.key)
       );
-      message.success("Contact deleted successfully.");
+      message.success("Video deleted successfully.");
     } catch (error) {
       console.error("Error deleting contact:", error);
       message.error("Failed to delete contact!");

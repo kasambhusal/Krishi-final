@@ -5,26 +5,11 @@ import { LoadingOutlined } from "@ant-design/icons";
 import { useNavigation } from "../../Context/NavigationContext";
 import { Get } from "../../Redux/API";
 
-function getYouTubeEmbedUrl(url) {
-  try {
-    const regExp =
-      /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    return match && match[2].length === 11
-      ? `https://www.youtube.com/embed/${match[2]}?autoplay=1`
-      : null;
-  } catch (error) {
-    console.error("Error parsing YouTube URL:", error);
-    return null;
-  }
-}
-
 export default function Card8() {
   const [videos, setVideos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const { lge } = useNavigation();
-  const [currentIndex, setCurrentIndex] = useState(0);
   const scrollContainerRef = useRef(null); // Ref for the scroll container
 
   useEffect(() => {
@@ -47,10 +32,7 @@ export default function Card8() {
           throw new Error("Failed to fetch videos");
         }
 
-        const filteredVideos = data
-          .filter((video) => video.language === lge)
-          .sort((a, b) => b.id - a.id)
-          .slice(0, 10); // Limit to 10 videos for the slider
+        const filteredVideos = data.sort((a, b) => b.id - a.id);
         setVideos(filteredVideos);
       } catch (err) {
         setError("Error loading videos. Please try again later.");
@@ -62,28 +44,6 @@ export default function Card8() {
 
     fetchVideos();
   }, [lge]);
-
-  const handleNext = useCallback(() => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % videos.length);
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({
-        left: 300, // Scroll by a fixed amount (adjust as needed)
-        behavior: "smooth", // Smooth scrolling
-      });
-    }
-  }, [videos.length]);
-
-  const handlePrevious = useCallback(() => {
-    setCurrentIndex(
-      (prevIndex) => (prevIndex - 1 + videos.length) % videos.length
-    );
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({
-        left: -300, // Scroll by a fixed amount (adjust as needed)
-        behavior: "smooth", // Smooth scrolling
-      });
-    }
-  }, [videos.length]);
 
   if (isLoading) {
     return (
@@ -109,54 +69,22 @@ export default function Card8() {
     <div className="relative w-full overflow-hidden my-10">
       <div
         ref={scrollContainerRef} // Attach ref to the scroll container
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 overflow-x-scroll"
+        className="flex flex-wrap justify-center gap-4 overflow-x-scroll"
       >
-        {videos.slice(currentIndex, currentIndex + 3).map((video, index) => {
-          const embedUrl = getYouTubeEmbedUrl(video.video_url);
-
-          if (!embedUrl) {
-            return (
-              <div key={video.id} className="text-red-500 text-center">
-                Invalid YouTube URL
-              </div>
-            );
-          }
-
+        {videos.slice(0, 3).map((video, index) => {
           return (
-            <div
-              key={video.id}
-              className={`aspect-video ${index === 1 ? "hidden sm:block" : ""} ${index === 2 ? "hidden lg:block" : ""}`}
-            >
-              <iframe
-                className="w-full h-full rounded-lg shadow-lg"
-                src={embedUrl}
-                title={video.title_name}
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-              ></iframe>
-            </div>
+            <iframe
+              width="300"
+              height="200"
+              src={video.video_url}
+              title="YouTube video player"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerpolicy="strict-origin-when-cross-origin"
+              allowfullscreen
+            />
           );
         })}
-      </div>
-
-      {/* Navigation buttons */}
-      <div className="absolute top-1/2 left-0 w-full flex justify-between p-4 z-10 transform -translate-y-1/2">
-        <Button
-          aria-label="Previous"
-          onClick={handlePrevious}
-          className="bg-green-600 w-[40px] h-[40px] scale-90 text-white rounded-full hover:bg-[#2d5e29] duration-150 z-5"
-        >
-          <FaAngleLeft size={30} />
-        </Button>
-
-        <Button
-          aria-label="Next"
-          onClick={handleNext}
-          className="bg-green-600 w-[40px] h-[40px] scale-90 text-white rounded-full hover:bg-[#2d5e29] duration-150 z-5"
-        >
-          <FaAngleRight size={30} />
-        </Button>
       </div>
     </div>
   );
