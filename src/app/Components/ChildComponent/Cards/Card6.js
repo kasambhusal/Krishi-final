@@ -53,7 +53,7 @@ const Card6 = ({ myWord }) => {
                   id={item.id}
                   title={item.news_title}
                   sub_title={item.news_sub_title}
-                  image={item.image || item.media_image}
+                  image={item.media_image || item.image}
                   textBlack={true}
                   created_date_ad={item.created_date_ad}
                   created_date_bs={item.created_date_bs}

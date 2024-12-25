@@ -19,7 +19,9 @@ const Card2 = ({ myWord }) => {
       setNews(filteredResponse);
     } else {
       const subCategoryFiltered = wholeNews.filter(
-        (item) => item.sub_category === myWord && item.image != null
+        (item) =>
+          item.sub_category === myWord
+          // (item.image || item.media_image) != null
       );
       // .sort((a, b) => b.id - a.id);
       setNews(subCategoryFiltered);
@@ -43,7 +45,7 @@ const Card2 = ({ myWord }) => {
                 id={item.id}
                 title={item.news_title}
                 sub_title={item.news_sub_title}
-                image={item.image || item.media_image}
+                image={item.media_image || item.image}
                 isRounded={true}
                 isShadow={true}
                 created_date_ad={item.created_date_ad}

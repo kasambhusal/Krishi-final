@@ -41,11 +41,11 @@ const Card10 = ({ myWord, id }) => {
         <div className="w-full">
           <div className="w-full flex justify-center">
             <div className="w-[85%] lg:w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 my-10">
-              {news.slice(0, 9).map((item) => (
+              {news.slice(0, 6).map((item) => (
                 <div key={item.id} className="w-full">
                   <SmallCardContentBottom
                     id={item.id}
-                    image={item.image || item.media_image}
+                    image={item.media_image || item.image}
                     lineClampTitle={2}
                     lineClampDes={2}
                     textBlack={true}

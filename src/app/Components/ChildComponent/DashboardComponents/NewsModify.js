@@ -70,10 +70,10 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
       );
       setLge(modifyObj.language);
       setDate(modifyObj.self_date ? dayjs(modifyObj.self_date) : null);
-      setActive(modifyObj.active || true);
+      setActive(modifyObj.active || false);
       setBreaking(modifyObj.breaking_news);
       setDisData(modifyObj.news_post || "");
-      setImagePreview(modifyObj.image || null);
+      setImagePreview(modifyObj.media_image || modifyObj.image || null);
     }
   }, [modifyObj]);
 
@@ -91,18 +91,18 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
 
   const handleUpload = (event) => {
     const file = event.target.files[0];
-    setSelectedImage(file);
     if (file) {
+      setSelectedImage(file);
       const previewUrl = URL.createObjectURL(file);
       setImagePreview(previewUrl);
-      setGalleryImage(null);
+      setGalleryImage("");
     }
   };
 
   const handleGalleryUpload = (myurl) => {
     setGalleryImage(myurl);
     setImagePreview(myurl);
-    setSelectedImage(null);
+    setSelectedImage("");
   };
 
   const handleSubmit = async () => {
@@ -130,12 +130,14 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
     formData.append("breaking_news", breaking ? "true" : "false");
 
     formData.append("news_post", disData);
-
     if (selectedImage) {
       formData.append("image", selectedImage);
+      formData.append("media_image", "");
     }
     if (galleryImage) {
       formData.append("media_image", galleryImage);
+      // const emptyFile = new File([""], "empty.txt", { type: "text/plain" });
+      formData.append("image", "");
     }
     const token = localStorage.getItem("Token");
     const headers = { Authorization: `Bearer ${token}` };
@@ -268,7 +270,7 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
           />
         </div>
       </Form.Item>
-      <div className="w-full flex justify-evenly">
+      <div className="w-full flex  flex-col sm:flex-row justify-evenly">
         <Form.Item label="Upload Image">
           <input type="file" onChange={handleUpload} />
         </Form.Item>

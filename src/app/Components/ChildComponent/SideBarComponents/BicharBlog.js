@@ -74,7 +74,7 @@ const BicharBlog = () => {
                 <div className="col-span-6 ">
                   <BicharBlogBox
                     title={item.news_title}
-                    image={item.image}
+                    image={item.media_image || item.image}
                     id={item.id}
                     created_date_ad={item.created_date_ad}
                     created_date_bs={item.created_date_bs}

@@ -53,8 +53,8 @@ const NewsTable = ({ reload, setReload }) => {
         news_post: item.news_post,
         self_date: item.self_date,
         image: hasContent
-          ? `https://cms.krishisanjal.com${item.image}`
-          : item.image || item.media_image,
+          ? `https://cms.krishisanjal.com${item.media_image || item.image}`
+          : item.media_image || item.image,
         active: item.active,
         breaking_news: item.breaking_news,
         category: item.category,

@@ -292,7 +292,7 @@ export default function NewsAdd({ handleCancel2, setReload }) {
           }}
         />
       </Form.Item>
-      <div className="w-full flex justify-evenly">
+      <div className="w-full flex flex-col sm:flex-row justify-evenly">
         <Form.Item label="Upload Image">
           <input type="file" onChange={handleUpload} />
         </Form.Item>

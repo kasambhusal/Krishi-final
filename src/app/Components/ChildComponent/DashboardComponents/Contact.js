@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
-import VideoTable from "./VideoTable";
+import ContactTable from "./ContactTable";
 import { Get } from "../../Redux/API";
 
 export default function Contact() {
@@ -20,7 +20,7 @@ export default function Contact() {
   return (
     <div className="flex justify-center items-center">
       <div style={{ width: "85%" }}>
-        <VideoTable />
+        <ContactTable />
       </div>
     </div>
   );

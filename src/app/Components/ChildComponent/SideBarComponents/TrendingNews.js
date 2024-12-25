@@ -58,7 +58,7 @@ export default function TrendingNews() {
                 created_date_bs: matchingNews.created_date_bs,
                 title: matchingNews.news_title,
                 subtitle: matchingNews.news_sub_title,
-                image: matchingNews.image,
+                image: matchingNews.media_image || matchingNews.image,
               };
             }
             return null;
@@ -104,6 +104,7 @@ export default function TrendingNews() {
                 title={news.title}
                 subtitle={news.subtitle}
                 image={
+                  news.media_image ||
                   news.image ||
                   "https://cms.krishisanjal.com/media/author/logo_2.jpg"
                 }

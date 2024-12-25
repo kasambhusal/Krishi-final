@@ -199,20 +199,19 @@ const Story = ({ news }) => {
         <div className="w-full grid grid-cols-11">
           <div className="col-span-11 xl:col-span-7 w-full h-full">
             <div className="flex flex-col gap-[20px] w-full">
-              {news.image ||
-                (news.media_image && (
-                  <Image
-                    src={news.image || news.media_image}
-                    alt={news.news_title}
-                    style={{
-                      border: `2px dotted ${themeColor}`,
-                      borderRadius: "5px",
-                    }}
-                    className="w-full"
-                    width={1200}
-                    height={600}
-                  />
-                ))}
+              {(news.image || news.media_image) && (
+                <Image
+                  src={news.image || news.media_image}
+                  alt={news.news_title}
+                  style={{
+                    border: `2px dotted ${themeColor}`,
+                    borderRadius: "5px",
+                  }}
+                  className="w-full"
+                  width={1200}
+                  height={600}
+                />
+              )}
               <div style={{ backgroundColor: bgColor, width: "100%" }}>
                 {renderHtmlContent(news.news_post)}
               </div>
