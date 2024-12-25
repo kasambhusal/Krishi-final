@@ -200,9 +200,9 @@ const Story = ({ news }) => {
           <div className="col-span-11 xl:col-span-7 w-full h-full">
             <div className="flex flex-col gap-[20px] w-full">
               {news.image ||
-                (news.gallery_image && (
+                (news.media_image && (
                   <Image
-                    src={news.image || news.gallery_image}
+                    src={news.image || news.media_image}
                     alt={news.news_title}
                     style={{
                       border: `2px dotted ${themeColor}`,

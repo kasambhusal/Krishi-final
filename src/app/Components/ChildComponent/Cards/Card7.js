@@ -51,7 +51,7 @@ const Card7 = ({ myWord }) => {
                 sub_title={item.news_sub_title}
                 lineClampTitle={2}
                 lineClampDes={2}
-                image={item.image || item.gallery_image}
+                image={item.image || item.media_image}
                 textBlack={true}
                 showParagraph={false}
                 showDate={false}
@@ -68,7 +68,7 @@ const Card7 = ({ myWord }) => {
                   key={item.id}
                   id={item.id}
                   title={item.news_title}
-                  image={item.image || item.gallery_image}
+                  image={item.image || item.media_image}
                   sub_title={item.news_sub_title}
                   lineClampTitle={2}
                   lineClampDes={2}

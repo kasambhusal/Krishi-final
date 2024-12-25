@@ -111,7 +111,7 @@ const SearchPage = () => {
                       sub_title={blog.news_sub_title}
                       image={
                         `https://cms.krishisanjal.com${blog.image}` ||
-                        blog.gallery_image
+                        blog.media_image
                       }
                       id={blog.id}
                       textBlack="true"

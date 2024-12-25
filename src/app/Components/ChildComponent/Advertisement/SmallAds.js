@@ -18,7 +18,7 @@ const SmallAds = ({ name }) => {
   const filteredAd = ads.find((ad) => ad.ads_name === `${name}`);
 
   return (
-    <div className="max-w-full max-h-[500px] flex justify-center my-5">
+    <div className="max-w-full max-h-[500px] overflow-hidden flex justify-center my-5">
       {loading ? (
         <span>Loading...</span>
       ) : (
@@ -31,7 +31,7 @@ const SmallAds = ({ name }) => {
                   alt="Ad"
                   width={700} // Set width for optimization (can be adjusted as needed)
                   height={450} // Set height for optimization (can be adjusted as needed)
-                  style={{ objectFit: "contain" }} // Ensures image maintains its aspect ratio
+                  style={{ objectFit: "contain", maxHeight: "500px" }} // Ensures image maintains its aspect ratio
                   loading="lazy" // Lazy load the image for better performance
                 />
               )}

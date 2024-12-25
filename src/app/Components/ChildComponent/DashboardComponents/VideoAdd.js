@@ -9,7 +9,7 @@ export default function VideoAdd({ handleCancel, setReload }) {
   const { lge } = useNavigation();
   const [formData, setFormData] = useState({
     title_name: "",
-    video_url: "", // Changed from gallery_image to video_url
+    video_url: "", // Changed from media_image to video_url
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);

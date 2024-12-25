@@ -31,7 +31,6 @@ export default function Card8() {
         if (!data) {
           throw new Error("Failed to fetch videos");
         }
-
         const filteredVideos = data.sort((a, b) => b.id - a.id);
         setVideos(filteredVideos);
       } catch (err) {
@@ -66,23 +65,26 @@ export default function Card8() {
   }
 
   return (
-    <div className="relative w-full overflow-hidden my-10">
+    <div className="relative flex justify-center w-full overflow-hidden my-10">
       <div
         ref={scrollContainerRef} // Attach ref to the scroll container
-        className="flex flex-wrap justify-center gap-4 overflow-x-scroll"
+        className="w-full lg:w-[95%] grid   grid-cols-3 gap-3 md:gap-1"
       >
         {videos.slice(0, 3).map((video, index) => {
           return (
-            <iframe
-              width="300"
-              height="200"
-              src={video.video_url}
-              title="YouTube video player"
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              referrerpolicy="strict-origin-when-cross-origin"
-              allowfullscreen
-            />
+            <div className=" col-span-3 lg:col-span-1">
+              <iframe
+                width="100%"
+                height="220"
+                src={video.video_url}
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+                style={{ width: "100%" }}
+              />
+            </div>
           );
         })}
       </div>

@@ -54,7 +54,7 @@ const NewsTable = ({ reload, setReload }) => {
         self_date: item.self_date,
         image: hasContent
           ? `https://cms.krishisanjal.com${item.image}`
-          : item.image,
+          : item.image || item.media_image,
         active: item.active,
         breaking_news: item.breaking_news,
         category: item.category,
@@ -279,7 +279,7 @@ const NewsTable = ({ reload, setReload }) => {
         <NewsModify
           modifyObj={selectedNews}
           fetchData={fetchData}
-          handleCancel={() => handleCancel("edit")}
+          handleCancel2={() => handleCancel("edit")}
         />
       </Modal>
       <Modal

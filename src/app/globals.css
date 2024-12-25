@@ -26,7 +26,7 @@ input::-webkit-outer-spin-button {
   max-height: 147px !important;
 }
 ::-webkit-scrollbar {
-  width: 5px;
+  width: 10px;
   height: 5px;
   border-radius: 5px;
 }

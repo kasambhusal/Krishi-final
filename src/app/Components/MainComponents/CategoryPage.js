@@ -118,7 +118,7 @@ const CategoryPage = ({ categoryName, isValidCategory }) => {
                 id={filteredNews[0].id}
                 title={filteredNews[0].news_title}
                 sub_title={filteredNews[0].news_sub_title}
-                image={filteredNews[0].image || filteredNews[0].gallery_image}
+                image={filteredNews[0].image || filteredNews[0].media_image}
                 created_date_ad={filteredNews[0].created_date_ad}
                 created_date_bs={filteredNews[0].created_date_bs}
               />
@@ -139,7 +139,7 @@ const CategoryPage = ({ categoryName, isValidCategory }) => {
                       showDate={false}
                       title={item.news_title}
                       sub_title={item.news_sub_title}
-                      image={item.image || item.gallery_image}
+                      image={item.image || item.media_image}
                       id={item.id}
                       created_date_ad={item.created_date_ad}
                       created_date_bs={item.created_date_bs}

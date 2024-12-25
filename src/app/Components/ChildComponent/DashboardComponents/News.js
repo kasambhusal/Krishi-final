@@ -25,17 +25,7 @@ export default function News() {
   return (
     <div className="flex justify-center items-center">
       <div style={{ width: "95%" }}>
-        <h2 className="w-full flex justify-between">
-          <Button
-            style={{ color: "white", backgroundColor: "green" }}
-            className="my-3"
-            onClick={() => {
-              router.push("/dashboard/news/gallery");
-            }}
-          >
-            View Gallery
-            <ion-icon name="add-outline" style={{ color: "white" }}></ion-icon>
-          </Button>
+        <h2 className="w-full text-right">
           <Button
             style={{ color: "white", backgroundColor: "#0d2914" }}
             className="my-3"

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Get } from "../../Redux/API"; // Adjust this import path as needed
 import { useNewsSearch } from "../../Context/searchNewsContext"; // Adjust this import path as needed
-import { Download, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 
 const Gallery = ({ handleGalleryUpload, handleCancel }) => {
   const [images, setImages] = useState([]);
@@ -13,7 +13,6 @@ const Gallery = ({ handleGalleryUpload, handleCancel }) => {
   const [error, setError] = useState(null);
   const { searchValue } = useNewsSearch();
   const [page, setPage] = useState(1);
-  const [hasSearchContent, setHasSearchContent] = useState(false);
   const imagesPerPage = 20;
 
   const handleImageSelect = (imageUrl) => {
@@ -34,20 +33,14 @@ const Gallery = ({ handleGalleryUpload, handleCancel }) => {
     const token = localStorage.getItem("Token");
     const headers = { Authorization: `Bearer ${token}` };
     try {
-      const hasContent = searchValue && /\S/.test(searchValue);
-      setHasSearchContent(hasContent);
-      const url = hasContent
-        ? `/search/search/?q=${searchValue}`
-        : "/gallery/image-gallery";
+      const url = "/news/news-images/";
       const response = await Get({
         url,
-        headers: hasContent ? null : headers,
+        headers: headers,
       });
-      console.log("Gallery :" + response);
-      const imageData = hasContent ? response.news : response;
-      const sortedImages = imageData
+      const sortedImages = response
         .sort((a, b) => b.id - a.id)
-        .filter((myImage) => myImage.image != null);
+        .filter((myImage) => myImage.image_url != null);
       setImages(sortedImages);
       console.log("Gallery :" + sortedImages);
       setPage(1);
@@ -60,9 +53,7 @@ const Gallery = ({ handleGalleryUpload, handleCancel }) => {
   };
 
   const handleDownload = (imageUrl, fileName) => {
-    const fullImageUrl = hasSearchContent
-      ? `https://cms.krishisanjal.com${imageUrl}`
-      : imageUrl;
+    const fullImageUrl = imageUrl;
 
     fetch(fullImageUrl)
       .then((response) => response.blob())
@@ -102,21 +93,21 @@ const Gallery = ({ handleGalleryUpload, handleCancel }) => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-green-900 text-white p-4 sm:p-8">
+    <div
+      className="min-h-screen w-full bg-green-900 text-white p-4 sm:p-8"
+      style={{ height: "94vh", overflowY: "scroll" }}
+    >
       <h1 className="text-4xl font-bold mb-8 text-center">Image Gallery</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 ">
         {displayedImages.map((image) => (
           <div
             key={image.id}
-            className="bg-green-800 rounded-lg shadow-lg overflow-hidden transform transition duration-300 hover:scale-105"
+            className="bg-green-800 rounded-lg shadow-lg overflow-hidden cursor-pointer transform transition duration-300 hover:scale-105"
+            onClick={() => handleImageSelect(image.image_url)}
           >
             <div className="relative h-48 sm:h-64">
               <Image
-                src={
-                  hasSearchContent
-                    ? `https://cms.krishisanjal.com${image.image}`
-                    : image.image
-                }
+                src={image.image_url}
                 alt={image.news_title || "Gallery Image"}
                 layout="fill"
                 objectFit="cover"
@@ -126,11 +117,11 @@ const Gallery = ({ handleGalleryUpload, handleCancel }) => {
               <h2 className="text-xl font-semibold mb-2 truncate">
                 {image.news_title}
               </h2>
-              <p className="text-sm text-green-300 mb-4">
+              {/* <p className="text-sm text-green-300 mb-4">
                 {new Date(image.created_date_ad).toLocaleDateString()}
-              </p>
+              </p> */}
               <button
-                onClick={() => handleImageSelect(image.image)}
+                onClick={() => handleImageSelect(image.image_url)}
                 className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out flex items-center justify-center"
               >
                 Select Image

@@ -102,7 +102,7 @@ export default function NewsAdd({ handleCancel2, setReload }) {
       formData.append("image", selectedImage);
     }
     if (galleryImage) {
-      formData.append("gallery_image", galleryImage);
+      formData.append("media_image", galleryImage);
     }
 
     try {
@@ -292,27 +292,36 @@ export default function NewsAdd({ handleCancel2, setReload }) {
           }}
         />
       </Form.Item>
-      <Form.Item label="Upload Image">
-        <input type="file" onChange={handleUpload} />
-      </Form.Item>
-      <Form.Item>
-        <Button onClick={showModal}>Upload Image from Server</Button>
-        <Modal
-          title="Upload Image from Server"
-          open={isModalOpen}
-          onOk={handleOk}
-          onCancel={handleCancel}
-          footer={null}
-          style={{ minWidth: "90vw" }}
-        >
-          <Gallery
-            handleGalleryUpload={handleGalleryUpload}
-            handleCancel={handleCancel}
-          />
-        </Modal>
-      </Form.Item>
+      <div className="w-full flex justify-evenly">
+        <Form.Item label="Upload Image">
+          <input type="file" onChange={handleUpload} />
+        </Form.Item>
+        <Form.Item>
+          <Button
+            onClick={showModal}
+            className="bg-gray-300"
+            style={{ border: "1px solid #525354" }}
+          >
+            Upload Image from Server
+          </Button>
+          <Modal
+            title="Upload Image from Server"
+            open={isModalOpen}
+            onOk={handleOk}
+            onCancel={handleCancel}
+            footer={null}
+            style={{ minWidth: "90vw", overflow: "hidden" }}
+          >
+            <Gallery
+              handleGalleryUpload={handleGalleryUpload}
+              handleCancel={handleCancel}
+            />
+          </Modal>
+        </Form.Item>
+      </div>
       {imagePreview && (
-        <div style={{ marginTop: "10px" }}>
+        <div style={{ marginTop: "10px" }} className=" my-3 ">
+          <h2 className="text-green-800 font-bold">Image Preview :</h2>
           <img
             src={imagePreview}
             alt="Preview"

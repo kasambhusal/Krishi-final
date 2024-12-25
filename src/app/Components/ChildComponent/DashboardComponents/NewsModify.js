@@ -1,15 +1,16 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Form, Input, Button, Select, Checkbox, message } from "antd";
+import { Form, Input, Button, Select, Checkbox, message, Modal } from "antd";
 import dayjs from "dayjs";
 import { Get, Put } from "../../Redux/API";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import Image from "next/image"; // Import Image component from next/image
+import Gallery from "./Gallery";
 
 const { Option } = Select;
 
-export default function NewsModify({ modifyObj, handleCancel, fetchData }) {
+export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
   const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
   const [author, setAuthor] = useState(null);
@@ -26,7 +27,8 @@ export default function NewsModify({ modifyObj, handleCancel, fetchData }) {
   const [subCategoryData, setSubCategoryData] = useState([]);
   const [authorData, setAuthorData] = useState([]);
   const [loading, setLoading] = useState(false);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [galleryImage, setGalleryImage] = useState(null);
   useEffect(() => {
     const fetchCategory = async () => {
       const token = localStorage.getItem("Token");
@@ -75,13 +77,32 @@ export default function NewsModify({ modifyObj, handleCancel, fetchData }) {
     }
   }, [modifyObj]);
 
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
   const handleUpload = (event) => {
     const file = event.target.files[0];
     setSelectedImage(file);
     if (file) {
       const previewUrl = URL.createObjectURL(file);
       setImagePreview(previewUrl);
+      setGalleryImage(null);
     }
+  };
+
+  const handleGalleryUpload = (myurl) => {
+    setGalleryImage(myurl);
+    setImagePreview(myurl);
+    setSelectedImage(null);
   };
 
   const handleSubmit = async () => {
@@ -113,6 +134,9 @@ export default function NewsModify({ modifyObj, handleCancel, fetchData }) {
     if (selectedImage) {
       formData.append("image", selectedImage);
     }
+    if (galleryImage) {
+      formData.append("media_image", galleryImage);
+    }
     const token = localStorage.getItem("Token");
     const headers = { Authorization: `Bearer ${token}` };
     try {
@@ -128,7 +152,7 @@ export default function NewsModify({ modifyObj, handleCancel, fetchData }) {
       console.error("Error submitting form:", error);
       message.error("Error on news publish");
     } finally {
-      handleCancel();
+      handleCancel2();
       fetchData();
       setLoading(false);
     }
@@ -244,21 +268,39 @@ export default function NewsModify({ modifyObj, handleCancel, fetchData }) {
           />
         </div>
       </Form.Item>
-      <Form.Item label="Upload Image">
-        <input type="file" onChange={handleUpload} />
-        {imagePreview && (
-          <div style={{ marginTop: "10px" }}>
-            {/* Replaced <img> with <Image> from next/image */}
-            <Image
-              src={imagePreview}
-              alt="Preview"
-              width={300} // Set width
-              height={200} // Set height
-              style={{ objectFit: "cover" }} // Ensure image covers the area
+      <div className="w-full flex justify-evenly">
+        <Form.Item label="Upload Image">
+          <input type="file" onChange={handleUpload} />
+        </Form.Item>
+        <Form.Item>
+          <Button onClick={showModal}>Upload Image from Server</Button>
+          <Modal
+            title="Upload Image from Server"
+            open={isModalOpen}
+            onOk={handleOk}
+            onCancel={handleCancel}
+            footer={null}
+            style={{ minWidth: "90vw", overflow: "hidden" }}
+          >
+            <Gallery
+              handleGalleryUpload={handleGalleryUpload}
+              handleCancel={handleCancel}
             />
-          </div>
-        )}
-      </Form.Item>
+          </Modal>
+        </Form.Item>
+      </div>
+      {imagePreview && (
+        <div style={{ marginTop: "10px" }}>
+          {/* Replaced <img> with <Image> from next/image */}
+          <Image
+            src={imagePreview}
+            alt="Preview"
+            width={300} // Set width
+            height={200} // Set height
+            style={{ objectFit: "cover" }} // Ensure image covers the area
+          />
+        </div>
+      )}
       <Form.Item>
         <Button
           type="primary"

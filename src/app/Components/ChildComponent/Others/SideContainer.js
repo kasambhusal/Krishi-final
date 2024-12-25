@@ -7,9 +7,9 @@ import SmallAds from "../Advertisement/SmallAds";
 
 const SideContainer = ({ mukhyaShow }) => {
   return (
-    <div className="w-full">
+    <div className="w-full h-auto">
       <SmallAds name="H_sidebar_before_followus" />
-      <div className="mt-10 w-full">
+      <div className="mt-10 w-full h-auto">
         {!mukhyaShow && (
           <div className="w-full">
             <h2 className="text-xl font-bold">Follow Us:</h2>

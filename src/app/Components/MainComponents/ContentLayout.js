@@ -115,7 +115,10 @@ const ContentLayout = ({ mukhyaShow }) => {
           <Ads name="H_landscape_after_video" />
         </div>
       </div>
-      <div className="col-span-10 lg:col-span-3 h-full border-lg ">
+      <div
+        className="col-span-10 lg:col-span-3 border-lg "
+        style={{ minHeight: "full" }}
+      >
         <div>
           <SideContainer mukhyaShow={mukhyaShow} />
         </div>
