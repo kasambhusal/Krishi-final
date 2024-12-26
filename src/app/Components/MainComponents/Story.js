@@ -13,6 +13,7 @@ import FormatEnglishDate from "../JS/FormatEnglishDate";
 import { useCount } from "../Context/CountContext";
 import { Get } from "../Redux/API";
 import Image from "next/image";
+import DOMPurify from "dompurify";
 import PDFViewer from "../ChildComponent/Others/PDFViewer";
 import Breadcrumb from "../ChildComponent/Others/Breadcrumb";
 import Card10 from "../ChildComponent/Cards/Card10";
@@ -81,29 +82,18 @@ const Story = ({ news }) => {
   }, [count, news.id]);
 
   const renderHtmlContent = (htmlString) => {
-    const parseOembed = (html) => {
+    const parseAndEmbed = (html) => {
       const parser = new DOMParser();
       const doc = parser.parseFromString(html, "text/html");
 
-      // Find all <oembed> tags
       const oembedElements = doc.querySelectorAll("oembed");
       oembedElements.forEach((oembed) => {
         const url = oembed.getAttribute("url");
-
         if (url) {
-          let embedUrl = url;
-
-          // Handle YouTube URLs
-          if (url.includes("youtube.com/watch")) {
-            const videoId = new URL(url).searchParams.get("v");
-            if (videoId) {
-              embedUrl = `https://www.youtube.com/embed/${videoId}`;
-            }
-          }
-
-          // Replace <oembed> with an <iframe>
           const iframe = document.createElement("iframe");
-          iframe.setAttribute("src", embedUrl);
+          iframe.src = url.includes("youtube.com")
+            ? `https://www.youtube.com/embed/${new URL(url).searchParams.get("v")}`
+            : url;
           iframe.setAttribute("frameborder", "0");
           iframe.setAttribute("allowfullscreen", "true");
           iframe.style.width = "100%";
@@ -115,20 +105,17 @@ const Story = ({ news }) => {
       return doc.body.innerHTML;
     };
 
-    // Parse and replace <oembed> tags in the HTML string
-    const processedHtml = parseOembed(htmlString);
-
+    const sanitizedHtml = DOMPurify.sanitize(parseAndEmbed(htmlString));
     return (
       <div
         dangerouslySetInnerHTML={{
-          __html: processedHtml || "<p>No content to display.</p>",
+          __html: sanitizedHtml || "<p>No content to display.</p>",
         }}
         className="content"
         style={{ lineHeight: "1.6", wordWrap: "break-word" }}
       />
     );
   };
-
   return (
     <div
       className="flex justify-center w-full"

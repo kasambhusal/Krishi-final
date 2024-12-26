@@ -307,7 +307,7 @@ export default function NewsAdd({ handleCancel2, setReload }) {
           }}
         />
       </Form.Item>
-      <div className="w-full flex flex-col sm:flex-row justify-evenly">
+      <div className="w-full flex flex-col sm:flex-row gap-[20px] flex-wrap">
         <Form.Item label="Upload Image">
           <input type="file" onChange={handleUpload} />
         </Form.Item>
@@ -333,6 +333,9 @@ export default function NewsAdd({ handleCancel2, setReload }) {
             />
           </Modal>
         </Form.Item>
+        <Form.Item label="Upload PDF">
+          <input type="file" accept=".pdf" onChange={handlePdfUpload} />
+        </Form.Item>
       </div>
 
       {imagePreview && (
@@ -345,9 +348,7 @@ export default function NewsAdd({ handleCancel2, setReload }) {
           />
         </div>
       )}
-      <Form.Item label="Upload PDF">
-        <input type="file" accept=".pdf" onChange={handlePdfUpload} />
-      </Form.Item>
+
       {selectedPdf && (
         <div style={{ marginTop: "10px" }} className="my-3">
           <h2 className="text-green-800 font-bold">Selected PDF:</h2>

@@ -43,7 +43,7 @@ export default function News() {
               style: { color: "black", border: "1px solid #bdbbbb" }, // Add custom styles here
             }}
             onCancel={handleCancel}
-            style={{ minWidth: "60vw" }}
+            style={{ minWidth: "80vw" }}
             footer={null}
           >
             <NewsAdd handleCancel2={handleCancel} setReload={setReload} />
