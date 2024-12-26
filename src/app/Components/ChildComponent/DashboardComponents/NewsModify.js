@@ -29,6 +29,9 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [galleryImage, setGalleryImage] = useState(null);
+  const [selectedPdf, setSelectedPdf] = useState(null);
+  const [pdfPreview, setPdfPreview] = useState(null);
+
   useEffect(() => {
     const fetchCategory = async () => {
       const token = localStorage.getItem("Token");
@@ -74,6 +77,7 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
       setBreaking(modifyObj.breaking_news);
       setDisData(modifyObj.news_post || "");
       setImagePreview(modifyObj.media_image || modifyObj.image || null);
+      setPdfPreview(modifyObj.pdf_document || null);
     }
   }, [modifyObj]);
 
@@ -96,6 +100,16 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
       const previewUrl = URL.createObjectURL(file);
       setImagePreview(previewUrl);
       setGalleryImage("");
+    }
+  };
+  const handlePdfUpload = (event) => {
+    const file = event.target.files[0];
+    if (file && file.type === "application/pdf") {
+      const previewUrl = URL.createObjectURL(file);
+      setPdfPreview(previewUrl); // Use a URL string
+      setSelectedPdf(file);
+    } else {
+      message.error("Please upload a PDF file");
     }
   };
 
@@ -138,6 +152,9 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
       formData.append("media_image", galleryImage);
       // const emptyFile = new File([""], "empty.txt", { type: "text/plain" });
       formData.append("image", "");
+    }
+    if (selectedPdf) {
+      formData.append("pdf_document", selectedPdf);
     }
     const token = localStorage.getItem("Token");
     const headers = { Authorization: `Bearer ${token}` };
@@ -293,7 +310,7 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
       </div>
       {imagePreview && (
         <div style={{ marginTop: "10px" }}>
-          {/* Replaced <img> with <Image> from next/image */}
+          <h2 className="text-green-800 font-bold">Image Preview :</h2>
           <Image
             src={imagePreview}
             alt="Preview"
@@ -301,6 +318,17 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
             height={200} // Set height
             style={{ objectFit: "cover" }} // Ensure image covers the area
           />
+        </div>
+      )}
+      <Form.Item label="Upload PDF" className="mt-[25px]">
+        <input type="file" accept=".pdf" onChange={handlePdfUpload} />
+      </Form.Item>
+      {pdfPreview && (
+        <div style={{ marginTop: "10px" }} className="my-3">
+          <h2 className="text-green-800 font-bold">PDF Overview:</h2>
+          <a href={pdfPreview} target="_blank">
+            {pdfPreview}
+          </a>
         </div>
       )}
       <Form.Item>

@@ -69,7 +69,7 @@ const Gallery = ({ handleGalleryUpload, handleCancel }) => {
 
   if (loading && currentPage === 1) {
     return (
-      <div className="flex justify-center items-center h-screen bg-gradient-to-r from-emerald-500 to-teal-500 text-white">
+      <div className="flex justify-center items-center h-[500px] bg-[#0c4512] from-emerald-500 to-teal-500 text-white">
         <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-white"></div>
       </div>
     );
@@ -77,14 +77,14 @@ const Gallery = ({ handleGalleryUpload, handleCancel }) => {
 
   if (error) {
     return (
-      <div className="flex justify-center items-center h-screen bg-gradient-to-r from-emerald-500 to-teal-500 text-red-100">
+      <div className="flex justify-center items-center h-screen bg-[#0c4512] from-emerald-500 to-teal-500 text-red-100">
         {error}
       </div>
     );
   }
 
   return (
-    <div className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white p-4 sm:p-8 space-y-8">
+    <div className="w-full bg-[#0c4512] from-emerald-500 to-teal-500 text-white p-4 sm:p-8 space-y-8">
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
         {displayedImages.map((image) => (
           <div

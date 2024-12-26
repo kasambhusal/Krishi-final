@@ -13,6 +13,7 @@ import FormatEnglishDate from "../JS/FormatEnglishDate";
 import { useCount } from "../Context/CountContext";
 import { Get } from "../Redux/API";
 import Image from "next/image";
+import PDFViewer from "../ChildComponent/Others/PDFViewer";
 import Breadcrumb from "../ChildComponent/Others/Breadcrumb";
 import Card10 from "../ChildComponent/Cards/Card10";
 import { usePathname } from "next/navigation";
@@ -217,6 +218,7 @@ const Story = ({ news }) => {
               </div>
               {news.table_html && renderHtmlContent(news.table_html)}
             </div>
+            {news.pdf_document && <PDFViewer pdfUrl={news.pdf_document} />}
             <div className="my-5">
               <Share
                 newsTitle={news.news_title}

@@ -57,6 +57,8 @@ const NewsTable = ({ reload, setReload }) => {
           : item.media_image || item.image,
         active: item.active,
         breaking_news: item.breaking_news,
+        pdf_document: item.pdf_document,
+
         category: item.category,
         category_name: item.category_name,
         category_key: item.category_key,
@@ -121,6 +123,8 @@ const NewsTable = ({ reload, setReload }) => {
     try {
       await Delete({ url: `/news/news/${newsId}`, headers });
       message.success("News item deleted successfully!");
+      setDeleteLoading(false);
+      handleCancel("delete");
       await fetchData();
     } catch (error) {
       console.error("Error deleting news:", error);

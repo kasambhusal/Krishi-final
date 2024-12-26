@@ -30,6 +30,7 @@ export default function NewsAdd({ handleCancel2, setReload }) {
   const [loading, setLoading] = useState(false);
   const [galleryImage, setGalleryImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedPdf, setSelectedPdf] = useState(null);
 
   const token = localStorage.getItem("Token");
   const headers = { Authorization: `Bearer ${token}` };
@@ -84,6 +85,16 @@ export default function NewsAdd({ handleCancel2, setReload }) {
     setImagePreview(myurl);
     setSelectedImage(null);
   };
+
+  const handlePdfUpload = (event) => {
+    const file = event.target.files[0];
+    if (file && file.type === "application/pdf") {
+      setSelectedPdf(file);
+    } else {
+      message.error("Please upload a PDF file");
+    }
+  };
+
   const handleSubmit = async () => {
     setLoading(true);
 
@@ -103,6 +114,9 @@ export default function NewsAdd({ handleCancel2, setReload }) {
     }
     if (galleryImage) {
       formData.append("media_image", galleryImage);
+    }
+    if (selectedPdf) {
+      formData.append("pdf_document", selectedPdf);
     }
 
     try {
@@ -180,6 +194,7 @@ export default function NewsAdd({ handleCancel2, setReload }) {
     setDisData("");
     setSelectedImage(null);
     setImagePreview(null);
+    setSelectedPdf(null);
   };
 
   const categoryChange = (value) => {
@@ -319,6 +334,7 @@ export default function NewsAdd({ handleCancel2, setReload }) {
           </Modal>
         </Form.Item>
       </div>
+
       {imagePreview && (
         <div style={{ marginTop: "10px" }} className=" my-3 ">
           <h2 className="text-green-800 font-bold">Image Preview :</h2>
@@ -327,6 +343,15 @@ export default function NewsAdd({ handleCancel2, setReload }) {
             alt="Preview"
             style={{ maxWidth: "100%", maxHeight: "200px" }}
           />
+        </div>
+      )}
+      <Form.Item label="Upload PDF">
+        <input type="file" accept=".pdf" onChange={handlePdfUpload} />
+      </Form.Item>
+      {selectedPdf && (
+        <div style={{ marginTop: "10px" }} className="my-3">
+          <h2 className="text-green-800 font-bold">Selected PDF:</h2>
+          <p>{selectedPdf.name}</p>
         </div>
       )}
       <Form.Item>
