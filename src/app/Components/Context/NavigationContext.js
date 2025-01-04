@@ -10,7 +10,7 @@ export const NavigationProvider = ({ children }) => {
   const [lge, setLge] = useState(pathname.includes("/en") ? "en" : "np");
 
   return (
-    <NavigationContext.Provider value={{ lge }}>
+    <NavigationContext.Provider value={{ lge, setLge }}>
       {children}
     </NavigationContext.Provider>
   );

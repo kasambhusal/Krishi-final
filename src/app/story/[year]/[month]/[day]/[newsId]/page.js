@@ -72,7 +72,7 @@ export async function generateMetadata({ params = {} }) {
       images: [
         {
           url:
-            post.image ||
+            post.image ||post.media_image ||
             "https://cms.krishisanjal.com/media/author/logo_2.jpg",
           width: 1260,
           height: 800,

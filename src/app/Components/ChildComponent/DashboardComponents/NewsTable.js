@@ -7,7 +7,6 @@ import { useNavigation } from "../../Context/NavigationContext";
 import { useNewsSearch } from "../../Context/searchNewsContext";
 import { Get, Delete } from "../../Redux/API";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
 
 const NewsTable = ({ reload, setReload }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -15,8 +14,7 @@ const NewsTable = ({ reload, setReload }) => {
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [selectedNews, setSelectedNews] = useState(null);
   const { searchValue } = useNewsSearch();
-  const pathname = usePathname();
-  const [lge, setLge] = useState(pathname.includes("/en") ? "en" : "np");
+  const { lge } = useNavigation();
   const [dataSource, setDataSource] = useState([]);
   const [loading, setLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
