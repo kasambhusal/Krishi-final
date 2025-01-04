@@ -51,7 +51,6 @@ const SmallCardContentBottom = ({
           <div
             className="w-full  overflow-hidden  relative group mb-[10px]"
             style={{
-              boxShadow: "0px 0px 16px black inset",
               borderRadius: "5px",
             }}
           >

@@ -94,7 +94,7 @@ const Gallery = ({ handleGalleryUpload, handleCancel }) => {
       // console.log("Url to push:", url);
 
       const response = await Get({ url, headers });
-
+      console.log(response);
       const refinedData = response.map((item) => ({
         id: item.id,
         image_url: item.image_url,
