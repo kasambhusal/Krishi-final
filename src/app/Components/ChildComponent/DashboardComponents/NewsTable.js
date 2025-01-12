@@ -8,7 +8,7 @@ import { useNewsSearch } from "../../Context/searchNewsContext";
 import { Get, Delete } from "../../Redux/API";
 import Image from "next/image";
 
-const NewsTable = ({ reload, setReload }) => {
+const NewsTable = ({ reload, setReload, isActive }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
@@ -33,9 +33,10 @@ const NewsTable = ({ reload, setReload }) => {
         url,
         headers: hasContent ? null : headers,
       });
+
       const responseData = hasContent ? response.news : response;
       const requiredData = responseData
-        .filter((item) => item.language === lge)
+        .filter((item) => item.language === lge && item.active === isActive)
         .sort((a, b) => {
           if (b.self_date !== a.self_date) {
             return b.self_date.localeCompare(a.self_date);
@@ -56,7 +57,6 @@ const NewsTable = ({ reload, setReload }) => {
         active: item.active,
         breaking_news: item.breaking_news,
         pdf_document: item.pdf_document,
-
         category: item.category,
         category_name: item.category_name,
         category_key: item.category_key,
@@ -71,12 +71,12 @@ const NewsTable = ({ reload, setReload }) => {
     } finally {
       setLoading(false);
     }
-  }, [lge, searchValue]);
+  }, [lge, searchValue, isActive]);
 
   useEffect(() => {
     fetchData();
     setReload(false);
-  }, [fetchData, setReload, reload, searchValue]);
+  }, [fetchData, setReload, reload, searchValue, isActive]);
 
   const showModal = (news, modalType) => {
     setSelectedNews(news);
@@ -219,7 +219,6 @@ const NewsTable = ({ reload, setReload }) => {
       const parser = new DOMParser();
       const doc = parser.parseFromString(html, "text/html");
 
-      // Find all <oembed> tags
       const oembedElements = doc.querySelectorAll("oembed");
       oembedElements.forEach((oembed) => {
         const url = oembed.getAttribute("url");
@@ -227,7 +226,6 @@ const NewsTable = ({ reload, setReload }) => {
         if (url) {
           let embedUrl = url;
 
-          // Handle YouTube URLs
           if (url.includes("youtube.com/watch")) {
             const videoId = new URL(url).searchParams.get("v");
             if (videoId) {
@@ -235,7 +233,6 @@ const NewsTable = ({ reload, setReload }) => {
             }
           }
 
-          // Replace <oembed> with an <iframe>
           const iframe = document.createElement("iframe");
           iframe.setAttribute("src", embedUrl);
           iframe.setAttribute("frameborder", "0");
@@ -249,7 +246,6 @@ const NewsTable = ({ reload, setReload }) => {
       return doc.body.innerHTML;
     };
 
-    // Parse and replace <oembed> tags in the HTML string
     const processedHtml = parseOembed(htmlString);
 
     return (
@@ -262,6 +258,7 @@ const NewsTable = ({ reload, setReload }) => {
       />
     );
   };
+
   return (
     <>
       <Table

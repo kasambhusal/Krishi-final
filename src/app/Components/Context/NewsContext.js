@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import { Get } from "../Redux/API";
 import Toast, { showToast } from "../JS/Toast";
+import { useNavigation } from "./NavigationContext";
 // Create the context with default values (these will be replaced in the provider)
 const NewsContext = createContext(null);
 
@@ -15,30 +16,25 @@ const NewsContext = createContext(null);
 export const NewsProvider = ({ children }) => {
   const [wholeNews, setWholeNews] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [lge, setLge] = useState(null);
-
-  // Check if we are on the client side to access `window`
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setLge(window.location.pathname.includes("/en") ? "en" : "np");
-    }
-  }, []); // Only runs once on component mount
-
+  const { lge } = useNavigation();
   // Memoize the fetchNews function with useCallback
   const fetchNews = useCallback(async () => {
     setLoading(true);
     try {
-      // Use the Get function with proper typing for the response
       const response = await Get({ url: "/public/news/get-news" });
-
-      // Filter and sort the news items based on the language and active status
-      const filteredResponse = await response
-        .filter((item) => item.language === lge && item.active === true)
-        .sort(
-          (a, b) =>
-            new Date(b.self_date).getTime() - new Date(a.self_date).getTime()
-        );
-
+      const filteredResponse = response
+        .filter(
+          (item) => item.active === true
+          // && item.language === lge
+        )
+        .sort((a, b) => {
+          // First, sort by self_date in descending order (latest date first)
+          if (b.self_date !== a.self_date) {
+            return new Date(b.self_date) - new Date(a.self_date); // Date comparison
+          }
+          // If self_dates are the same, then sort by id in descending order
+          return b.id - a.id; // ID comparison in descending order
+        });
       setWholeNews(filteredResponse);
     } catch (error) {
       showToast("Error on news fetching", "error");
@@ -51,7 +47,7 @@ export const NewsProvider = ({ children }) => {
   // Fetch news on language change or component mount
   useEffect(() => {
     fetchNews(); // Fetch news when the language changes or on mount
-  }, [lge, fetchNews]); // `fetchNews` is stable now due to `useCallback`
+  }, []); // `fetchNews` is stable now due to `useCallback`
 
   return (
     <NewsContext.Provider value={{ wholeNews, loading, setWholeNews }}>

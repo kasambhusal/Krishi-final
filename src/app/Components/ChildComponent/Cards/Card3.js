@@ -9,7 +9,6 @@ import { useNews } from "../../Context/NewsContext"; // Adjust the import based 
 const Card3 = ({ myWord }) => {
   const { wholeNews, loading } = useNews(); // Get news and loading state from context
   const [news, setNews] = useState([]);
-
   useEffect(() => {
     const filteredResponse = wholeNews.filter(
       (item) => item.category_name === myWord
@@ -72,7 +71,7 @@ const Card3 = ({ myWord }) => {
           </div>
         </div>
       ) : (
-        <div className="text-center py-4 h-[60vh]"> </div>
+        <div className="text-center py-4 h-[60vh]"> No News Available ! </div>
       )}
     </div>
   );

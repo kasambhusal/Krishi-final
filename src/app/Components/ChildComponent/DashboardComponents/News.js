@@ -1,16 +1,16 @@
 "use client";
 import React, { useState } from "react";
-import { Button } from "antd";
-import { Modal } from "antd";
+import { Button, Modal, Switch } from "antd";
 import NewsAdd from "./NewsAdd";
 import NewsTable from "./NewsTable";
 import { useRouter } from "next/navigation";
+import { useTheme } from "../../Context/ThemeContext";
 
 export default function News() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [reload, setReload] = useState(false);
-  const router = useRouter();
-
+  const [isActive, setIsActive] = useState(true);
+  const { themeColor } = useTheme();
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -22,34 +22,51 @@ export default function News() {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+
+  const handleFilterChange = (checked) => {
+    setIsActive(checked);
+    setReload(true); // Trigger a reload when the filter changes
+  };
+
   return (
     <div className="flex justify-center items-center">
       <div style={{ width: "95%" }}>
-        <h2 className="w-full text-right">
+        <div className="w-full flex justify-between items-center my-3">
+          <div className="mr-4 flex items-center">
+            <h2>Active / Draft : </h2>
+            <Switch
+              defaultChecked
+              onChange={handleFilterChange}
+              checkedChildren="Active"
+              unCheckedChildren="Draft"
+              style={{
+                backgroundColor: themeColor, // Dark green color when checked
+              }}
+            />
+          </div>
           <Button
             style={{ color: "white", backgroundColor: "#0d2914" }}
-            className="my-3"
             onClick={showModal}
           >
             Add News{" "}
             <ion-icon name="add-outline" style={{ color: "white" }}></ion-icon>
           </Button>
-          <Modal
-            title="Create News"
-            open={isModalOpen}
-            onOk={handleOk}
-            okText="Submit"
-            okButtonProps={{
-              style: { color: "black", border: "1px solid #bdbbbb" }, // Add custom styles here
-            }}
-            onCancel={handleCancel}
-            style={{ minWidth: "80vw" }}
-            footer={null}
-          >
-            <NewsAdd handleCancel2={handleCancel} setReload={setReload} />
-          </Modal>
-        </h2>
-        <NewsTable reload={reload} setReload={setReload} />
+        </div>
+        <Modal
+          title="Create News"
+          open={isModalOpen}
+          onOk={handleOk}
+          okText="Submit"
+          okButtonProps={{
+            style: { color: "black", border: "1px solid #bdbbbb" },
+          }}
+          onCancel={handleCancel}
+          style={{ minWidth: "80vw" }}
+          footer={null}
+        >
+          <NewsAdd handleCancel2={handleCancel} setReload={setReload} />
+        </Modal>
+        <NewsTable reload={reload} setReload={setReload} isActive={isActive} />
       </div>
     </div>
   );

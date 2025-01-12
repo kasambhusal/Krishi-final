@@ -260,7 +260,7 @@ const BottomNav = () => {
                   className="relative group hidden lg:flex h-full"
                 >
                   <Link
-                    href="/table"
+                    href={lge === "en" ? "/en/table" : "/table"}
                     // onClick={scrollToTop}
                     className="flex items-center justify-center text-white/90 text-[18px] font-mukta hover:text-white duration-150"
                   >
@@ -413,7 +413,7 @@ const BottomNav = () => {
                 //  onClick={scrollToTop}
                 >
                   <Link
-                    href="/table"
+                    href={lge === "en" ? "/en/table" : "/table"}
                     onClick={onClose}
                     className="flex items-center justify-center font-bold gap-1 text-black/90 text-[22px] hover:black-white duration-150"
                   >

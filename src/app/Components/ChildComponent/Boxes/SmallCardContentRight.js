@@ -46,7 +46,6 @@ const SmallCardContentRight = ({
           <div
             className="w-[150px] overflow-hidden h-[100px] relative flex justify-center group bg-gray-200"
             style={{
-              boxShadow: "0px 0px 16px black inset",
               borderRadius: "5px",
             }}
           >

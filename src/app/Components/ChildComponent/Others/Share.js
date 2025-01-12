@@ -14,7 +14,7 @@ import {
 } from "next-share"; // Import icons from react-share
 import { Post } from "../../Redux/API";
 
-const Share = ({ newsTitle, id, shareCount }) => {
+const Share = ({ newsTitle, id, shareCount, vertical = false }) => {
   const [newsUrl, setNewsUrl] = useState(""); // Store the URL in state
 
   // Dynamically set the URL after the component mounts (client-side)
@@ -39,15 +39,21 @@ const Share = ({ newsTitle, id, shareCount }) => {
   };
 
   return (
-    <div className="flex gap-[10px]">
-      <div className="flex items-center justify-center gap-[5px]">
+    <div className={`flex ${vertical ? "flex-col items-start" : "gap-[10px]"}`}>
+      <div
+        className={`"flex items-center justify-center gap-[5px] ${vertical ? "flex-col mb-[5px]" : "flex-row"}`}
+      >
         <h2 className="text-[20px] font-bold text-[#8a8986]">
           {shareCount || "0"}
         </h2>
         <h2 className="text-[12px] text-[#8a8986]">Shares</h2>
       </div>
 
-      <div className="flex gap-[10px]">
+      <div
+        className={`flex ${
+          vertical ? "flex-col gap-[10px]" : "flex-row gap-[10px]"
+        }`}
+      >
         <FacebookShareButton
           url={newsUrl}
           quote={newsTitle}

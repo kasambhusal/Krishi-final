@@ -17,7 +17,11 @@ const CategoryPage = ({ categoryName, isValidCategory }) => {
   const { wholeNews, loading, setWholeNews } = useNews();
   const { bgColor } = useTheme();
   const [localLoading, setLocalLoading] = useState(true);
-
+  console.log(
+    "isvalid category and category name",
+    isValidCategory,
+    categoryName
+  );
   useEffect(() => {
     const fetchNews = async () => {
       setLocalLoading(true);

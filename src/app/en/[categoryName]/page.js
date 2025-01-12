@@ -55,7 +55,7 @@ export default async function Page({ params }) {
   const { categoryName, isValidCategory } = await fetchData(
     params.categoryName
   );
-
+  console.log(categoryName, isValidCategory);
   return (
     <div className={`${mukta.className} antialiased`}>
       <CategoryPage

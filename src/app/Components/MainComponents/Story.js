@@ -29,6 +29,7 @@ const Story = ({ news }) => {
   const [shareCount, setShareCount] = useState(0);
   const pathname = usePathname();
   const [lge, setLge] = useState(pathname.includes("/en") ? "en" : "np");
+  const [isVisible, setIsVisible] = useState(false);
   useEffect(() => {
     setNepaliDate(FormatNepaliDate(news.self_date));
     setEnglishDate(FormatEnglishDate(news.self_date));
@@ -37,6 +38,31 @@ const Story = ({ news }) => {
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Get the position of the news content
+      const newsElement = document.querySelector(".news-content"); // Ensure the news section has this class or use an appropriate selector
+      const newsRect = newsElement?.getBoundingClientRect();
+
+      // Check if the user has scrolled more than 300px
+      const hasScrolled = window.scrollY > 300;
+
+      if (newsRect) {
+        // Check if the news content is still visible on the screen
+        const isNewsVisible =
+          newsRect.top <= window.innerHeight && newsRect.bottom >= 0;
+
+        // Set visibility only if both conditions are met
+        setIsVisible(hasScrolled && isNewsVisible);
+      }
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -118,9 +144,20 @@ const Story = ({ news }) => {
   };
   return (
     <div
-      className="flex justify-center w-full"
+      className=" w-full flex justify-center"
       style={{ backgroundColor: bgColor }}
     >
+      {isVisible && (
+        <div className="fixed top-[150px] left-[2%] z-50  hidden md:block ">
+          <Share
+            newsTitle={news.news_title}
+            id={viewsId}
+            shareCount={shareCount}
+            vertical={true}
+          />
+        </div>
+      )}
+
       <div className="flex flex-col justify-center w-[97%] sm:w-[90%]">
         <RoadBlocking name="S_roadblocking_ads" />
         <Ads name="S_landscape_before_title" />
@@ -186,7 +223,7 @@ const Story = ({ news }) => {
         <Ads name="S_landscape_after_title" />
         <div className="w-full grid grid-cols-11">
           <div className="col-span-11 xl:col-span-7 w-full h-full">
-            <div className="flex flex-col gap-[20px] w-full">
+            <div className="flex flex-col gap-[20px] w-full news-content">
               {(news.image || news.media_image) && (
                 <Image
                   src={news.image || news.media_image}
