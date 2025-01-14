@@ -3,17 +3,17 @@ import React, { useEffect, useState } from "react";
 import SmallCardContentBottom from "../Boxes/SmallCardContentBottom";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import { useNews } from "../../Context/NewsContext"; // Adjust the import based on your file structure
+import { useNews } from "../../Context/NewsContext"; 
 
 const Card9 = ({ myWord }) => {
-  const { wholeNews, loading } = useNews(); // Get news and loading state from context
+  const { wholeNews, loading } = useNews(); 
   const [isMobile, setIsMobile] = useState(false);
   const [news, setNews] = useState([]);
 
   useEffect(() => {
     const filteredResponse = wholeNews.filter(
       (item) =>
-        (item.category_name === myWord || item.sub_category === myWord) &&
+        (item.category_names.includes(myWord) || item.sub_category_names.includes(myWord)) &&
         item.active === true
       //  &&          item.image != null
     );

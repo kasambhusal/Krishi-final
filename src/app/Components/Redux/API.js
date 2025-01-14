@@ -1,6 +1,6 @@
 import axios from "axios";
 // const Base_Url = "https://cms.bhandarirajan7.com.np/krishi_cms/api/v1"; // Set your base URL here
-const Base_Url = "https://cms.krishisanjal.com/krishi_cms/api/v1"; // Set your base URL here
+const Base_Url = "https://cms.bhuvanpaudel.com.np/krishi_cms/api/v1"; // Set your base URL here
 
 // GET request
 export async function Get({ url, headers = {}, props = "" }) {

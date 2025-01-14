@@ -27,7 +27,7 @@ const BicharBlog = () => {
   useEffect(() => {
     const filterNews = () => {
       const news = wholeNews.filter(
-        (item) => item.category_name === (lge === "en" ? "Opinion" : "खानपान")
+        (item) => item.category_names.includes(lge === "en" ? "Opinion" : "खानपान")
       );
       setFilteredNews(news.slice(0, 4)); // Limit to 4 items
       setLoading(false); // Set loading to false after filtering

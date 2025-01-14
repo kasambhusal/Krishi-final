@@ -57,9 +57,8 @@ const NewsTable = ({ reload, setReload, isActive }) => {
         active: item.active,
         breaking_news: item.breaking_news,
         pdf_document: item.pdf_document,
-        category: item.category,
-        category_name: item.category_name,
-        category_key: item.category_key,
+        category_names: item.category_names.join(", "),
+        sub_category_names: item.sub_category_names.join(", "),
       }));
       setDataSource(transformedData);
     } catch (error) {
@@ -180,9 +179,14 @@ const NewsTable = ({ reload, setReload, isActive }) => {
         ),
     },
     {
-      title: "Category",
-      dataIndex: "category_name",
-      width: 100,
+      title: "Categories",
+      dataIndex: "category_names",
+      width: 200,
+    },
+    {
+      title: "Subcategories",
+      dataIndex: "sub_category_names",
+      width: 200,
     },
     {
       title: "Action",
@@ -213,51 +217,6 @@ const NewsTable = ({ reload, setReload, isActive }) => {
       width: 150,
     },
   ];
-
-  const renderHtmlContent = (htmlString) => {
-    const parseOembed = (html) => {
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, "text/html");
-
-      const oembedElements = doc.querySelectorAll("oembed");
-      oembedElements.forEach((oembed) => {
-        const url = oembed.getAttribute("url");
-
-        if (url) {
-          let embedUrl = url;
-
-          if (url.includes("youtube.com/watch")) {
-            const videoId = new URL(url).searchParams.get("v");
-            if (videoId) {
-              embedUrl = `https://www.youtube.com/embed/${videoId}`;
-            }
-          }
-
-          const iframe = document.createElement("iframe");
-          iframe.setAttribute("src", embedUrl);
-          iframe.setAttribute("frameborder", "0");
-          iframe.setAttribute("allowfullscreen", "true");
-          iframe.style.width = "100%";
-          iframe.style.height = "400px";
-          oembed.replaceWith(iframe);
-        }
-      });
-
-      return doc.body.innerHTML;
-    };
-
-    const processedHtml = parseOembed(htmlString);
-
-    return (
-      <div
-        dangerouslySetInnerHTML={{
-          __html: processedHtml || "<p>No content to display.</p>",
-        }}
-        className="content"
-        style={{ lineHeight: "1.6", wordWrap: "break-word" }}
-      />
-    );
-  };
 
   return (
     <>
@@ -304,11 +263,7 @@ const NewsTable = ({ reload, setReload, isActive }) => {
         {selectedNews && (
           <div>
             <div className="flex flex-col gap-[20px] max-w-full">
-              <div style={{ width: "100%" }}>
-                {renderHtmlContent(selectedNews.news_post)}
-              </div>
-              {selectedNews.table_html &&
-                renderHtmlContent(selectedNews.table_html)}
+              <div style={{ width: "100%" }}>{selectedNews.news_post}</div>
             </div>
           </div>
         )}

@@ -11,7 +11,7 @@ const Card2 = ({ myWord }) => {
 
   useEffect(() => {
     const filteredResponse = wholeNews.filter(
-      (item) => item.category_name === myWord
+      (item) => item.category_names.includes(myWord)
       // && item.image != null
     );
 
@@ -20,7 +20,7 @@ const Card2 = ({ myWord }) => {
     } else {
       const subCategoryFiltered = wholeNews.filter(
         (item) =>
-          item.sub_category === myWord
+          item.sub_category_names.includes(myWord)
           // (item.image || item.media_image) != null
       );
       // .sort((a, b) => b.id - a.id);

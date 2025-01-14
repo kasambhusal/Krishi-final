@@ -16,8 +16,8 @@ export default function NewsAdd({ handleCancel2, setReload }) {
   const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
   const [author, setAuthor] = useState(null);
-  const [category, setCategory] = useState("");
-  const [subcategory, setSubcategory] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
   const [date, setDate] = useState(dayjs());
   const [active, setActive] = useState(true);
   const [breaking, setBreaking] = useState(false);
@@ -40,7 +40,7 @@ export default function NewsAdd({ handleCancel2, setReload }) {
       try {
         // Fetch categories
         const categoriesResponse = await Get({
-          url: "/category/category",
+          url: "/category/category", // Update with the new endpoint
           headers,
         });
         setCategoryData(
@@ -61,6 +61,10 @@ export default function NewsAdd({ handleCancel2, setReload }) {
     fetchData();
   }, [lge]);
 
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
   const handleUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -69,30 +73,21 @@ export default function NewsAdd({ handleCancel2, setReload }) {
       setGalleryImage(null);
     }
   };
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
+  
   const handleGalleryUpload = (myurl) => {
     setGalleryImage(myurl);
     setImagePreview(myurl);
     setSelectedImage(null);
   };
-
-  const handlePdfUpload = (event) => {
-    const file = event.target.files[0];
-    if (file && file.type === "application/pdf") {
-      setSelectedPdf(file);
-    } else {
-      message.error("Please upload a PDF file");
-    }
+  const categoryChange = (selectedCategories) => {
+    setCategories(selectedCategories);
+    const selectedCategoryData = categoryData.filter((cat) =>
+      selectedCategories.includes(cat.id)
+    );
+    const allSubcategories = selectedCategoryData.flatMap(
+      (cat) => cat.category_key || []
+    );
+    setSubCategoryData(allSubcategories);
   };
 
   const handleSubmit = async () => {
@@ -103,12 +98,21 @@ export default function NewsAdd({ handleCancel2, setReload }) {
     formData.append("news_sub_title", subtitle);
     formData.append("language", lge);
     formData.append("author_name", author);
-    formData.append("category", category);
-    formData.append("category_key", subcategory);
     formData.append("self_date", date.format("YYYY-MM-DD"));
     formData.append("active", active ? "true" : "false");
     formData.append("breaking_news", breaking ? "true" : "false");
     formData.append("news_post", disData);
+
+    // Append categories and category_keys as individual entries
+    if (Array.isArray(categories)) {
+      categories.forEach((catId) => formData.append("categories", catId));
+    }
+    if (Array.isArray(subcategories)) {
+      subcategories.forEach((subCatId) =>
+        formData.append("category_keys", subCatId)
+      );
+    }
+
     if (selectedImage) {
       formData.append("image", selectedImage);
     }
@@ -127,34 +131,6 @@ export default function NewsAdd({ handleCancel2, setReload }) {
       });
 
       if (response) {
-        console.log(response);
-        const sharePayload = {
-          title: response.id.toString(),
-          visit_count: 0,
-        };
-
-        const response2 = await Post({
-          url: "/count/posts/4/",
-          data: JSON.stringify(sharePayload),
-          headers: {
-            ...headers,
-            "Content-Type": "application/json",
-          },
-        });
-        const myShare = {
-          id: response.id,
-          share_count: 100,
-        };
-
-        const shareResponse = await Post({
-          url: `/count/share/${response2.id}/store_share_count/`,
-          data: JSON.stringify(myShare),
-          headers: {
-            ...headers,
-            "Content-Type": "application/json",
-          },
-        });
-
         toast.success(response.message);
         resetForm();
         handleCancel2();
@@ -186,8 +162,8 @@ export default function NewsAdd({ handleCancel2, setReload }) {
     setTitle("");
     setSubtitle("");
     setAuthor(null);
-    setCategory("");
-    setSubcategory("");
+    setCategories([]);
+    setSubcategories([]);
     setDate(dayjs());
     setActive(true);
     setBreaking(false);
@@ -197,21 +173,13 @@ export default function NewsAdd({ handleCancel2, setReload }) {
     setSelectedPdf(null);
   };
 
-  const categoryChange = (value) => {
-    setCategory(value);
-    const selectedCategory = categoryData.find((cat) => cat.id === value);
-    setSubCategoryData(
-      selectedCategory ? selectedCategory.category_key || [] : []
-    );
-  };
-
   return (
     <Form onFinish={handleSubmit}>
       <ToastContainer position="top-right" autoClose={5000} />
       <Form.Item
         label="Title"
         name="title"
-        rules={[{ required: true, message: "Please select Title!" }]}
+        rules={[{ required: true, message: "Please enter the Title!" }]}
       >
         <Input value={title} onChange={(e) => setTitle(e.target.value)} />
       </Form.Item>
@@ -221,7 +189,7 @@ export default function NewsAdd({ handleCancel2, setReload }) {
       <Form.Item
         label="Author"
         name="author"
-        rules={[{ required: true, message: "Please select a Author!" }]}
+        rules={[{ required: true, message: "Please select an Author!" }]}
       >
         <Select
           showSearch
@@ -240,10 +208,19 @@ export default function NewsAdd({ handleCancel2, setReload }) {
       </Form.Item>
       <Form.Item
         label="Category"
-        name="category"
-        rules={[{ required: true, message: "Please select a Category!" }]}
+        name="categories"
+        rules={[
+          { required: true, message: "Please select at least one Category!" },
+        ]}
       >
-        <Select onChange={categoryChange} value={category}>
+        <Select
+          mode="multiple"
+          onChange={categoryChange}
+          value={categories}
+          placeholder="Select categories"
+          allowClear
+          style={{ width: "100%" }}
+        >
           {categoryData.map((cat) => (
             <Option key={cat.id} value={cat.id}>
               {cat.category_name}
@@ -251,8 +228,15 @@ export default function NewsAdd({ handleCancel2, setReload }) {
           ))}
         </Select>
       </Form.Item>
-      <Form.Item label="Subcategory">
-        <Select onChange={setSubcategory} value={subcategory}>
+      <Form.Item label="Subcategory" name="subcategories">
+        <Select
+          mode="multiple"
+          onChange={setSubcategories}
+          value={subcategories}
+          placeholder="Select subcategories"
+          allowClear
+          style={{ width: "100%" }}
+        >
           {subCategoryData.map((subCat) => (
             <Option key={subCat.id} value={subCat.id}>
               {subCat.category_key_name}
@@ -260,27 +244,25 @@ export default function NewsAdd({ handleCancel2, setReload }) {
           ))}
         </Select>
       </Form.Item>
-      <div className="flex justify-evenly">
-        <Form.Item label="Date">
-          <input
-            type="date"
-            value={date.format("YYYY-MM-DD")}
-            onChange={(e) => setDate(dayjs(e.target.value))}
-          />
-        </Form.Item>
-        <Form.Item label="Active">
-          <Checkbox
-            checked={active}
-            onChange={(e) => setActive(e.target.checked)}
-          />
-        </Form.Item>
-        <Form.Item label="Is Breaking">
-          <Checkbox
-            checked={breaking}
-            onChange={(e) => setBreaking(e.target.checked)}
-          />
-        </Form.Item>
-      </div>
+      <Form.Item label="Date">
+        <input
+          type="date"
+          value={date.format("YYYY-MM-DD")}
+          onChange={(e) => setDate(dayjs(e.target.value))}
+        />
+      </Form.Item>
+      <Form.Item label="Active">
+        <Checkbox
+          checked={active}
+          onChange={(e) => setActive(e.target.checked)}
+        />
+      </Form.Item>
+      <Form.Item label="Is Breaking">
+        <Checkbox
+          checked={breaking}
+          onChange={(e) => setBreaking(e.target.checked)}
+        />
+      </Form.Item>
       <Form.Item
         label="Content"
         name="content"
@@ -289,7 +271,6 @@ export default function NewsAdd({ handleCancel2, setReload }) {
         <CKEditor
           editor={ClassicEditor}
           data={disData}
-          className="p-[20px]"
           onChange={(event, editor) => setDisData(editor.getData())}
           config={{
             toolbar: [
@@ -307,61 +288,47 @@ export default function NewsAdd({ handleCancel2, setReload }) {
           }}
         />
       </Form.Item>
-      <div className="w-full flex flex-col sm:flex-row gap-[20px] flex-wrap">
-        <Form.Item label="Upload Image">
-          <input type="file" onChange={handleUpload} />
-        </Form.Item>
-        <Form.Item>
-          <Button
-            onClick={showModal}
-            className="bg-gray-300"
-            style={{ border: "1px solid #525354" }}
-          >
-            Upload Image from Server
-          </Button>
-          <Modal
-            title="Upload Image from Server"
-            open={isModalOpen}
-            onOk={handleOk}
-            onCancel={handleCancel}
-            footer={null}
-            style={{ minWidth: "90vw", overflow: "hidden" }}
-          >
-            <Gallery
-              handleGalleryUpload={handleGalleryUpload}
-              handleCancel={handleCancel}
-            />
-          </Modal>
-        </Form.Item>
-        <Form.Item label="Upload PDF">
-          <input type="file" accept=".pdf" onChange={handlePdfUpload} />
-        </Form.Item>
-      </div>
-
-      {imagePreview && (
-        <div style={{ marginTop: "10px" }} className=" my-3 ">
-          <h2 className="text-green-800 font-bold">Image Preview :</h2>
-          <img
-            src={imagePreview}
-            alt="Preview"
-            style={{ maxWidth: "100%", maxHeight: "200px" }}
+      <Form.Item label="Upload Image">
+        <input type="file" onChange={handleUpload} />
+      </Form.Item>
+      <Form.Item>
+        <Button onClick={() => setIsModalOpen(true)}>
+          Upload Image from Server
+        </Button>
+        <Modal
+          title="Upload Image from Server"
+          open={isModalOpen}
+          onOk={() => setIsModalOpen(false)}
+          onCancel={() => setIsModalOpen(false)}
+          footer={null}
+        >
+          <Gallery
+            handleGalleryUpload={handleGalleryUpload}
+            handleCancel={handleCancel}
           />
+        </Modal>
+      </Form.Item>
+      <Form.Item label="Upload PDF">
+        <input
+          type="file"
+          accept=".pdf"
+          onChange={(e) => setSelectedPdf(e.target.files[0])}
+        />
+      </Form.Item>
+      {imagePreview && (
+        <div>
+          <h3>Image Preview:</h3>
+          <img src={imagePreview} alt="Preview" style={{ maxWidth: "100%" }} />
         </div>
       )}
-
       {selectedPdf && (
-        <div style={{ marginTop: "10px" }} className="my-3">
-          <h2 className="text-green-800 font-bold">Selected PDF:</h2>
+        <div>
+          <h3>Selected PDF:</h3>
           <p>{selectedPdf.name}</p>
         </div>
       )}
       <Form.Item>
-        <Button
-          type="primary"
-          htmlType="submit"
-          loading={loading}
-          className="bg-blue-500"
-        >
+        <Button type="primary" htmlType="submit" loading={loading}>
           Submit
         </Button>
       </Form.Item>

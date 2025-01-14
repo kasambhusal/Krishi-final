@@ -98,7 +98,7 @@ const Hero = ({ lge = "np", order }) => {
     return `${nepaliDay} ${nepaliMonth} ${nepaliYear}`;
   };
 
-  const { news_title, news_sub_title, author_name, category_name, image, id } =
+  const { news_title, news_sub_title, author_name, category_names, image, id } =
     news || {};
 
   // Ensure the required fields are available before using them in the Link
@@ -159,7 +159,7 @@ const Hero = ({ lge = "np", order }) => {
                     id={author_name}
                     englishDate={englishDate}
                     nepaliDate={nepaliDate}
-                    category={category_name}
+                    category={category_names[0]}
                     language={lge}
                   />
                 )}

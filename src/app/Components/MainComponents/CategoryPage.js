@@ -17,11 +17,7 @@ const CategoryPage = ({ categoryName, isValidCategory }) => {
   const { wholeNews, loading, setWholeNews } = useNews();
   const { bgColor } = useTheme();
   const [localLoading, setLocalLoading] = useState(true);
-  console.log(
-    "isvalid category and category name",
-    isValidCategory,
-    categoryName
-  );
+
   useEffect(() => {
     const fetchNews = async () => {
       setLocalLoading(true);
@@ -39,8 +35,8 @@ const CategoryPage = ({ categoryName, isValidCategory }) => {
       if (wholeNews.length > 0) {
         const filtered = wholeNews.filter(
           (item) =>
-            item.category_name === categoryName ||
-            item.sub_category === categoryName
+            item.category_names?.includes(categoryName) ||
+            item.sub_category_names?.includes(categoryName)
         );
         setFilteredNews(filtered);
         setLocalLoading(false);

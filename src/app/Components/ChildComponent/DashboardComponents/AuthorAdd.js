@@ -57,18 +57,6 @@ const AuthorAdd = ({ setReload, handleCancel }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  useEffect(() => {
-    // Call handleSubmit initially when useEffect runs
-    if (
-      formData.name &&
-      formData.phone_no &&
-      formData.address &&
-      formData.social_media_url &&
-      formData.author_email
-    ) {
-      handleSubmit();
-    }
-  }, [formData, handleCancel, lge, selectedFile, setReload]); // Add missing dependencies here
   const handleSubmit = async () => {
     const token = localStorage.getItem("Token");
     const headers = { Authorization: `Bearer ${token}` };
@@ -78,7 +66,7 @@ const AuthorAdd = ({ setReload, handleCancel }) => {
       formDataToSubmit.append(key, value);
     });
     if (selectedFile) {
-      formDataToSubmit.append("image", selectedFile); // Append the image file
+      formDataToSubmit.append("image", selectedFile); 
     }
     if (!formData.phone_no.startsWith("9") || formData.phone_no.length < 10) {
       message.error("Enter Valid Phone number");

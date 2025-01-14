@@ -13,14 +13,14 @@ const Card1 = ({ myWord }) => {
   const { themeColor } = useTheme();
   useEffect(() => {
     const filteredResponse = wholeNews.filter(
-      (item) => item.category_name === myWord
+      (item) => item.category_names.includes(myWord)
       // && item.image != null
     );
     if (filteredResponse.length > 0) {
       setNews(filteredResponse);
     } else {
       const subCategoryFiltered = wholeNews.filter(
-        (item) => item.sub_category === myWord && item.active === true
+        (item) => item.sub_category_names.includes(myWord) && item.active === true
         // (item.image || item.media_image) != null
       );
       // .sort((a, b) => b.id - a.id);

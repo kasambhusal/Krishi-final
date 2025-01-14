@@ -11,7 +11,7 @@ const Card3 = ({ myWord }) => {
   const [news, setNews] = useState([]);
   useEffect(() => {
     const filteredResponse = wholeNews.filter(
-      (item) => item.category_name === myWord
+      (item) => item.category_names.includes(myWord)
       //  && item.image != null
     );
 
@@ -19,7 +19,7 @@ const Card3 = ({ myWord }) => {
       setNews(filteredResponse);
     } else {
       const subCategoryFiltered = wholeNews.filter(
-        (item) => item.sub_category === myWord
+        (item) => item.sub_category_names.includes(myWord)
         // (item.image || item.media_image) != null
       );
       setNews(subCategoryFiltered);

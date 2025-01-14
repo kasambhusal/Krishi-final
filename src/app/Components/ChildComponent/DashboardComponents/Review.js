@@ -91,7 +91,7 @@ export default function Review() {
                   key: matchingNews.id,
                   title: matchingNews.news_title,
                   views_count: view.visit_count,
-                  category: matchingNews.category_name,
+                  category: matchingNews.category_names[0],
                 }
               : null;
           })

@@ -13,7 +13,7 @@ const Card10 = ({ myWord, id }) => {
   useEffect(() => {
     const filteredResponse = wholeNews.filter(
       (item) =>
-        (item.category_name === myWord || item.sub_category === myWord) &&
+        (item.category_names.includes(myWord) || item.sub_category_names.includes(myWord)) &&
         item.id != id
     );
     setNews(filteredResponse);

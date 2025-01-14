@@ -1,25 +1,28 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Form, Input, Button, Select, Checkbox, message, Modal } from "antd";
 import dayjs from "dayjs";
 import { Get, Put } from "../../Redux/API";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import Image from "next/image"; // Import Image component from next/image
+import Image from "next/image";
 import Gallery from "./Gallery";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const { Option } = Select;
 
 export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
+  const [form] = Form.useForm();
   const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
   const [author, setAuthor] = useState(null);
   const [lge, setLge] = useState("");
-  const [category, setCategory] = useState(null);
-  const [subcategory, setSubcategory] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
   const [date, setDate] = useState(null);
-  const [active, setActive] = useState();
-  const [breaking, setBreaking] = useState();
+  const [active, setActive] = useState(false);
+  const [breaking, setBreaking] = useState(false);
   const [disData, setDisData] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -32,22 +35,48 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
   const [selectedPdf, setSelectedPdf] = useState(null);
   const [pdfPreview, setPdfPreview] = useState(null);
 
+  const fetchCategory = useCallback(async () => {
+    const token = localStorage.getItem("Token");
+    const headers = { Authorization: `Bearer ${token}` };
+    try {
+      const response = await Get({ url: "/category/category", headers });
+      const filteredResponse = response.filter(
+        (category) => category.language === `${modifyObj.language}`
+      );
+      setCategoryData(filteredResponse);
+    } catch (error) {
+      console.error("Error fetching category:", error);
+    }
+  }, [modifyObj.language]);
+
+  const fetchSubcategories = useCallback(async (selectedCategories) => {
+    if (selectedCategories.length === 0) {
+      setSubCategoryData([]);
+      return;
+    }
+    const token = localStorage.getItem("Token");
+    const headers = { Authorization: `Bearer ${token}` };
+    try {
+      const promises = selectedCategories.map((catId) =>
+        Get({ url: `/category/category/${catId}`, headers })
+      );
+      const responses = await Promise.all(promises);
+      const allSubcategories = responses.flatMap(
+        (response) => response.category_key || []
+      );
+      setSubCategoryData(allSubcategories);
+    } catch (error) {
+      console.error("Error fetching subcategories:", error);
+    }
+  }, []);
+
   useEffect(() => {
-    const fetchCategory = async () => {
-      const token = localStorage.getItem("Token");
-      const headers = { Authorization: `Bearer ${token}` };
-      try {
-        const response = await Get({ url: "/category/category", headers });
-        const filteredResponse = response.filter(
-          (category) => category.language === `${modifyObj.language}`
-        );
-        setCategoryData(filteredResponse);
-      } catch (error) {
-        console.error("Error fetching category:", error);
-      }
-    };
+    fetchCategory();
 
     const fetchAuthorData = async () => {
+      const token = localStorage.getItem("Token");
+      const headers = { Authorization: `Bearer ${token}` };
+
       try {
         const response = await Get({ url: "/author/author", headers });
         const filteredResponse = response.filter(
@@ -58,28 +87,57 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
         console.log("Error fetching authors" + error);
       }
     };
-    fetchCategory();
+
     fetchAuthorData();
-  }, [modifyObj]);
+  }, [modifyObj, fetchCategory]);
 
   useEffect(() => {
-    if (modifyObj) {
+    if (modifyObj && categoryData.length > 0) {
       setTitle(modifyObj.news_title || "");
       setSubtitle(modifyObj.news_sub_title || "");
       setAuthor(modifyObj.author_name || null);
-      setCategory(modifyObj.category ? parseInt(modifyObj.category, 10) : null);
-      setSubcategory(
-        modifyObj.category_key ? parseInt(modifyObj.category_key, 10) : null
-      );
       setLge(modifyObj.language);
-      setDate(modifyObj.self_date ? dayjs(modifyObj.self_date) : null);
+      setDate(modifyObj.self_date ? dayjs(modifyObj.self_date) : dayjs());
       setActive(modifyObj.active || false);
-      setBreaking(modifyObj.breaking_news);
+      setBreaking(modifyObj.breaking_news || false);
       setDisData(modifyObj.news_post || "");
       setImagePreview(modifyObj.media_image || modifyObj.image || null);
       setPdfPreview(modifyObj.pdf_document || null);
+
+      // Map category names to IDs
+      const categoryIds = categoryData
+        .filter((cat) =>
+          modifyObj.category_names.split(", ").includes(cat.category_name)
+        )
+        .map((cat) => cat.id);
+      setCategories(categoryIds);
+      fetchSubcategories(categoryIds);
+
+      form.setFieldsValue({
+        title: modifyObj.news_title || "",
+        subtitle: modifyObj.news_sub_title || "",
+        author: modifyObj.author_name || null,
+        categories: categoryIds,
+        date: modifyObj.self_date ? dayjs(modifyObj.self_date) : dayjs(),
+        active: modifyObj.active || false,
+        breaking: modifyObj.breaking_news || false,
+      });
     }
-  }, [modifyObj]);
+  }, [modifyObj, categoryData, fetchSubcategories, form]);
+
+  useEffect(() => {
+    if (subCategoryData.length > 0 && modifyObj) {
+      const subcategoryIds = subCategoryData
+        .filter((subCat) =>
+          modifyObj.sub_category_names
+            .split(", ")
+            .includes(subCat.category_key_name)
+        )
+        .map((subCat) => subCat.id);
+      setSubcategories(subcategoryIds);
+      form.setFieldsValue({ subcategories: subcategoryIds });
+    }
+  }, [subCategoryData, modifyObj, form]);
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -102,11 +160,12 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
       setGalleryImage("");
     }
   };
+
   const handlePdfUpload = (event) => {
     const file = event.target.files[0];
     if (file && file.type === "application/pdf") {
       const previewUrl = URL.createObjectURL(file);
-      setPdfPreview(previewUrl); // Use a URL string
+      setPdfPreview(previewUrl);
       setSelectedPdf(file);
     } else {
       message.error("Please upload a PDF file");
@@ -119,100 +178,95 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
     setSelectedImage("");
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (values) => {
     setLoading(true);
 
     const formData = new FormData();
-    formData.append("news_title", title);
-    formData.append("news_sub_title", subtitle);
+    formData.append("news_title", values.title);
+    formData.append("news_sub_title", values.subtitle);
     formData.append("language", lge);
-    formData.append("author_name", author);
-    formData.append("category", category);
+    formData.append("author_name", values.author);
 
-    // Ensure category_key is sent correctly
-    formData.append("category_key", subcategory !== null ? subcategory : "");
+    values.categories.forEach((catId) => formData.append("categories", catId));
+    values.subcategories.forEach((subCatId) =>
+      formData.append("category_keys", subCatId)
+    );
 
-    if (date) {
-      formData.append("self_date", dayjs(date).format("YYYY-MM-DD"));
-    } else {
-      message.error("Please select a valid date.");
-      setLoading(false);
-      return;
-    }
-
-    formData.append("active", active ? "true" : "false");
-    formData.append("breaking_news", breaking ? "true" : "false");
-
+    formData.append("self_date", values.date.format("YYYY-MM-DD"));
+    formData.append("active", values.active ? "true" : "false");
+    formData.append("breaking_news", values.breaking ? "true" : "false");
     formData.append("news_post", disData);
+
     if (selectedImage) {
       formData.append("image", selectedImage);
       formData.append("media_image", "");
     }
     if (galleryImage) {
       formData.append("media_image", galleryImage);
-      // const emptyFile = new File([""], "empty.txt", { type: "text/plain" });
       formData.append("image", "");
     }
     if (selectedPdf) {
       formData.append("pdf_document", selectedPdf);
     }
+
     const token = localStorage.getItem("Token");
     const headers = { Authorization: `Bearer ${token}` };
+
     try {
-      if (modifyObj) {
-        await Put({
-          url: `/news/news/${modifyObj.key}`,
-          data: formData,
-          headers,
-        });
+      const response = await Put({
+        url: `/news/news/${modifyObj.key}`,
+        data: formData,
+        headers,
+      });
+
+      if (response) {
         message.success("News updated successfully");
+        handleCancel2();
+        fetchData();
       }
     } catch (error) {
-      console.error("Error submitting form:", error);
-      message.error("Error on news publish");
+      if (error.response && error.response.data) {
+        Object.entries(error.response.data).forEach(([key, value]) => {
+          const messages = Array.isArray(value) ? value : [value];
+          messages.forEach((message) => {
+            toast.error(`${key}: ${message}`, {
+              autoClose: 5000,
+              closeOnClick: true,
+              draggable: true,
+              closeButton: true,
+            });
+          });
+        });
+      } else {
+        toast.error(error.message || "An error occurred");
+      }
+      console.error("Error updating news:", error);
     } finally {
-      handleCancel2();
-      fetchData();
       setLoading(false);
     }
   };
 
-  const categoryChange = (value) => {
-    setCategory(value ? parseInt(value, 10) : null);
-    const selectedCategory = categoryData.find(
-      (mycategory) => mycategory.id === value
-    );
-    setSubCategoryData(
-      selectedCategory ? selectedCategory.category_key || [] : []
-    );
-  };
-
-  const subCategoryChange = (value) => {
-    setSubcategory(value ? parseInt(value, 10) : null);
-  };
-  const titleChange = (e) => {
-    setTitle(e.target.value);
-  };
-  const subtitleChange = (e) => {
-    setSubtitle(e.target.value);
+  const categoryChange = (selectedCategories) => {
+    setCategories(selectedCategories);
+    fetchSubcategories(selectedCategories);
+    form.setFieldsValue({ subcategories: [] });
   };
 
   return (
-    <Form onFinish={handleSubmit}>
-      <Form.Item label="Title">
-        <Input value={title} onChange={titleChange} />
+    <Form
+      form={form}
+      onFinish={handleSubmit}
+      initialValues={{ categories: [], subcategories: [] }}
+    >
+      <ToastContainer position="top-right" autoClose={5000} />
+      <Form.Item name="title" label="Title">
+        <Input />
       </Form.Item>
-      <Form.Item label="Subtitle">
-        <Input value={subtitle} onChange={subtitleChange} />
+      <Form.Item name="subtitle" label="Subtitle">
+        <Input />
       </Form.Item>
-      <Form.Item label="Author">
-        <Select
-          showSearch
-          onChange={setAuthor}
-          value={author}
-          placeholder="Select an author"
-          allowClear
-        >
+      <Form.Item name="author" label="Author">
+        <Select showSearch placeholder="Select an author" allowClear>
           {authorData.map((author) => (
             <Option key={author.id} value={author.id}>
               {author.name}
@@ -220,8 +274,13 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
           ))}
         </Select>
       </Form.Item>
-      <Form.Item label="Category">
-        <Select onChange={categoryChange} value={category} allowClear>
+      <Form.Item name="categories" label="Category">
+        <Select
+          mode="multiple"
+          onChange={categoryChange}
+          placeholder="Select categories"
+          allowClear
+        >
           {categoryData.map((cat) => (
             <Option key={cat.id} value={cat.id}>
               {cat.category_name}
@@ -229,36 +288,26 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
           ))}
         </Select>
       </Form.Item>
-      <Form.Item label="Subcategory">
-        <Select onChange={subCategoryChange} value={subcategory} allowClear>
+
+      <Form.Item name="subcategories" label="Subcategory">
+        <Select mode="multiple" placeholder="Select subcategories" allowClear>
           {subCategoryData.map((subCat) => (
             <Option key={subCat.id} value={subCat.id}>
-              {subCat.category_key_name}{" "}
+              {subCat.category_key_name}
             </Option>
           ))}
         </Select>
       </Form.Item>
+
       <div className="flex flex-wrap justify-evenly">
-        <Form.Item label="Date">
-          <input
-            type="date"
-            onChange={(e) => {
-              const selectedDate = e.target.value;
-              setDate(selectedDate ? dayjs(selectedDate) : null);
-            }}
-          />
+        <Form.Item name="date" label="Date">
+          <input type="date" />
         </Form.Item>
-        <Form.Item label="Active">
-          <Checkbox
-            checked={active}
-            onChange={(e) => setActive(e.target.checked)}
-          />
+        <Form.Item name="active" label="Active" valuePropName="checked">
+          <Checkbox />
         </Form.Item>
-        <Form.Item label="Is Breaking">
-          <Checkbox
-            checked={breaking}
-            onChange={(e) => setBreaking(e.target.checked)}
-          />
+        <Form.Item name="breaking" label="Is Breaking" valuePropName="checked">
+          <Checkbox />
         </Form.Item>
       </div>
       <Form.Item label="Content">
@@ -287,7 +336,7 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
           />
         </div>
       </Form.Item>
-      <div className="w-full flex  flex-col sm:flex-row justify-evenly">
+      <div className="w-full flex flex-col sm:flex-row justify-evenly">
         <Form.Item label="Upload Image">
           <input type="file" onChange={handleUpload} />
         </Form.Item>
@@ -314,9 +363,9 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
           <Image
             src={imagePreview}
             alt="Preview"
-            width={300} // Set width
-            height={200} // Set height
-            style={{ objectFit: "cover" }} // Ensure image covers the area
+            width={300}
+            height={200}
+            style={{ objectFit: "cover" }}
           />
         </div>
       )}
@@ -326,7 +375,7 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
       {pdfPreview && (
         <div style={{ marginTop: "10px" }} className="my-3">
           <h2 className="text-green-800 font-bold">PDF Overview:</h2>
-          <a href={pdfPreview} target="_blank">
+          <a href={pdfPreview} target="_blank" rel="noopener noreferrer">
             {pdfPreview}
           </a>
         </div>

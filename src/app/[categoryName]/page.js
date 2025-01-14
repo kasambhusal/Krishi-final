@@ -10,28 +10,26 @@ const mukta = Mukta({
 });
 
 export const metadata = {
-  title: "Lokpati | Category Page",
-  description: "Category Page of Lokpati",
-  icons: {
-    icon: "https://cms.lokpati.com/media/author/favicon-lokpati.png",
-  },
+  title: "KrishiSanjal | CategoryPage",
+  description:
+    "KrishiSanjal empowers Nepalese farmers with agricultural knowledge and resources.",
 };
 
 async function fetchData(categoryName) {
   try {
     const [categoryResponse, subCategoryResponse] = await Promise.all([
       fetch(
-        "https://cms.krishisanjal.com/krishi_cms/api/v1/public/category/get-category",{
-          cache: "no-store"
+        "https://cms.bhuvanpaudel.com.np/krishi_cms/api/v1/public/category/get-category",
+        {
+          cache: "no-store",
         }
       ),
       fetch(
-        "https://cms.krishisanjal.com/krishi_cms/api/v1/public/category-key/get-categoryKey",
+        "https://cms.bhuvanpaudel.com.np/krishi_cms/api/v1/public/category-key/get-categoryKey",
         {
-          cache:"no-cache"
+          cache: "no-cache",
         }
       ),
-
     ]);
 
     const categoryData = await categoryResponse.json();

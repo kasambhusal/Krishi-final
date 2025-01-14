@@ -12,7 +12,9 @@ const Card6 = ({ myWord }) => {
 
   useEffect(() => {
     const filteredResponse = wholeNews.filter(
-      (item) => item.category_name === myWord || item.sub_category === myWord
+      (item) =>
+        item.category_names.includes(myWord) ||
+        item.sub_category_names.includes(myWord)
       // &&        item.image != null
     );
 
