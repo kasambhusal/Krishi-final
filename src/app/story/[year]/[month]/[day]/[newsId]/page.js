@@ -11,7 +11,7 @@ const mukta = Mukta({
 
 async function fetchPost(postId) {
   const response = await fetch(
-    `https://cms.bhuvanpaudel.com.np/krishi_cms/api/v1/public/news/get-news/${postId}`,
+    `https://cms.krishisanjal.com/krishi_cms/api/v1/public/news/get-news/${postId}`,
     { method: "GET", cache: "no-store" }
   );
   if (!response.ok) {

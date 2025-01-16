@@ -19,13 +19,13 @@ async function fetchData(categoryName) {
   try {
     const [categoryResponse, subCategoryResponse] = await Promise.all([
       fetch(
-        "https://cms.bhuvanpaudel.com.np/krishi_cms/api/v1/public/category/get-category",
+        "https://cms.krishisanjal.com/krishi_cms/api/v1/public/category/get-category",
         {
           cache: "no-store",
         }
       ),
       fetch(
-        "https://cms.bhuvanpaudel.com.np/krishi_cms/api/v1/public/category-key/get-categoryKey",
+        "https://cms.krishisanjal.com/krishi_cms/api/v1/public/category-key/get-categoryKey",
         {
           cache: "no-cache",
         }
