@@ -4,8 +4,8 @@ import { Select, Input, Form, Button, message } from "antd";
 import { useNavigation } from "../../Context/NavigationContext";
 import { Put } from "../../Redux/API";
 import Image from "next/image"; // Import Image from next/image
-
 const homeOptions = [
+  { value: "H_roadblocking_ads", label: "Home Roadblocking" },
   { value: "H_landscape_top_header", label: "landscape_top_header" },
   { value: "H_landscape_above_breaking", label: "landscape_above_breaking" },
   {
@@ -14,14 +14,17 @@ const homeOptions = [
   },
   { value: "H_landscape_after_breaking", label: "landscape_after_breaking" },
   { value: "H_landscape_after_samachar", label: "landscape_after_samachar" },
-  { value: "H_landscape_krishi_prabidhi", label: "landscape_krishi_prabidhi" },
   {
-    value: "H_landscape_after_pasupanchi",
-    label: "landscape_after_pasupanchi",
+    value: "H_landscape_after_krishiprabidhi",
+    label: "landscape_krishi_prabidhi",
   },
   {
     value: "H_landscape_after_bicharblog",
     label: "landscape_after_bicharblog",
+  },
+  {
+    value: "H_landscape_after_pasupanchi",
+    label: "landscape_after_pasupanchi",
   },
   {
     value: "H_landscape_after_krishakkokatha",
@@ -32,16 +35,22 @@ const homeOptions = [
   { value: "H_sidebar_after_followus", label: "sidebar_after_followus" },
   { value: "H_sidebar_after_trending", label: "sidebar_after_trending" },
   { value: "H_sidebar_after_tajakhabar", label: "sidebar_after_tajakhabar" },
-  { value: "H_sidebar_after_bicharblog", label: "sidebar_after_bicharblog" },
+  { value: "H_sidebar_after_khanpin", label: "sidebar_after_khanpin" },
 ];
 
 const singleOptions = [
-  { value: "S_landscape_top_header", label: "landscape_top_header" },
+  { value: "S_roadblocking_ads", label: "Single page Roadblocking" },
   { value: "S_landscape_before_title", label: "landscape_before_title" },
   { value: "S_landscape_after_title", label: "landscape_after_title" },
   { value: "S_landscape_after_content", label: "landscape_after_content" },
-  { value: "S_sidebar_after_followus", label: "sidebar_after_followus" },
-  { value: "S_sidebar_after_bicharblog", label: "sidebar_after_bicharblog" },
+  { value: "S_sidebar_before_followus1", label: "sidebar_before_followus1" },
+  { value: "S_sidebar_before_followus2", label: "sidebar_before_followus2" },
+  { value: "S_sidebar_after_followus1", label: "sidebar_after_followus1" },
+  { value: "S_sidebar_after_followus2", label: "sidebar_after_followus2" },
+  {
+    value: "S_sidebar_after_tajasamachar",
+    label: "sidebar_after_tajasamachar",
+  },
 ];
 
 export default function AdvertisementModify({

@@ -146,12 +146,6 @@ const NewsTable = ({ reload, setReload, isActive }) => {
       ellipsis: true,
     },
     {
-      title: "News Sub Title",
-      dataIndex: "news_sub_title",
-      width: 150,
-      ellipsis: true,
-    },
-    {
       title: "Date",
       dataIndex: "self_date",
       width: 120,

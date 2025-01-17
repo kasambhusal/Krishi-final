@@ -16,6 +16,7 @@ const StorySideBar = React.memo(() => {
       </div>
       <div style={{ position: "sticky", top: "120px", zIndex: "5" }}>
         <TajaSamachar />
+        <SmallAds name="S_sidebar_after_tajasamachar" />
       </div>
     </div>
   );

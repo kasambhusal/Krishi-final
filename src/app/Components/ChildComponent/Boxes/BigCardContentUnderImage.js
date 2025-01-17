@@ -4,8 +4,6 @@ import Link from "next/link";
 import Image from "next/image"; // Import Image from Next.js
 import { usePathname } from "next/navigation";
 const BigCardContentUnderImage = ({
-  isRounded = false,
-  isShadow = false,
   id,
   title,
   sub_title,
@@ -58,7 +56,7 @@ const BigCardContentUnderImage = ({
             objectFit="cover" // Ensure the image fills the container without distortion
             loading="lazy" // Lazy load the image to improve performance
           />
-          <div className="absolute inset-0 bg-[rgba(0,0,0,0.04)] h-full bg-gradient-to-t to-[#9c9c9c02] from-[#000] flex flex-col items-center justify-end gap-[25px]">
+          <div className="absolute inset-0 bg-[rgba(0,0,0,0.04)] h-full bg-gradient-to-t to-[#9c9c9c02] from-[#000] flex flex-col items-center justify-end pb-[5%] gap-[25px]">
             <p
               className="text-center text-3xl sm:text-4xl max-w-[90%] mx-auto text-[#FCFBF4]  font-mukta line-clamp-3 h-auto"
               style={{

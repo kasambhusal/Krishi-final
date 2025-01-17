@@ -42,10 +42,10 @@ export default function BicharBlogBox({
         />
         <span className="flex-1">
           <p
-            className="text-xl text-base my-1 w-full text-[rgba(0,0,0,0.7)] hover:text-green-700 overflow-hidden"
+            className="text-xl my-1 w-full text-[rgba(0,0,0,0.7)] hover:text-green-700 overflow-hidden"
             style={{
               display: "-webkit-box",
-              WebkitLineClamp: 2, // Limit text to 2 lines
+              WebkitLineClamp: 3, // Limit text to 2 lines
               WebkitBoxOrient: "vertical",
               overflow: "hidden",
               wordWrap: "break-word", // Break long words if necessary

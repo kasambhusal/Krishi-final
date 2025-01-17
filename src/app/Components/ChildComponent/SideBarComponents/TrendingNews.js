@@ -78,10 +78,12 @@ export default function TrendingNews() {
   }
   return (
     <div className="p-5">
-      <Breadcrumb
-        myWord={lge === "en" ? "Trending" : "लोकप्रिय"}
-        addNews={false}
-      />
+      {trendingNews.length > 0 && (
+        <Breadcrumb
+          myWord={lge === "en" ? "Trending" : "लोकप्रिय"}
+          addNews={false}
+        />
+      )}
       {trendingNews.map((news, index) => (
         <React.Fragment key={news.id}>
           <div className="grid grid-cols-7 gap-5 my-4">

@@ -38,20 +38,22 @@ const AuthorBredCrumb = ({
         onClick={handleAuthorClick}
       >
         <div className="flex items-center justify-center">
-          <Image
-            src={
-              myAuthor?.image ||
-              "https://media.istockphoto.com/id/827247322/vector/danger-sign-vector-icon-attention-caution-illustration-business-concept-simple-flat-pictogram.jpg?s=612x612&w=0&k=20&c=BvyScQEVAM94DrdKVybDKc_s0FBxgYbu-Iv6u7yddbs="
-            }
-            width={35}
-            height={32}
-            className="rounded-full border border-gray-300 transition-transform transform hover:scale-105"
-            alt={myAuthor?.name || "Author"}
-            onError={(e) => {
-              e.target.src =
-                "https://media.istockphoto.com/id/827247322/vector/danger-sign-vector-icon-attention-caution-illustration-business-concept-simple-flat-pictogram.jpg?s=612x612&w=0&k=20&c=BvyScQEVAM94DrdKVybDKc_s0FBxgYbu-Iv6u7yddbs=";
-            }}
-          />
+          <div className="w-9 h-9 rounded-full overflow-hidden border border-gray-300">
+            <Image
+              src={
+                myAuthor?.image ||
+                "https://media.istockphoto.com/id/827247322/vector/danger-sign-vector-icon-attention-caution-illustration-business-concept-simple-flat-pictogram.jpg?s=612x612&w=0&k=20&c=BvyScQEVAM94DrdKVybDKc_s0FBxgYbu-Iv6u7yddbs="
+              }
+              width={35}
+              height={35}
+              className="object-cover w-full h-full"
+              alt={myAuthor?.name || "Author"}
+              onError={(e) => {
+                e.target.src =
+                  "https://media.istockphoto.com/id/827247322/vector/danger-sign-vector-icon-attention-caution-illustration-business-concept-simple-flat-pictogram.jpg?s=612x612&w=0&k=20&c=BvyScQEVAM94DrdKVybDKc_s0FBxgYbu-Iv6u7yddbs=";
+              }}
+            />
+          </div>
         </div>
 
         <div

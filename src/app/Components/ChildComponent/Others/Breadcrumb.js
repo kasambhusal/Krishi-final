@@ -10,14 +10,10 @@ import PropTypes from "prop-types";
 // Assuming you have a ThemeContext
 import { useTheme } from "../../Context/ThemeContext";
 
-const Breadcrumb = ({
-  myWord,
-  addNews = true,
-  showLink = false,
-  video = false,
-}) => {
+const Breadcrumb = ({ myWord, addNews = true, video = false }) => {
   const pathname = usePathname();
   const { themeColor } = useTheme();
+  const cleanedPath = myWord.replace(/\//g, " ");
 
   const lge = useMemo(
     () => (pathname.includes("/en") ? "en" : "np"),
@@ -79,7 +75,7 @@ const Breadcrumb = ({
         </p>
         <div className="w-full bg-[#509933] h-[0.05rem]"></div>
         {addNews && (
-          <Link href={lge === "en" ? `/en/${myWord}` : `/${myWord}`}>
+          <Link href={lge === "en" ? `/en/${cleanedPath}` : `/${cleanedPath}`}>
             <div
               className="flex items-center text-nowrap text-l text-[#2a511b] cursor-pointer hover:tracking-wide duration-200 hover:text-[#509933] group"
               // onClick={scrollToTop}

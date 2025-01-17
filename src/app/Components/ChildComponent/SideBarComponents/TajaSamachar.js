@@ -28,7 +28,7 @@ export default function TajaSamachar() {
     const filteredResponse = wholeNews;
 
     setFilteredNews(filteredResponse);
-  }, [wholeNews, lge]); // Re-run when wholeNews or lge changes
+  }, [wholeNews, lge]); 
 
   return (
     <div

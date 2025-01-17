@@ -23,10 +23,7 @@ export const NewsProvider = ({ children }) => {
     try {
       const response = await Get({ url: "/public/news/get-news" });
       const filteredResponse = response
-        .filter(
-          (item) => item.active === true
-          // && item.language === lge
-        )
+        .filter((item) => item.active === true && item.language === lge)
         .sort((a, b) => {
           // First, sort by self_date in descending order (latest date first)
           if (b.self_date !== a.self_date) {

@@ -18,12 +18,12 @@ const SideContainer = ({ mukhyaShow }) => {
         )}
         <SmallAds name="H_sidebar_after_followus" />
         <TajaSamachar />
-        <SmallAds name="H_sidebar_after_trending" />
+        <SmallAds name="H_sidebar_after_tajakhabar" />
         {/* {mukhyaShow && <MukhyaSamachar />} */}
         {!mukhyaShow && (
           <div className="flex flex-col gap-[10px] w-full">
             <TrendingNews />
-            <SmallAds name="H_sidebar_after_tajakhabar" />
+            <SmallAds name="H_sidebar_after_trending" />
             <BicharBlog />
           </div>
         )}

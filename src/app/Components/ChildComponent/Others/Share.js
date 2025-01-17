@@ -43,7 +43,7 @@ const Share = ({ newsTitle, id, shareCount, vertical = false }) => {
       <div
         className={`"flex items-center justify-center gap-[5px] ${vertical ? "flex-col mb-[5px]" : "flex-row"}`}
       >
-        <h2 className="text-[20px] font-bold text-[#8a8986]">
+        <h2 className="text-[20px] font-bold text-[#8a8986] text-center">
           {shareCount || "0"}
         </h2>
         <h2 className="text-[12px] text-[#8a8986]">Shares</h2>
