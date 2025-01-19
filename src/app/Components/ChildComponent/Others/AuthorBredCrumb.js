@@ -57,7 +57,7 @@ const AuthorBredCrumb = ({
         </div>
 
         <div
-          className={`font-mukta text-[19px] font-bold hover:text-[#101a9c] ${textColorClass}`}
+          className={`font-mukta text-[19px] font-bold hover:text-[#30873c] ${textColorClass}`}
         >
           {loading ? "Loading..." : myAuthor?.name || "Author Not Found"}
         </div>

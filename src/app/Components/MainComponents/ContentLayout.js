@@ -74,6 +74,7 @@ const ContentLayout = ({ mukhyaShow }) => {
             <Breadcrumb
               showLinks={false}
               myWord={lge === "en" ? "Farmer’s Story" : "कृषकको कथा"}
+              go={lge === "en" ? "Story" : ""}
             />
             <Card5 myWord={lge === "en" ? "Story" : "कृषकको कथा"} />
           </div>

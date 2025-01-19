@@ -10,10 +10,10 @@ import PropTypes from "prop-types";
 // Assuming you have a ThemeContext
 import { useTheme } from "../../Context/ThemeContext";
 
-const Breadcrumb = ({ myWord, addNews = true, video = false }) => {
+const Breadcrumb = ({ myWord, addNews = true, video = false, go = "" }) => {
   const pathname = usePathname();
   const { themeColor } = useTheme();
-  const cleanedPath = myWord.replace(/\//g, " ");
+  const cleanedPath = go || myWord.replace(/\//g, " ");
 
   const lge = useMemo(
     () => (pathname.includes("/en") ? "en" : "np"),

@@ -31,6 +31,7 @@ const Main = () => {
           <Breadcrumb
             addNews={true}
             myWord={lge === "en" ? "Highlights" : "समाचार"}
+            go={lge === "en" ? "News" : ""}
           />
           <Card1 myWord={lge === "en" ? "News" : "समाचार"} />
         </div>
