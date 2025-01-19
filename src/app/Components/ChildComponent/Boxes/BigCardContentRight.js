@@ -17,7 +17,7 @@ const BigCardContentRight = ({
 
   return (
     <div
-      className=" h-[370px] sm:h-[350px]"
+      className=" h-[450px] sm:h-[350px]"
       style={{ background: " linear-gradient(to top, #006400, #E8F5E9)" }}
     >
       <Link
@@ -56,9 +56,9 @@ const BigCardContentRight = ({
                 />
               )}
             </div>
-            <div className="w-full sm:w-2/5 flex flex-col h-[150px] sm:h-full justify-center gap-10 ">
+            <div className="w-full sm:w-2/5 flex flex-col h-[150px] sm:h-full justify-center items-center gap-10 ">
               <h2
-                className="text-[#006400] font-bold font-bold text-2xl text-center  sm:text-3xl line-clamp-3 !font-medium leading-6 px-2"
+                className="text-[#006400]  text-2xl text-center  sm:text-3xl line-clamp-3 !font-medium leading-6 px-2"
                 style={{
                   overflowWrap: "break-word", // Ensure long words are wrapped only when necessary
                   wordBreak: "normal", // Prevent breaking words like "book"
@@ -70,7 +70,7 @@ const BigCardContentRight = ({
               </h2>
               {showParagraph && (
                 <p
-                  className="text-[#f5f5dc] text-base text-xl line-clamp-4 !font-normal "
+                  className="text-[#f5f5dc]  text-xl text-center line-clamp-4 !font-normal px-[10px]"
                   style={{ lineHeight: "1.5" }}
                 >
                   {sub_title}

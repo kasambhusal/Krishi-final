@@ -112,7 +112,7 @@ const TopNav = () => {
   }, []);
   return (
     <div className="h-[200px] sm:h-[120px] bg-transparent py-2 w-full">
-      <div className="bg-red-30 flex w-full h-full grid grid-cols-10 justify-between items-center gap-[10px] sm:gap-[10px]">
+      <div className="bg-red-30  w-full h-full grid grid-cols-10 justify-between items-center gap-[10px] sm:gap-[10px]">
         <div className="col-span-10 sm:col-span-2 flex flex-col item-center justify-center  order-2 sm:order-1">
           <Link
             href={lge === "en" ? "/en" : "/"}
@@ -163,7 +163,7 @@ const TopNav = () => {
         </div>
       </div>
       {isScrolled && (
-        <div className=" px-2 bg-[#1f1e1e] text-white absolute top-[260px] sm:top-[180px] text-[11px] z-10">
+        <div className=" px-2 bg-[#161616] text-white absolute top-[260px] sm:top-[180px] text-[11px] z-10 rounded-sm">
           {lge === "np" ? formattedNepaliDate : formattedEnglishDate}
         </div>
       )}

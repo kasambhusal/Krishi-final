@@ -17,7 +17,7 @@ const CategoryPage = ({ categoryName, isValidCategory }) => {
   const { wholeNews, loading, setWholeNews } = useNews();
   const { bgColor } = useTheme();
   const [localLoading, setLocalLoading] = useState(true);
-
+  console.log("category page :-", categoryName, isValidCategory);
   useEffect(() => {
     const fetchNews = async () => {
       setLocalLoading(true);
@@ -90,13 +90,41 @@ const CategoryPage = ({ categoryName, isValidCategory }) => {
       </div>
     </div>
   );
+  const renderEmptyState = () => (
+    <div
+      className="w-full flex justify-center"
+      style={{ backgroundColor: bgColor }}
+    >
+      <div className="w-[97%] sm:w-[90%]">
+        <div className="w-full grid grid-cols-6 mt-10">
+          <div className="col-span-6 md:col-span-4 px-3">
+            <Breadcrumb
+              showLinks={false}
+              myWord={categoryName}
+              addNews={false}
+            />
+            <div className="w-full h-[500px] flex items-center justify-center">
+              <h1 className="text-red font-bold text-center text-2xl">
+                No News available for this category
+              </h1>
+            </div>
+          </div>
+          <div className="col-span-6 md:col-span-2 mt-10">
+            <div className="sticky top-[60px]">
+              <TajaSamachar />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
   if (loading || localLoading || wholeNews.length === 0) {
     return renderLoadingState();
   }
 
   if (filteredNews.length === 0) {
-    return renderLoadingState();
+    return renderEmptyState();
   }
 
   return (

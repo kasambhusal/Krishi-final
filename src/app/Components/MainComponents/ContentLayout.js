@@ -89,7 +89,7 @@ const ContentLayout = ({ mukhyaShow }) => {
         <div className="h-auto my-2 sm:mb-[20px]">
           <Breadcrumb
             showLinks={false}
-            myWord={lge === "en" ? "Research Special" : "अनुसन्धान विशेष"}
+            myWord={lge === "en" ? "Research" : "अनुसन्धान विशेष"}
           />
           <Card6 myWord={lge === "en" ? "Research" : "अनुसन्धान विशेष"} />
         </div>

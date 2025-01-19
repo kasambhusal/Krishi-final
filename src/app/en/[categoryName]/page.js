@@ -9,27 +9,31 @@ const mukta = Mukta({
   variable: "--font-mukta",
 });
 
-export async function generateMetadata({ params }) {
-  return {
-    title: `${decodeURIComponent(params.categoryName) || "unknown"} | KrishiSanjal`,
-    description:
-      "KrishiSanjal empowers Nepalese farmers with agricultural knowledge and resources.",
-  };
-}
+export const metadata = {
+  title: "KrishiSanjal | CategoryPage",
+  description:
+    "KrishiSanjal empowers Nepalese farmers with agricultural knowledge and resources.",
+};
+
 async function fetchData(categoryName) {
   try {
     const [categoryResponse, subCategoryResponse] = await Promise.all([
       fetch(
-        "https://cms.krishisanjal.com/krishi_cms/api/v1/public/category/get-category"
+        "https://cms.krishisanjal.com/krishi_cms/api/v1/public/category/get-category",
+        {
+          cache: "no-store",
+        }
       ),
       fetch(
-        "https://cms.krishisanjal.com/krishi_cms/api/v1/public/category-key/get-categoryKey"
+        "https://cms.krishisanjal.com/krishi_cms/api/v1/public/category-key/get-categoryKey",
+        {
+          cache: "no-cache",
+        }
       ),
     ]);
 
     const categoryData = await categoryResponse.json();
     const subCategoryData = await subCategoryResponse.json();
-
     const isValidCategory =
       categoryData.some(
         (item) => item.category_name === decodeURIComponent(categoryName)
@@ -55,7 +59,7 @@ export default async function Page({ params }) {
   const { categoryName, isValidCategory } = await fetchData(
     params.categoryName
   );
-  console.log(categoryName, isValidCategory);
+
   return (
     <div className={`${mukta.className} antialiased`}>
       <CategoryPage
