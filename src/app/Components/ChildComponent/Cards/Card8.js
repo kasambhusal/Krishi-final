@@ -1,6 +1,5 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
-import { Button, Spin } from "antd";
-import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import {  Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useNavigation } from "../../Context/NavigationContext";
 import { Get } from "../../Redux/API";
@@ -10,7 +9,6 @@ export default function Card8() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const { lge } = useNavigation();
-  const scrollContainerRef = useRef(null); // Ref for the scroll container
 
   useEffect(() => {
     const fetchVideos = async () => {
@@ -67,7 +65,6 @@ export default function Card8() {
   return (
     <div className="relative flex justify-center w-full overflow-hidden my-10">
       <div
-        ref={scrollContainerRef} // Attach ref to the scroll container
         className="w-full lg:w-[95%] grid   grid-cols-3 gap-3 md:gap-1"
       >
         {videos.slice(0, 3).map((video, index) => {

@@ -120,15 +120,26 @@ const ContactUs = () => {
               </div>
               <div className="flex flex-col gap-1 tracking-wide">
                 <h3 className="text-[#185924] text-xl font-semibold">
-                  Information Department Registration No :
+                  Department of Information and Broadcasting Regd. No.:
                 </h3>
-                <p>४२४६-२०८०/८१</p>
+                <p>4246-2080/81 </p>
               </div>
             </div>
           </div>
-          <div className="w-[1px] hidden md:block min-h-[380px] h-full bg-[#797979] mb-14"></div>
+          <div className="w-[1px] hidden md:block min-h-[450px] h-full bg-[#797979] mb-14"></div>
           <div className="md:w-1/2 w-full flex justify-center items-center">
             <form className="md:w-[85%] w-[90%] m-auto mr-10 flex justify-center items-center flex-col gap-3">
+              <h3 className="text-3xl font-semibold text-green-700 mb-4">
+                कृषि सञ्जाललाई सम्पर्क गर्नुहोस्
+              </h3>
+              <p
+                className="text-gray-500 font-bold text-[16px] mb-8 text-center"
+                style={{ lineHeight: "1.6" }}
+              >
+                के कृषि सम्बन्धी तपाईंका जिज्ञासा, सुझाव वा टिप्पणीहरू छन् ? यदि
+                छन् भने, कृपया तलको फारम भरेर हामीलाई सन्देश पठाउनुहोस् । हामी
+                सकेसम्म छिटो जवाफ दिने प्रयास गर्नेछौँ 
+              </p>
               <input
                 type="text"
                 id="name"

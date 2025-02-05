@@ -90,7 +90,8 @@ const MyFooter = () => {
                 कृषि सञ्चारको संवाहक
               </p>
               <hr className="h-[4px] bg-black-700 mt-2" />
-              <p className="font-bold">सूचना विभाग दर्ता नं: ४२४६-२०८०/८१</p>
+              <p className="font-bold">सूचना तथा प्रसारण विभाग</p>
+              <p className="font-bold">दर्ता नं: ४२४६-२०८०/८१</p>
               <p className="font-bold">+977-9855034935</p>
               <p className="font-bold">info.krishisanjal@gmail.com</p>
               <Contact />
@@ -160,7 +161,9 @@ const MyFooter = () => {
                   style={{ borderLeft: "1px solid #7a7979" }}
                 >
                   <div>
-                    <h3 className="p-y-[20px] text-2xl font-bold text-center lg:text-start">Our Teams</h3>
+                    <h3 className="p-y-[20px] text-2xl font-bold text-center lg:text-start">
+                      Our Teams
+                    </h3>
                   </div>
                   <div className="grid grid-cols-6">
                     <div className="col-span-2 flex flex-col gap-[20px]">
@@ -275,14 +278,14 @@ const MyFooter = () => {
                         className="text-white text-lg lg:text-xl cursor-pointer"
                         onClick={() => handlePhoneClick("9855034935")}
                       >
-                        Mobile No. +977 9855034935
+                        Mobile No.: +977 9855034935
                       </p>
                       <div className="text-white text-sm lg:text-xl flex flex-col lg:flex-row gap-[5px]">
                         <a
                           className="text-l"
-                          href="mailto:info.krishisanjal@gmail.com"
+                          href="mailto:info@krishisanjal.com"
                         >
-                          info.krishisanjal@gmail.com
+                          info@krishisanjal.com
                         </a>
                       </div>
                     </div>
@@ -305,14 +308,14 @@ const MyFooter = () => {
                         className="text-white text-lg lg:text-xl cursor-pointer"
                         onClick={() => handlePhoneClick("9855034935")}
                       >
-                        Mobile No. +977 9855034935
+                        Mobile No.: +977 9855034935
                       </p>
                       <p className="text-white text-sm lg:text-xl flex flex-col lg:flex-row">
                         <a
                           className="text-l"
-                          href="mailto:info.krishisanjal@gmail.com"
+                          href="mailto:marketing@krishisanjal.com"
                         >
-                          info.krishisanjal@gmail.com
+                          marketing@krishisanjal.com
                         </a>
                       </p>
                     </div>

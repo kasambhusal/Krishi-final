@@ -70,7 +70,7 @@ const SearchPage = () => {
     >
       <div className="w-[97%] md:w-[90%]">
         {loading ? (
-          <div className="flex justify-center py-10">
+          <div className="flex justify-center py-10 min-h-screen">
             <Spin size="large" />
           </div>
         ) : allBlogs.length === 0 ? (
@@ -122,13 +122,15 @@ const SearchPage = () => {
                 ))}
               </div>
               {itemsToShow < allBlogs.length && (
-                <Button
+                <button
                   onClick={handleLoadMore}
                   type="primary"
-                  className="mt-4 w-full bg-blue-500 hover:bg-blue-100 text-white font-bold"
+                  block
+                  className="w-full py-1 mb-2  bg-green-500 text-white hover:bg-green-800"
+                  style={{ borderRadius: "5px" }}
                 >
                   Load More
-                </Button>
+                </button>
               )}
             </div>
 

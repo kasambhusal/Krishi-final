@@ -15,6 +15,7 @@ import {
 import { Post } from "../../Redux/API";
 
 const Share = ({ newsTitle, id, shareCount, vertical = false }) => {
+  console.log("from share", id);
   const [newsUrl, setNewsUrl] = useState(""); // Store the URL in state
 
   // Dynamically set the URL after the component mounts (client-side)

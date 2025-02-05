@@ -16,7 +16,7 @@ import ArticleContent from "../ChildComponent/Others/ArticleContent";
 import StorySideBar from "../ChildComponent/Others/StorySideBar";
 
 const Story = ({ news }) => {
-  const { themeColor, bgColor } = useTheme();
+  const { bgColor } = useTheme();
   const { count } = useCount();
   const [scrolled, setScrolled] = useState(false);
   const [nepaliDate, setNepaliDate] = useState("");
@@ -55,15 +55,17 @@ const Story = ({ news }) => {
     const fetchAndPostViews = async () => {
       try {
         const response = await count;
+        console.log("all response :-", response);
         const filteredResponse = response.find(
-          (item) => item.title === String(news.id)
+          (item) => item.title === String(news?.id)
         );
+        console.log("filtered :-", filteredResponse);
         if (filteredResponse) {
           const response2 = await Get({
             url: `/count/posts/${filteredResponse.id}/`,
           });
           if (response2) {
-            setShareCount(JSON.parse(response2.shares[0].share_count));
+            setShareCount(response2.shares[0]?.share_count);
             setViewsId(response2.id);
           }
         }
@@ -139,7 +141,7 @@ const Story = ({ news }) => {
 
         <div className="w-full grid grid-cols-11">
           <div className="col-span-11 xl:col-span-7 w-full h-full">
-            <ArticleContent news={news} themeColor={themeColor} bgColor={bgColor} />
+            <ArticleContent news={news} />
             <div className="my-5">
               <Share
                 newsTitle={news.news_title}
@@ -165,4 +167,3 @@ const Story = ({ news }) => {
 };
 
 export default Story;
-

@@ -5,7 +5,8 @@ import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import AdvertisementModify from "./AdvertisementModify";
 import { useNewsSearch } from "../../Context/searchNewsContext";
 import { Get, Delete } from "../../Redux/API";
-import Image from "next/image"; // Import Image from next/image
+import Image from "next/image";
+import { useNavigation } from "../../Context/NavigationContext";
 
 const AdvertisementTable = ({ reload, setReload }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -15,15 +16,17 @@ const AdvertisementTable = ({ reload, setReload }) => {
   const [adToDelete, setAdToDelete] = useState(null);
   const [ifContent, setIfContent] = useState(false);
   const [largeGifUrl, setLargeGifUrl] = useState(null);
-  const [loading, setLoading] = useState(false); // Add loading state
+  const [loading, setLoading] = useState(false);
 
   const { searchValue } = useNewsSearch();
+  const { lge } = useNavigation();
 
   useEffect(() => {
     const token = localStorage.getItem("Token");
     const headers = { Authorization: `Bearer ${token}` };
+
     const fetchAdvertisements = async () => {
-      setLoading(true); // Start loading
+      setLoading(true);
       try {
         const hasContent = searchValue && /\S/.test(searchValue);
         setIfContent(hasContent);
@@ -40,11 +43,10 @@ const AdvertisementTable = ({ reload, setReload }) => {
           ? response.advertisement || []
           : response || [];
 
-        if (!responseData || (hasContent && !response.advertisement)) {
-          throw new Error("Invalid response structure");
-        }
+        if (!responseData) throw new Error("Invalid response structure");
 
         const sortedResponse = responseData
+          .filter((ad) => ad.language === lge)
           .map((ad) => ({ ...ad }))
           .sort((a, b) => b.id - a.id);
 
@@ -54,30 +56,21 @@ const AdvertisementTable = ({ reload, setReload }) => {
       } catch (error) {
         message.error(error.response?.data?.code);
       } finally {
-        setLoading(false); // End loading
+        setLoading(false);
       }
     };
     fetchAdvertisements();
     setReload(false);
-  }, [reload, searchValue, setReload]); // Include setReload here
+  }, [reload, searchValue, setReload, lge]);
 
   const showEditModal = (record) => {
     setSelectedAd(record);
     setIsModalOpen(true);
   };
 
-  const handleOk = () => {
-    setIsModalOpen(false);
-    setSelectedAd(null);
-  };
-
-  const handleCancelEditModal = () => {
-    setIsModalOpen(false);
-    setSelectedAd(null);
-  };
-
   const handleDelete = (adId) => {
     setAdToDelete(adId);
+    setReload(true);
     setIsConfirmDeleteVisible(true);
   };
 
@@ -92,8 +85,7 @@ const AdvertisementTable = ({ reload, setReload }) => {
       message.success("Advertisement deleted successfully.");
       setIsConfirmDeleteVisible(false);
       setAdToDelete(null);
-      await fetchAdvertisements();
-    } catch (error) {
+    } catch {
       message.error("Error deleting advertisement.");
     }
   };
@@ -104,19 +96,10 @@ const AdvertisementTable = ({ reload, setReload }) => {
     setIsModalOpen(false);
   };
 
-  const handleGifPreviewCancel = () => {
-    setLargeGifUrl(null);
-  };
-
   const columns = [
-    {
-      title: "S.N",
-      dataIndex: "key",
-    },
-    {
-      title: "Title",
-      dataIndex: "ads_name",
-    },
+    { title: "S.N", dataIndex: "key" },
+    { title: "Title", dataIndex: "ads_name" },
+    { title: "Lge", dataIndex: "language" },
     {
       title: "Image",
       dataIndex: "ads_image",
@@ -130,13 +113,10 @@ const AdvertisementTable = ({ reload, setReload }) => {
               ifContent ? `https://cms.krishisanjal.com${image}` : `${image}`
             }
             alt="Advertisement"
-            width={100} // Set a width for the image
-            height={100} // Set a height for the image
-            style={{
-              objectFit: "contain", // Ensure the image fits within the box
-              borderRadius: "8px", // Optional: Add border radius for a better visual effect
-            }}
-            loading="lazy" // Lazy load the image
+            width={100}
+            height={100}
+            style={{ objectFit: "contain", borderRadius: "8px" }}
+            loading="lazy"
           />
         </div>
       ),
@@ -146,11 +126,7 @@ const AdvertisementTable = ({ reload, setReload }) => {
       dataIndex: "action",
       render: (_, record) => (
         <div style={{ display: "flex", gap: "8px" }}>
-          <Button
-            type="primary"
-            onClick={() => showEditModal(record)}
-            className="bg-white text-black"
-          >
+          <Button type="primary" onClick={() => showEditModal(record)}>
             <EditOutlined />
           </Button>
           <Button type="danger" onClick={() => handleDelete(record.id)}>
@@ -166,34 +142,26 @@ const AdvertisementTable = ({ reload, setReload }) => {
       <Modal
         title="Modify Advertisement"
         open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancelEditModal}
+        onCancel={() => setIsModalOpen(false)}
         footer=""
-        okButtonProps={{
-          style: { color: "black", border: "1px solid #bdbbbb" },
-        }}
       >
-        <AdvertisementModify
-          setReload={setReload}
-          handleCancel={handleCancelEditModal}
-          selectedAd={selectedAd}
-        />
+        <AdvertisementModify setReload={setReload} selectedAd={selectedAd} />
       </Modal>
 
       <Modal
         title="GIF Preview"
-        visible={!!largeGifUrl}
+        open={!!largeGifUrl}
         footer={null}
-        onCancel={handleGifPreviewCancel}
+        onCancel={() => setLargeGifUrl(null)}
         width={800}
       >
         {largeGifUrl && (
           <Image
             src={largeGifUrl}
             alt="Large GIF"
-            width={800} // Adjust width as needed
-            height={450} // Adjust height as needed
-            style={{ objectFit: "contain", width: "100%" }}
+            width={800}
+            height={450}
+            style={{ objectFit: "contain" }}
             loading="lazy"
           />
         )}
@@ -201,12 +169,9 @@ const AdvertisementTable = ({ reload, setReload }) => {
 
       <Modal
         title="Confirm Deletion"
-        visible={isConfirmDeleteVisible}
+        open={isConfirmDeleteVisible}
         onOk={confirmDelete}
         onCancel={() => setIsConfirmDeleteVisible(false)}
-        okText="Yes"
-        cancelText="No"
-        okButtonProps={{ style: { backgroundColor: "blue" } }}
       >
         <p>Are you sure you want to delete this advertisement?</p>
       </Modal>
@@ -215,7 +180,7 @@ const AdvertisementTable = ({ reload, setReload }) => {
         columns={columns}
         dataSource={dataSource}
         scroll={{ x: "max-content" }}
-        loading={loading} // Add loading prop here
+        loading={loading}
       />
     </>
   );

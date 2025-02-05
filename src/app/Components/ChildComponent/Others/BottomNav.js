@@ -181,7 +181,7 @@ const BottomNav = () => {
             href={lge === "en" ? "/en" : "/"}
             className="hidden lg:flex items-center justify-center gap-1 text-white/90 text-[18px] hover:text-white duration-150 group"
           >
-            {lge === "en" ? <p>Home</p> : <p>गृहपृष्ठ</p>}
+            {lge === "en" ? <p>Home</p> : <p>होमपेज</p>}
           </Link>
         </li>
         {isScrolled && (
@@ -302,7 +302,7 @@ const BottomNav = () => {
               {capitalize(lge)}
             </Button>
           </div>
-          <div className="flex items-center flex lg:hidden justify-center gap-4">
+          <div className="flex items-center  lg:hidden justify-center gap-4">
             <Button
               className="bg-[#2d5e29] text-white font-bold h-[40px] w-[40px] hover:bg-green-500"
               style={{ border: "1px solid #ccc4c4", borderRadius: "100%" }}
@@ -359,7 +359,7 @@ const BottomNav = () => {
               onClick={onClose}
               className="flex items-center font-bold justify-center gap-1 text-black/90 text-[22px] hover:black-white duration-150"
             >
-              {lge === "en" ? <p>Home</p> : <p>गृहपृष्ठ</p>}
+              {lge === "en" ? <p>Home</p> : <p>होमपेज</p>}
             </Link>
           </li>
           {categories.map((category, index) => (

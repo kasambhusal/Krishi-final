@@ -1,9 +1,11 @@
-import React from 'react';
-import Image from 'next/image';
-import DOMPurify from 'dompurify';
-import PDFViewer from '../Others/PDFViewer';
+import React from "react";
+import Image from "next/image";
+import DOMPurify from "dompurify";
+import PDFViewer from "../Others/PDFViewer";
+import { useTheme } from "../../Context/ThemeContext";
 
-const ArticleContent = React.memo(({ news, themeColor, bgColor }) => {
+const ArticleContent = React.memo(({ news }) => {
+  const { themeColor, bgColor } = useTheme();
   const renderHtmlContent = (htmlString) => {
     const sanitizedHtml = DOMPurify.sanitize(htmlString);
     return (
@@ -42,4 +44,3 @@ const ArticleContent = React.memo(({ news, themeColor, bgColor }) => {
 });
 
 export default ArticleContent;
-

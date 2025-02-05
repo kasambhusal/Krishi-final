@@ -10,6 +10,7 @@ import Image from "next/image"; // Import next/image
 const TopNav = () => {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
+
   const [lge, setLge] = useState(pathname.includes("/en") ? "en" : "np");
   // Function to convert English month name to Nepali
   const getNepaliMonthName = (monthName) => {
@@ -94,8 +95,11 @@ const TopNav = () => {
     return "unknown";
   };
 
-  // Filter the ads to find the specific one
-  const filteredAd = ads.find((ad) => ad.ads_name === "H_landscape_top_header");
+  const filteredAd = ads.find(
+    (ads) =>
+      ads.ads_name === "H_landscape_top_header" && ads.language === `${lge}`
+  );
+
   const handleScroll = () => {
     if (window.scrollY > 600) {
       setIsScrolled(true);

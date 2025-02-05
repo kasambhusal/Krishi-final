@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useAds } from "../../Context/AdsContext";
 import Image from "next/image"; // Import Image from next/image
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const RoadBlocking = ({ name }) => {
   const { ads, loading: adsLoading } = useAds();
   const [isVisible, setIsVisible] = useState(false);
+  const pathname = usePathname();
 
   const handleClose = () => {
     setIsVisible(false);
@@ -21,8 +23,10 @@ const RoadBlocking = ({ name }) => {
     return "unknown";
   };
 
-  const filteredAd = ads.find((ad) => ad.ads_name === name);
-
+  const lge = pathname.includes("/en") ? "en" : "np";
+  const filteredAd = ads.find(
+    (ads) => ads.ads_name === `${name}` && ads.language === `${lge}`
+  );
   // Set visibility with a delay if an ad is found
   useEffect(() => {
     let timer;

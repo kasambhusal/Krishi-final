@@ -2,6 +2,7 @@
 
 "use client";
 import "./globals.css";
+
 import { Suspense } from "react";
 import React, { useEffect, useState } from "react";
 import ClientSideNav from "./Components/MainComponents/ClientSideNav";
@@ -14,8 +15,11 @@ import { AuthorProvider } from "./Components/Context/AuthorContext";
 import { CountProvider } from "./Components/Context/CountContext";
 import { ThemeProvider } from "./Components/Context/ThemeContext";
 import { NewsSearchProvider } from "./Components/Context/searchNewsContext";
-// import { ContextLoader } from "./Components/Context/ContextLoader";
+import { GoogleTagManager } from "@next/third-parties/google"; // Import Google Tag Manager
+
 import Head from "next/head";
+
+const GTM_ID = "GTM-P8XNQCHW"; // Replace with your actual GTM ID
 
 export default function RootLayout({ children }) {
   const [isNav, setIsNav] = useState(true);
@@ -83,6 +87,8 @@ export default function RootLayout({ children }) {
                   <ThemeProvider>
                     <NewsSearchProvider>
                       <NewsProvider>
+                        <GoogleTagManager gtmId={GTM_ID} />{" "}
+                        {/* Insert Google Tag Manager here */}
                         <div className="sticky top-[-201px] sm:top-[-121px] z-50">
                           <Suspense fallback={<div>Loading...</div>}>
                             <ClientSideNav />

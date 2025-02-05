@@ -1,8 +1,8 @@
 import React from "react";
-import SearchPage from "../../en/search/[searchValue]/page";
+import SearchPage from "../../Components/MainComponents/SearchPage";
 export async function generateMetadata({ params }) {
   return {
-    title: `KrishiSanjal | Search: ${decodeURIComponent(params.searchValue) || "unknown"}`,
+    title: `KrishiSanjal | Searchpage`,
     description:
       "KrishiSanjal empowers Nepalese farmers with agricultural knowledge and resources.",
   };

@@ -1,9 +1,11 @@
 import React from "react";
 import { useAds } from "../../Context/AdsContext";
 import Image from "next/image"; // Import Image from Next.js
+import { usePathname } from "next/navigation";
 
 const SmallAds = ({ name }) => {
   const { ads, loading } = useAds();
+  const pathname = usePathname();
 
   const getMediaType = (url) => {
     const extension = url.split(".").pop().toLowerCase();
@@ -15,7 +17,10 @@ const SmallAds = ({ name }) => {
     return "unknown";
   };
 
-  const filteredAd = ads.find((ad) => ad.ads_name === `${name}`);
+  const lge = pathname.includes("/en") ? "en" : "np";
+  const filteredAd = ads.find(
+    (ad) => ad.ads_name === `${name}` && ad.language === `${lge}`
+  );
 
   return (
     <div className="max-w-full max-h-[500px] overflow-hidden flex justify-center my-5">

@@ -55,6 +55,7 @@ export default function MemberModify({ fetchData, handleCancel, modifyObj }) {
       setSocialMediaUrl(modifyObj.social_media_url || ""); // Handle potential undefined
       setDescription(modifyObj.description || "");
       setLge(modifyObj.lge);
+      setImagePreview(modifyObj.img);
     }
   }, [modifyObj]);
 
@@ -74,14 +75,10 @@ export default function MemberModify({ fetchData, handleCancel, modifyObj }) {
     formData.append("display_order", displayOrder);
     if (imageFile) {
       formData.append("image", imageFile); // Include the new image file
-    } else if (modifyObj && modifyObj.img) {
-      // If no new image, and modifying existing, append the current image URL
-      formData.append("image", modifyObj.img);
     }
     const token = localStorage.getItem("Token");
     const headers = { Authorization: `Bearer ${token}` };
     try {
-      console.log(modifyObj.key);
       const url = `/member/member/${modifyObj.key}`;
 
       await Put({ url, headers, data: formData });

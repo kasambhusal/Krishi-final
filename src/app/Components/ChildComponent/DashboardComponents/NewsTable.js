@@ -7,6 +7,7 @@ import { useNavigation } from "../../Context/NavigationContext";
 import { useNewsSearch } from "../../Context/searchNewsContext";
 import { Get, Delete } from "../../Redux/API";
 import Image from "next/image";
+import ArticleContent from "../Others/ArticleContent";
 
 const NewsTable = ({ reload, setReload, isActive }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -57,8 +58,12 @@ const NewsTable = ({ reload, setReload, isActive }) => {
         active: item.active,
         breaking_news: item.breaking_news,
         pdf_document: item.pdf_document,
-        category_names: item.category_names.join(", "),
-        sub_category_names: item.sub_category_names.join(", "),
+        category_names: item.category_names
+          ? item.category_names.join(", ")
+          : "",
+        sub_category_names: item.sub_category_names
+          ? item.sub_category_names.join(", ")
+          : "",
       }));
       setDataSource(transformedData);
     } catch (error) {
@@ -226,7 +231,7 @@ const NewsTable = ({ reload, setReload, isActive }) => {
         open={isModalOpen}
         onCancel={() => handleCancel("edit")}
         footer={null}
-        className="min-w-[60vw]"
+        className="min-w-[80vw]"
       >
         <NewsModify
           modifyObj={selectedNews}
@@ -257,7 +262,8 @@ const NewsTable = ({ reload, setReload, isActive }) => {
         {selectedNews && (
           <div>
             <div className="flex flex-col gap-[20px] max-w-full">
-              <div style={{ width: "100%" }}>{selectedNews.news_post}</div>
+              {/* <div style={{ width: "100%" }}>{selectedNews.news_post}</div> */}
+              <ArticleContent news={selectedNews} />
             </div>
           </div>
         )}

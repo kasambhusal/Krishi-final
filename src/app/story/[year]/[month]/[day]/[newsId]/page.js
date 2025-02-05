@@ -31,7 +31,7 @@ function generateKeywords(newsTitle) {
 }
 
 export async function generateMetadata({ params }) {
-  const { year, month, day, newsId } = params;
+  const { year, month, day, newsId } = await params; // Await params before using
   const fullUrl = `https://krishisanjal.com/story/${year}/${month}/${day}/${newsId}`;
 
   try {
@@ -72,7 +72,7 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function Page({ params }) {
-  const { newsId } = params;
+  const { newsId } = await params; // Await params before using
   try {
     const news = await fetchPost(newsId);
     return (

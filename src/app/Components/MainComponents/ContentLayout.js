@@ -44,8 +44,9 @@ const ContentLayout = ({ mukhyaShow }) => {
         <div className="h-auto ">
           <Breadcrumb
             showLinks={true}
+            go={lge === "en" ? "Livestock and Fishery" : "पशुपंक्षी र मत्स्य"}
             myWord={
-              lge === "en" ? "Livestock and Fishery" : "पशुपंक्षी र मत्स्य"
+              lge === "en" ? "Livestock and Fishery" : "पशुपन्छी र मत्स्य"
             }
           />
           <div className="mt-5">

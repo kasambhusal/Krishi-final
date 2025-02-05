@@ -262,7 +262,10 @@ html {
   width: 100%;
   border-collapse: collapse;
 }
-
+.content a {
+  color: #0a5a13;
+  font-weight: bold;
+}
 .content th,
 .content td {
   border: 1px solid #abaaaa;
@@ -332,4 +335,29 @@ html {
   position: -webkit-sticky; /* Safari */
   position: sticky !important;
   top: 60px;
+}
+@import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&display=swap");
+
+@media print {
+  body {
+    margin: 0 !important;
+  }
+}
+
+.main-container {
+  font-family: "Lato";
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ck-content {
+  font-family: "Lato";
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+.editor-container_classic-editor .editor-container__editor {
+  min-width: 50vw;
+  max-width: 80vw;
 }

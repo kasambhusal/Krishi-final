@@ -19,7 +19,7 @@ import { CloseOutlined } from "@mui/icons-material";
 import Link from "next/link";
 
 export default function Navigation({ open, setOpen }) {
-  const { lge, setLge } = useNavigation();
+  const { setLge } = useNavigation();
   const { setSearchValue } = useNewsSearch();
   const [search, setSearch] = useState("");
   const router = useRouter();

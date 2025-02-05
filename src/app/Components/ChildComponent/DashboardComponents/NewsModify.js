@@ -3,12 +3,11 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Form, Input, Button, Select, Checkbox, message, Modal } from "antd";
 import dayjs from "dayjs";
 import { Get, Put } from "../../Redux/API";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import Image from "next/image";
 import Gallery from "./Gallery";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import CkEditor from "./CKEditor";
 
 const { Option } = Select;
 
@@ -178,6 +177,10 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
     setSelectedImage("");
   };
 
+  const handleEditorChange = (data) => {
+    setDisData(data);
+  };
+
   const handleSubmit = async (values) => {
     setLoading(true);
 
@@ -312,28 +315,7 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
       </div>
       <Form.Item label="Content">
         <div className="my-7">
-          <CKEditor
-            editor={ClassicEditor}
-            data={disData}
-            onChange={(event, editor) => {
-              const data = editor.getData();
-              setDisData(data);
-            }}
-            config={{
-              toolbar: [
-                "heading",
-                "|",
-                "bold",
-                "italic",
-                "link",
-                "bulletedList",
-                "numberedList",
-                "blockQuote",
-                "insertTable",
-                "imageUpload",
-              ],
-            }}
-          />
+          <CkEditor onChange={handleEditorChange} initialContent={disData} />
         </div>
       </Form.Item>
       <div className="w-full flex flex-col sm:flex-row justify-evenly">

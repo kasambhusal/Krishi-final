@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect, useState, useMemo } from "react";
+import React, {   useMemo } from "react";
 import { GoArrowUpRight } from "react-icons/go";
 import { FaChevronRight, FaChevronLeft } from "react-icons/fa";
 import { usePathname } from "next/navigation";
