@@ -184,6 +184,16 @@ export default function NewsAdd({ handleCancel2, setReload }) {
     }
   };
 
+  const removeImage = () => {
+    setSelectedImage(null);
+    setGalleryImage(null);
+    setImagePreview(null);
+  };
+
+  const removePdf = () => {
+    setSelectedPdf(null);
+  };
+
   return (
     <Form
       form={form}
@@ -322,15 +332,17 @@ export default function NewsAdd({ handleCancel2, setReload }) {
             alt="Preview"
             style={{ maxWidth: "100%" }}
           />
+          <Button onClick={removeImage} className="my-2">Remove Image</Button>
         </div>
       )}
       {selectedPdf && (
         <div>
           <h3>Selected PDF:</h3>
           <p>{selectedPdf.name}</p>
+          <Button onClick={removePdf} className="my-2">Remove PDF</Button>
         </div>
       )}
-      <Form.Item>
+      <Form.Item className="my-4">
         <Button type="primary" htmlType="submit" loading={loading}>
           Submit
         </Button>
