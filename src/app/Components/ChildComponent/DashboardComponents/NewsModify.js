@@ -33,6 +33,8 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
   const [galleryImage, setGalleryImage] = useState(null);
   const [selectedPdf, setSelectedPdf] = useState(null);
   const [pdfPreview, setPdfPreview] = useState(null);
+  const [hasImage, setHasImage] = useState(false);
+  const [hasPdf, setHasPdf] = useState(false);
 
   const fetchCategory = useCallback(async () => {
     const token = localStorage.getItem("Token");
@@ -102,6 +104,8 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
       setDisData(modifyObj.news_post || "");
       setImagePreview(modifyObj.media_image || modifyObj.image || null);
       setPdfPreview(modifyObj.pdf_document || null);
+      setHasImage(!!modifyObj.media_image || !!modifyObj.image);
+      setHasPdf(!!modifyObj.pdf_document);
 
       // Map category names to IDs
       const categoryIds = categoryData
@@ -157,6 +161,7 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
       const previewUrl = URL.createObjectURL(file);
       setImagePreview(previewUrl);
       setGalleryImage("");
+      setHasImage(true);
     }
   };
 
@@ -166,6 +171,7 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
       const previewUrl = URL.createObjectURL(file);
       setPdfPreview(previewUrl);
       setSelectedPdf(file);
+      setHasPdf(true);
     } else {
       message.error("Please upload a PDF file");
     }
@@ -179,6 +185,19 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
 
   const handleEditorChange = (data) => {
     setDisData(data);
+  };
+
+  const removeImage = () => {
+    setSelectedImage(null);
+    setGalleryImage(null);
+    setImagePreview(null);
+    setHasImage(false);
+  };
+
+  const removePdf = () => {
+    setSelectedPdf(null);
+    setPdfPreview(null);
+    setHasPdf(false);
   };
 
   const handleSubmit = async (values) => {
@@ -200,16 +219,23 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
     formData.append("breaking_news", values.breaking ? "true" : "false");
     formData.append("news_post", disData);
 
-    if (selectedImage) {
-      formData.append("image", selectedImage);
+    if (hasImage) {
+      if (selectedImage) {
+        formData.append("image", selectedImage);
+        formData.append("media_image", "");
+      } else if (galleryImage) {
+        formData.append("media_image", galleryImage);
+        formData.append("image", "");
+      }
+    } else {
+      formData.append("image", "");
       formData.append("media_image", "");
     }
-    if (galleryImage) {
-      formData.append("media_image", galleryImage);
-      formData.append("image", "");
-    }
-    if (selectedPdf) {
+
+    if (hasPdf && selectedPdf) {
       formData.append("pdf_document", selectedPdf);
+    } else {
+      formData.append("pdf_document", "");
     }
 
     const token = localStorage.getItem("Token");
@@ -221,7 +247,6 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
         data: formData,
         headers,
       });
-
       if (response) {
         message.success("News updated successfully");
         handleCancel2();
@@ -318,7 +343,7 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
           <CkEditor onChange={handleEditorChange} initialContent={disData} />
         </div>
       </Form.Item>
-      <div className="w-full flex flex-col sm:flex-row justify-evenly">
+      <div className="w-full flex  justify-between">
         <Form.Item label="Upload Image">
           <input type="file" onChange={handleUpload} />
         </Form.Item>
@@ -338,28 +363,34 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
             />
           </Modal>
         </Form.Item>
+        <Form.Item label="Upload PDF">
+          <input type="file" accept=".pdf" onChange={handlePdfUpload} />
+        </Form.Item>
       </div>
       {imagePreview && (
         <div style={{ marginTop: "10px" }}>
           <h2 className="text-green-800 font-bold">Image Preview :</h2>
           <Image
-            src={imagePreview}
+            src={imagePreview || "/placeholder.svg"}
             alt="Preview"
             width={300}
             height={200}
             style={{ objectFit: "cover" }}
           />
+          <Button onClick={removeImage} className="mt-2">
+            Remove Image
+          </Button>
         </div>
       )}
-      <Form.Item label="Upload PDF" className="mt-[25px]">
-        <input type="file" accept=".pdf" onChange={handlePdfUpload} />
-      </Form.Item>
       {pdfPreview && (
         <div style={{ marginTop: "10px" }} className="my-3">
           <h2 className="text-green-800 font-bold">PDF Overview:</h2>
           <a href={pdfPreview} target="_blank" rel="noopener noreferrer">
             {pdfPreview}
           </a>
+          <Button onClick={removePdf} className="mt-2">
+            Remove PDF
+          </Button>
         </div>
       )}
       <Form.Item>

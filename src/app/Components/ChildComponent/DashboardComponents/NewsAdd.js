@@ -8,6 +8,7 @@ import CKEditor from "./CKEditor";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Gallery from "./Gallery";
+import Image from "next/image";
 const { Option } = Select;
 
 export default function NewsAdd({ handleCancel2, setReload }) {
@@ -127,7 +128,6 @@ export default function NewsAdd({ handleCancel2, setReload }) {
       });
 
       if (response) {
-        console.log(response);
         const sharePayload = {
           title: response.id.toString(),
           visit_count: 0,
@@ -296,50 +296,58 @@ export default function NewsAdd({ handleCancel2, setReload }) {
       >
         <CKEditor onChange={handleEditorChange} />
       </Form.Item>
-      <Form.Item label="Upload Image">
-        <input type="file" onChange={handleUpload} />
-      </Form.Item>
-      <Form.Item>
-        <Button onClick={() => setIsModalOpen(true)}>
-          Upload Image from Server
-        </Button>
-        <Modal
-          title="Upload Image from Server"
-          open={isModalOpen}
-          onOk={() => setIsModalOpen(false)}
-          onCancel={() => setIsModalOpen(false)}
-          footer={null}
-          className="min-w-[80vw] min-h-[80vh]"
-        >
-          <Gallery
-            handleGalleryUpload={handleGalleryUpload}
-            handleCancel={handleCancel}
+      <div className="flex flex-wrap justify-between">
+        <Form.Item label="Upload Image">
+          <input type="file" onChange={handleUpload} />
+        </Form.Item>
+        <Form.Item>
+          <Button onClick={() => setIsModalOpen(true)}>
+            Upload Image from Server
+          </Button>
+          <Modal
+            title="Upload Image from Server"
+            open={isModalOpen}
+            onOk={() => setIsModalOpen(false)}
+            onCancel={() => setIsModalOpen(false)}
+            footer={null}
+            className="min-w-[80vw] min-h-[80vh]"
+          >
+            <Gallery
+              handleGalleryUpload={handleGalleryUpload}
+              handleCancel={handleCancel}
+            />
+          </Modal>
+        </Form.Item>
+        <Form.Item label="Upload PDF">
+          <input
+            type="file"
+            accept=".pdf"
+            onChange={(e) => setSelectedPdf(e.target.files[0])}
           />
-        </Modal>
-      </Form.Item>
-      <Form.Item label="Upload PDF">
-        <input
-          type="file"
-          accept=".pdf"
-          onChange={(e) => setSelectedPdf(e.target.files[0])}
-        />
-      </Form.Item>
+        </Form.Item>
+      </div>
       {imagePreview && (
         <div>
           <h3>Image Preview:</h3>
-          <img
+          <Image
             src={imagePreview || "/placeholder.svg"}
             alt="Preview"
-            style={{ maxWidth: "100%" }}
+            width={300}
+            height={200}
+            style={{ objectFit: "cover" }}
           />
-          <Button onClick={removeImage} className="my-2">Remove Image</Button>
+          <Button onClick={removeImage} className="my-2">
+            Remove Image
+          </Button>
         </div>
       )}
       {selectedPdf && (
         <div>
           <h3>Selected PDF:</h3>
           <p>{selectedPdf.name}</p>
-          <Button onClick={removePdf} className="my-2">Remove PDF</Button>
+          <Button onClick={removePdf} className="my-2">
+            Remove PDF
+          </Button>
         </div>
       )}
       <Form.Item className="my-4">
