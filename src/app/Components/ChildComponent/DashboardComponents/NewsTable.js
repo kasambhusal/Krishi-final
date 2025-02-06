@@ -263,7 +263,7 @@ const NewsTable = ({ reload, setReload, isActive }) => {
           <div>
             <div className="flex flex-col gap-[20px] max-w-full">
               {/* <div style={{ width: "100%" }}>{selectedNews.news_post}</div> */}
-              <ArticleContent news={selectedNews} />
+              <ArticleContent news={selectedNews} image={false} />
             </div>
           </div>
         )}
