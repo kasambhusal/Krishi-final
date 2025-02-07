@@ -61,9 +61,8 @@ const ArticleContent = React.memo(({ news, image = true }) => {
 
       <div
         style={{ backgroundColor: bgColor }}
-        className="p-4 rounded-lg shadow-md"
+        className="p-4 rounded-lg "
       >
-        <h1 className="text-2xl font-bold mb-4">{news.news_title}</h1>
         {renderHtmlContent(news.news_post)}
       </div>
 

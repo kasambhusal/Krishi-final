@@ -40,7 +40,7 @@ const Card10 = ({ myWord, id }) => {
       ) : news.length > 0 ? (
         <div className="w-full">
           <div className="w-full flex justify-center">
-            <div className="w-[85%] lg:w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 my-10">
+            <div className="w-[85%] lg:w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
               {news.slice(0, 6).map((item) => (
                 <div key={item.id} className="w-full">
                   <SmallCardContentBottom
