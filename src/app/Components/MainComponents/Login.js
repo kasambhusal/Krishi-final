@@ -47,11 +47,15 @@ const Login = () => {
       const response = await Post({ url: "/user/login/", data: values });
       // Save the token in localStorage after successful login
       const token = response.tokens.access; // Stringify to ensure JSON format
+      const name = response.user_name; // Stringify to ensure JSON format
       localStorage.setItem("Token", token);
+      localStorage.setItem("User_name", name);
+
+      console.log(response);
       message.success("Login successful!");
       router.push("/dashboard");
     } catch (error) {
-      console.log("Login failed:", error);
+      console.error("Login failed:", error);
       message.error("Login failed. Please check your credentials.");
     } finally {
       setLoading(false);

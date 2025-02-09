@@ -336,7 +336,7 @@ const MyFooter = () => {
         className={`flex flex-wrap justify-center items-center gap-2 px-2 sm:px-0`}
       >
         <p className="text-l" style={{ color: "white" }}>
-          Copyright © 2024 KRISHI SANJAL
+          Copyright © 2025 KRISHI SANJAL
         </p>
         <p className="text-l" style={{ color: "white" }}>
           |

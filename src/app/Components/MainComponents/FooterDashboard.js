@@ -17,7 +17,7 @@ export default function FooterDashboard() {
         className={`flex flex-wrap  justify-center items-center gap-2 px-2 sm:px-0 `}
       >
         <h2 className=" text-l " style={{ color: "#878684" }}>
-          Copyright © 2024 Krishi Sanjal
+          Copyright © 2025 Krishi Sanjal
         </h2>
         <h2 className=" text-l " style={{ color: "#878684" }}>
           |

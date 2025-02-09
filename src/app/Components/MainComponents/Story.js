@@ -97,20 +97,30 @@ const Story = ({ news }) => {
         <RoadBlocking name="S_roadblocking_ads" />
         <Ads name="S_landscape_before_title" />
 
-        <h1
-          className={`w-full text-${scrolled ? "xl pl-3 mt-[30px] md:text-3xl shadow-lg" : "3xl md:text-5xl"} 
+        <span
+          className={`text-${
+            scrolled
+              ? "2xl pl-3 mt-[30px] md:text-3xl shadow-lg"
+              : "3xl md:text-5xl"
+          } 
           duration-[1s] font-bold sticky top-[59px] z-10 p-2`}
           style={{
             lineHeight: "1.5",
             transition: "font-size 0.2s ease-in-out",
             backgroundColor: bgColor,
-            overflowWrap: "break-word",
-            wordBreak: "normal",
-            whiteSpace: "normal",
           }}
         >
-          {news.news_title}
-        </h1>
+          <h1
+            className="w-full break-words mt-[20px]"
+            style={{
+              overflowWrap: "break-word", // Ensure long words are wrapped only when necessary
+              wordBreak: "normal", // Prevent breaking words like "book"
+              whiteSpace: "normal", // Ensure proper line wrapping
+            }}
+          >
+            {news.news_title}
+          </h1>
+        </span>
 
         {news.news_sub_title && (
           <h2 className="text-2xl pl-3 my-3 w-full text-[#4f4f4f]">

@@ -4,6 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import NavigationDashboard from "../Components/MainComponents/NavigationDashboard";
 import FooterDashboard from "../Components/MainComponents/FooterDashboard";
+import { useNavigation } from "../Components/Context/NavigationContext";
 
 const TOKEN_CHECK_INTERVAL = 10000; // Check token every 30 seconds
 
@@ -12,7 +13,7 @@ export default function RootLayout({ children }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const router = useRouter();
-
+  const { user } = useNavigation();
   // Format pathname for display
   const myLinkFormatted = pathname
     .slice(1)
@@ -33,8 +34,15 @@ export default function RootLayout({ children }) {
   const checkToken = () => {
     if (typeof window !== "undefined") {
       const token = localStorage.getItem("Token");
-      if (!isValidToken(token)) {
+      const name = localStorage.getItem("User_name");
+      if (
+        !isValidToken(token) ||
+        !name ||
+        name === undefined ||
+        name === null
+      ) {
         localStorage.removeItem("Token"); // Remove invalid token
+        localStorage.removeItem("User_name"); // Remove invalid user name
         router.push("/dashboard/login"); // Redirect if token is invalid
       }
     }
@@ -64,7 +72,14 @@ export default function RootLayout({ children }) {
       </div>
       <div className="flex w-[97%] md:w-[90%] flex-col">
         <div className="w-full min-h-[85vh]">
-          {isNav && <h2 className="text-l px-3 my-5">{myLinkFormatted}</h2>}
+          {isNav && (
+            <div className="w-full flex justify-between">
+              <h2 className="text-l px-3 my-5">{myLinkFormatted}</h2>
+              <h2 className="text-xl px-3 my-5 sm:mr-5 font-bold">
+                Hi {user.name ? user.name : "there!"}👋
+              </h2>
+            </div>
+          )}
           <div>{children}</div>
         </div>
         {isNav && <FooterDashboard />}
