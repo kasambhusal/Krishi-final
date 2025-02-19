@@ -4,11 +4,12 @@ import { Form, Input, Button, Modal, Select, Checkbox, message } from "antd";
 import dayjs from "dayjs";
 import { useNavigation } from "../../Context/NavigationContext";
 import { Get, Post } from "../../Redux/API";
-import CKEditor from "./CKEditor";
+
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Gallery from "./Gallery";
 import Image from "next/image";
+import QuillEditor from "./QuillEditor";
 const { Option } = Select;
 
 export default function NewsAdd({ handleCancel2, setReload }) {
@@ -294,7 +295,7 @@ export default function NewsAdd({ handleCancel2, setReload }) {
         name="content"
         rules={[{ required: true, message: "This field can't be empty" }]}
       >
-        <CKEditor onChange={handleEditorChange} />
+        <QuillEditor value={editorData} onChange={setEditorData} />
       </Form.Item>
       <div className="flex flex-wrap justify-between">
         <Form.Item label="Upload Image">

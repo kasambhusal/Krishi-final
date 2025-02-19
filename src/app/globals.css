@@ -361,3 +361,7 @@ html {
   min-width: 50vw;
   max-width: 80vw;
 }
+
+.ql-container {
+  min-height: 400px;
+}

@@ -7,7 +7,8 @@ import Image from "next/image";
 import Gallery from "./Gallery";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import CkEditor from "./CKEditor";
+import CkEditor from "./QuillEditor";
+import QuillEditor from "./QuillEditor";
 
 const { Option } = Select;
 
@@ -340,7 +341,7 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
       </div>
       <Form.Item label="Content">
         <div className="my-7">
-          <CkEditor onChange={handleEditorChange} initialContent={disData} />
+          <QuillEditor value={disData} onChange={handleEditorChange} />
         </div>
       </Form.Item>
       <div className="w-full flex  justify-between">
