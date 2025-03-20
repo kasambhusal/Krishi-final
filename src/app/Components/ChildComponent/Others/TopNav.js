@@ -12,6 +12,7 @@ const TopNav = () => {
   const [isScrolled, setIsScrolled] = useState(false);
 
   const [lge, setLge] = useState(pathname.includes("/en") ? "en" : "np");
+
   // Function to convert English month name to Nepali
   const getNepaliMonthName = (monthName) => {
     const nepaliMonths = [
@@ -59,8 +60,10 @@ const TopNav = () => {
       .join("");
   };
 
-  // Get today's date in Nepali format
-  const todayNepaliDate = new NepaliDate().format("DD MMMM YYYY dddd");
+  // Get the local time and convert it to Nepali date
+  const localTime = new Date(); // This will get the browser's local time
+  const todayNepaliDate = new NepaliDate(localTime).format("DD MMMM YYYY dddd");
+
   const [day, monthName, year, dayOfWeek] = todayNepaliDate.split(" ");
 
   // Convert day and year to Nepali numerals
@@ -114,6 +117,7 @@ const TopNav = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
   return (
     <div className="h-[200px] sm:h-[120px] bg-transparent py-2 w-full">
       <div className="bg-red-30  w-full h-full grid grid-cols-10 justify-between items-center gap-[10px] sm:gap-[10px]">
