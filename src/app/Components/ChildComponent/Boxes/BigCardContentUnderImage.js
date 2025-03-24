@@ -25,7 +25,8 @@ const BigCardContentUnderImage = ({
 
   return (
     <div
-      className="h-full w-full cursor-pointer overflow-hidden bg-white"
+      className="h-full w-full cursor-pointer overflow-hidden "
+      style={{ borderRadius: "5px" }}
       // onClick={() => {
       //   scrollToTop();
       // }}
@@ -42,7 +43,7 @@ const BigCardContentUnderImage = ({
       >
         <div
           className="relative w-full h-full overflow-hidden hover:scale-110 duration-150"
-          style={{ boxShadow: "0px 0px 16px black inset", borderRadius: "5px" }}
+          style={{ boxShadow: "0px 0px 16px black inset" }}
         >
           {/* Use the Image component from next/image */}
           <Image

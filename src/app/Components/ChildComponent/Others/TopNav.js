@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import NepaliDate from "nepali-date";
+import { NepaliDate } from "@zener/nepali-datepicker-react";
 import { useAds } from "../../Context/AdsContext";
 import { Skeleton } from "@mui/material";
 import Image from "next/image"; // Import next/image
@@ -12,7 +12,6 @@ const TopNav = () => {
   const [isScrolled, setIsScrolled] = useState(false);
 
   const [lge, setLge] = useState(pathname.includes("/en") ? "en" : "np");
-
   // Function to convert English month name to Nepali
   const getNepaliMonthName = (monthName) => {
     const nepaliMonths = [
@@ -51,6 +50,31 @@ const TopNav = () => {
     return index !== -1 ? nepaliMonths[index] : "Unknown Month";
   };
 
+  // Function to convert English weekday to Nepali
+  const getNepaliWeekday = (weekday) => {
+    const nepaliWeekdays = [
+      "आइतबार",
+      "सोमबार",
+      "मंगलबार",
+      "बुधबार",
+      "बिहिबार",
+      "शुक्रबार",
+      "शनिबार",
+    ];
+    const englishWeekdays = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+
+    const index = englishWeekdays.indexOf(weekday);
+    return index !== -1 ? nepaliWeekdays[index] : "Unknown Weekday";
+  };
+
   // Function to convert English numerals to Nepali numerals
   const convertToNepaliNumerals = (number) => {
     const nepaliNumerals = ["०", "१", "२", "३", "४", "५", "६", "७", "८", "९"];
@@ -60,17 +84,20 @@ const TopNav = () => {
       .join("");
   };
 
-  // Get the local time and convert it to Nepali date
-  const localTime = new Date(); // This will get the browser's local time
-  const todayNepaliDate = new NepaliDate(localTime).format("DD MMMM YYYY dddd");
+  // Get today's date in Nepali format
+  const date = new NepaliDate();
+  const weekday = date.format("dddd"); // Get the day of the week (in English)
+  const day = date.format("DD"); // Get the day of the month
+  const month = date.format("MMMM"); // Get the month (in English)
+  const year = date.format("YYYY"); // Get the year
 
-  const [day, monthName, year, dayOfWeek] = todayNepaliDate.split(" ");
+  const nepaliWeekday = getNepaliWeekday(weekday); // Convert to Nepali weekday
+  const nepaliMonth = getNepaliMonthName(month); // Convert to Nepali month
+  const nepaliDay = convertToNepaliNumerals(day); // Convert the day to Nepali numerals
+  const nepaliYear = convertToNepaliNumerals(year); // Convert the year to Nepali numerals
 
   // Convert day and year to Nepali numerals
-  const nepaliDay = convertToNepaliNumerals(day);
-  const nepaliYear = convertToNepaliNumerals(year);
-  const nepaliMonthName = getNepaliMonthName(monthName);
-  const formattedNepaliDate = `${dayOfWeek}, ${nepaliDay} ${nepaliMonthName} ${nepaliYear}`;
+  const formattedNepaliDate = `${nepaliWeekday}, ${nepaliDay} ${nepaliMonth} ${nepaliYear}`;
 
   // Function to get English date in the same format
   const getEnglishDate = () => {
@@ -117,7 +144,6 @@ const TopNav = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-
   return (
     <div className="h-[200px] sm:h-[120px] bg-transparent py-2 w-full">
       <div className="bg-red-30  w-full h-full grid grid-cols-10 justify-between items-center gap-[10px] sm:gap-[10px]">
