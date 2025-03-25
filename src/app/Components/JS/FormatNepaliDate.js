@@ -1,5 +1,5 @@
 // src/utils/FormatNepaliDate.js
-import NepaliDate from "nepali-date";
+import { NepaliDate } from "@zener/nepali-datepicker-react";
 
 const englishToNepaliMonths = {
   Baisakh: "बैशाख",
@@ -18,9 +18,8 @@ const englishToNepaliMonths = {
 
 const FormatNepaliDate = (dateString) => {
   const [year, month, day] = dateString.split("-").map(Number);
-
   // Create a new Date object and add one day
-  const englishDate = new Date(year, month - 1, day + 1); // Month is 0-indexed
+  const englishDate = new Date(year, month - 1, day); // Month is 0-indexed
   const nepaliDate = new NepaliDate(englishDate);
   const formattedNepaliDate = nepaliDate.format("DD MMMM YYYY");
 

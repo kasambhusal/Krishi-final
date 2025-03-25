@@ -5,7 +5,7 @@ import PDFViewer from "../Others/PDFViewer";
 import { useTheme } from "../../Context/ThemeContext";
 
 const ArticleContent = React.memo(({ news, image = true }) => {
-  const { themeColor, bgColor } = useTheme();
+  const { bgColor } = useTheme();
 
   const renderYouTubeEmbed = (url) => {
     const videoId = url.split("v=")[1];
