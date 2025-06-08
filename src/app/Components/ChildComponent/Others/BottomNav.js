@@ -5,58 +5,63 @@ import { IoSearch } from "react-icons/io5";
 import { FaAngleDown } from "react-icons/fa6";
 import { MenuOutlined, SearchOutlined } from "@ant-design/icons";
 import { Button, Drawer } from "antd";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useTheme } from "../../Context/ThemeContext";
 import Image from "next/image";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useCategory } from "../../Context/CategoryContext";
 import { useNavigation } from "../../Context/NavigationContext";
+import { Get } from "../../Redux/API";
 
 const BottomNav = () => {
   const [searchValue, setSearchValue] = useState("");
   const { themeColor } = useTheme();
   const [categories, setCategories] = useState([]);
-  const pathname = usePathname();
+  const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
   const [hoveredCategoryId, setHoveredCategoryId] = useState(null);
   const [timeoutId, setTimeoutId] = useState(null);
-  const { category } = useCategory();
   const router = useRouter();
   const [openCategoryId, setOpenCategoryId] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [url, setUrl] = useState("");
   const { lge } = useNavigation();
 
-  const showDrawer = () => {
-    if (window.innerWidth < 1024) {
-      setOpen(true);
-    }
-  };
-  const showDrawer2 = () => {
-    setOpen2(true);
-  };
-  const handleScroll = () => {
-    if (window.scrollY > 150) {
-      setIsScrolled(true);
-    } else {
-      setIsScrolled(false);
+  // Simplified category fetching
+  const fetchCategories = async () => {
+    try {
+      setLoading(true);
+      const response = await Get({
+        url: `/public/category/get-category?language=${lge}`,
+      });
+
+      const processedData = response || response.results;
+
+      if (processedData && processedData.length > 0) {
+        // Sort the categories by display_order in ascending order
+        const sortedData = processedData.sort(
+          (a, b) => a.display_order - b.display_order
+        );
+        setCategories(sortedData);
+      } else {
+        setCategories([]);
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      toast.error("Error loading categories");
+      setCategories([]);
+    } finally {
+      setLoading(false);
     }
   };
 
+  // Fetch categories when component mounts or language changes
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
-      event.preventDefault(); // Prevent form submission if in a form
-      searched();
-    }
-  };
+    fetchCategories();
+  }, [lge]);
+
+  // Set URL based on language
   useEffect(() => {
     if (lge === "en") {
       setUrl("/en");
@@ -65,23 +70,41 @@ const BottomNav = () => {
     }
   }, [lge]);
 
-  const onClose2 = () => {
-    setOpen2(false);
-  };
+  // Handle scroll effect
   useEffect(() => {
-    fetchData();
+    const handleScroll = () => {
+      if (window.scrollY > 150) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
-  const fetchData = async () => {
-    try {
-      setCategories(category);
-    } catch (error) {
-      console.log("Error fetching categories:", error);
-      toast.error(error.message);
-      if (error.message === "Not responding") {
-        return <ServerNotResponding />;
-      }
+  const showDrawer = () => {
+    if (window.innerWidth < 1024) {
+      setOpen(true);
     }
+  };
+
+  const showDrawer2 = () => {
+    setOpen2(true);
+  };
+
+  const handleKeyDown = (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      searched();
+    }
+  };
+
+  const onClose2 = () => {
+    setOpen2(false);
   };
 
   const onClose = () => {
@@ -110,32 +133,47 @@ const BottomNav = () => {
       );
     }
   };
+
   const capitalize = (str) => {
     const mystr = str === "en" ? "nep" : "eng";
-    if (!mystr) return ""; // Handle empty strings
+    if (!mystr) return "";
     return mystr.charAt(0).toUpperCase() + mystr.slice(1);
   };
+
   const toggleLanguage = () => {
     const ln = lge === "en" ? "" : "en";
     window.open(`https://krishisanjal.com/${ln}`, "_blank");
   };
+
   const toggleCategory = (categoryId) => {
     setOpenCategoryId((prevId) => (prevId === categoryId ? null : categoryId));
   };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div
+        className={`top-0 z-50 h-[60px] w-full flex items-center justify-center`}
+        style={{ backgroundColor: themeColor }}
+      >
+        <div className="text-white">Loading ...</div>
+      </div>
+    );
+  }
+
   return (
     <div
-      className={`top-0 z-50  h-[60px] w-full flex items-center  ${isScrolled ? "justify-between lg:pr-5 lg:pl-0" : "lg:px-10 justify-end lg:justify-start"} `}
+      className={`top-0 z-50 h-[60px] w-full flex items-center ${
+        isScrolled
+          ? "justify-between lg:pr-5 lg:pl-0"
+          : "lg:px-10 justify-end lg:justify-start"
+      }`}
       style={{ backgroundColor: themeColor }}
     >
-      {/* <ToastContainer position="top-right" autoClose={5000} /> */}
       {isScrolled && (
         <div
           style={{
-            // position: "absolute",
-            // top: "100px",
-            // left: "60px",
             height: "60px",
-
             backgroundColor: "white",
           }}
           className="flex"
@@ -148,18 +186,16 @@ const BottomNav = () => {
             alt="logo"
             onClick={() => {
               router.push("/");
-              // scrollToTop();
             }}
           />
         </div>
       )}
       <ul
-        className={`flex overflow-visible justify-end pr-4 lg:justify-between  h-full items-center !font-medium !font-mukta !text-lg gap-1 ${isScrolled ? "w-[80%]" : "w-full"}`}
+        className={`flex overflow-visible justify-end pr-4 lg:justify-between h-full items-center !font-medium !font-mukta !text-lg gap-1 ${
+          isScrolled ? "w-[80%]" : "w-full"
+        }`}
       >
-        <li
-          className=" hidden lg:flex "
-          // onClick={scrollToTop}
-        >
+        <li className="hidden lg:flex">
           <Link
             href={lge === "en" ? "/en" : "/"}
             className="hidden lg:flex items-center justify-center gap-1 text-white/90 text-[18px] hover:text-white duration-150 group"
@@ -173,20 +209,18 @@ const BottomNav = () => {
               position: "absolute",
               left: "10px",
               height: "60px",
-
               backgroundColor: "white",
             }}
             className="flex items-center justify-center top-[200px] sm:top-[120px]"
           >
             <Image
               src="/logo.png"
-              className="max-w-100px h-[50px] block lg:hidden "
+              className="max-w-100px h-[50px] block lg:hidden"
               width={150}
               height={50}
               alt="logo"
               onClick={() => {
                 router.push("/");
-                // scrollToTop();
               }}
             />
           </div>
@@ -198,33 +232,30 @@ const BottomNav = () => {
                 className="relative group hidden lg:flex h-full"
                 onMouseEnter={() => handleMouseEnter(category.id)}
                 onMouseLeave={handleMouseLeave}
-                // onClick={scrollToTop}
-                key={category.id} // Ensure each category has a unique key
               >
                 <Link
                   className="flex items-center justify-center gap-1 text-white/90 text-[18px] font-mukta hover:text-white duration-150"
                   href={`${url}/${encodeURIComponent(category.category_name)}`}
                 >
-                  <span className="flex items-center gap-1 ">
+                  <span className="flex items-center gap-1">
                     {category.category_name}
-                    {category.category_key.length > 0 && (
-                      <FaAngleDown className="ml-1" />
-                    )}
+                    {category.category_key &&
+                      category.category_key.length > 0 && (
+                        <FaAngleDown className="ml-1" />
+                      )}
                   </span>
                 </Link>
 
                 {/* Subcategories */}
                 {hoveredCategoryId === category.id &&
+                  category.category_key &&
                   category.category_key.length > 0 && (
                     <div className="absolute top-[50px] left-0 z-20 min-w-[200px] bg-green-100 rounded-md shadow-lg mt-2">
                       <ul className="flex flex-col">
                         {category.category_key
                           .filter((subcategory) => subcategory.active === true)
                           .map((subcategory) => (
-                            <li
-                              key={subcategory.id}
-                              // onClick={scrollToTop}
-                            >
+                            <li key={subcategory.id}>
                               <Link
                                 href={`${url}/${subcategory.category_key_name}`}
                                 className="text-black/90 text-center text-[16px] hover:text-white px-2 py-1 hover:bg-[#12801e] block"
@@ -238,20 +269,12 @@ const BottomNav = () => {
                   )}
               </li>
               {index === 3 && (
-                <li
-                  // onClick={scrollToTop}
-                  className="relative group hidden lg:flex h-full"
-                >
+                <li className="relative group hidden lg:flex h-full">
                   <Link
                     href={lge === "en" ? "/en/table" : "/table"}
-                    // onClick={scrollToTop}
                     className="flex items-center justify-center text-white/90 text-[18px] font-mukta hover:text-white duration-150"
                   >
-                    {lge === "en" ? (
-                      <p>Market</p>
-                    ) : (
-                      <h2>{lge === "en" ? <p>Market</p> : <p>बजार</p>}</h2>
-                    )}
+                    {lge === "en" ? <p>Market</p> : <p>बजार</p>}
                   </Link>
                 </li>
               )}
@@ -262,7 +285,9 @@ const BottomNav = () => {
         <li>
           <div className="hidden lg:flex items-center">
             <div
-              className={`relative m-2 rounded-full  ${isScrolled ? "hidden" : "flex"}  overflow-hidden  justify-center items-center h-full bg-white`}
+              className={`relative m-2 rounded-full ${
+                isScrolled ? "hidden" : "flex"
+              } overflow-hidden justify-center items-center h-full bg-white`}
             >
               <input
                 type="text"
@@ -285,7 +310,7 @@ const BottomNav = () => {
               {capitalize(lge)}
             </Button>
           </div>
-          <div className="flex items-center  lg:hidden justify-center gap-4">
+          <div className="flex items-center lg:hidden justify-center gap-4">
             <Button
               className="bg-[#2d5e29] text-white font-bold h-[40px] w-[40px] hover:bg-green-500"
               style={{ border: "1px solid #ccc4c4", borderRadius: "100%" }}
@@ -310,16 +335,14 @@ const BottomNav = () => {
         height={80}
       >
         <div className="w-full h-full flex justify-center items-center">
-          <div
-            className={`relative rounded-full  flex overflow-hidden flex justify-center items-center h-full bg-white`}
-          >
+          <div className="relative rounded-full flex overflow-hidden justify-center items-center h-full bg-white">
             <input
               type="text"
               value={searchValue}
               onChange={handleChange}
               onKeyDown={handleKeyDown}
               placeholder="Search..."
-              className="w-full bg-transparent shadow px-4 pr-10  rounded-full border border-gray-400 py-1.5 font-light !text-sm"
+              className="w-full bg-transparent shadow px-4 pr-10 rounded-full border border-gray-400 py-1.5 font-light !text-sm"
             />
             <IoSearch
               className="absolute right-2.5 cursor-pointer"
@@ -334,9 +357,7 @@ const BottomNav = () => {
         open={open}
       >
         <ul className="h-full flex flex-col gap-[20px]">
-          <li
-          // onClick={scrollToTop}
-          >
+          <li>
             <Link
               href="/"
               onClick={onClose}
@@ -350,61 +371,55 @@ const BottomNav = () => {
               <li>
                 <div className="flex justify-center gap-[7px]">
                   <Link
-                    className="flex items-center justify-center gap-1 font-bold text-black/90 text-[22px]  duration-150"
+                    className="flex items-center justify-center gap-1 font-bold text-black/90 text-[22px] duration-150"
                     href={`${url}/${category.category_name}`}
                     onClick={onClose}
                   >
                     {category.category_name}
-                  </Link>{" "}
+                  </Link>
                   <span
                     className="flex items-center gap-1"
                     onClick={() => toggleCategory(category.id)}
                   >
-                    {category.category_key.length > 0 && (
-                      <FaAngleDown
-                        className="ml-1"
-                        style={{ fontSize: "20px" }}
-                      />
-                    )}
+                    {category.category_key &&
+                      category.category_key.length > 0 && (
+                        <FaAngleDown
+                          className="ml-1"
+                          style={{ fontSize: "20px" }}
+                        />
+                      )}
                   </span>
                 </div>
                 {openCategoryId === category.id &&
+                  category.category_key &&
                   category.category_key.length > 0 && (
                     <div className="min-w-[120px] bg-green-100">
                       <ul className="flex flex-col items-center">
-                        {category.category_key.map((subcategory) => (
-                          <li
-                            key={subcategory.key}
-                            // onClick={scrollToTop}
-                          >
-                            <Link
-                              href={`${url}/${subcategory.category_key_name}`}
-                              className="text-black/90 text-[20px] hover:text-white px-2 py-1 block"
-                              onClick={onClose}
-                            >
-                              {subcategory.category_key_name}
-                            </Link>
-                          </li>
-                        ))}
+                        {category.category_key
+                          .filter((subcategory) => subcategory.active === true)
+                          .map((subcategory) => (
+                            <li key={subcategory.id}>
+                              <Link
+                                href={`${url}/${subcategory.category_key_name}`}
+                                className="text-black/90 text-[20px] hover:text-white px-2 py-1 block"
+                                onClick={onClose}
+                              >
+                                {subcategory.category_key_name}
+                              </Link>
+                            </li>
+                          ))}
                       </ul>
                     </div>
                   )}
               </li>
-              {/* Render something special for the third category */}
               {index === 3 && (
-                <li
-                //  onClick={scrollToTop}
-                >
+                <li>
                   <Link
                     href={lge === "en" ? "/en/table" : "/table"}
                     onClick={onClose}
                     className="flex items-center justify-center font-bold gap-1 text-black/90 text-[22px] hover:black-white duration-150"
                   >
-                    {lge === "en" ? (
-                      <p>Market</p>
-                    ) : (
-                      <h2>{lge === "en" ? <p>Market</p> : <p>बजार</p>}</h2>
-                    )}
+                    {lge === "en" ? <p>Market</p> : <p>बजार</p>}
                   </Link>
                 </li>
               )}
