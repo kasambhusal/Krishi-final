@@ -8,6 +8,7 @@ import SmallCardContentRight from "../../Components/ChildComponent/Boxes/SmallCa
 import { Get } from "../../Components/Redux/API";
 import { useTheme } from "../../Components/Context/ThemeContext";
 import { usePathname } from "next/navigation";
+import { useNavigation } from "../Context/NavigationContext";
 
 const SearchPage = () => {
   const { searchValue } = useParams();
@@ -20,9 +21,7 @@ const SearchPage = () => {
   const [allBlogs, setAllBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [itemsToShow, setItemsToShow] = useState(14);
-  const [language, setLanguage] = useState(
-    pathname.includes("/en") ? "en" : "np"
-  );
+  const { lge } = useNavigation();
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -31,7 +30,7 @@ const SearchPage = () => {
         const response = await Get({ url: `/search/search/?q=${searchValue}` });
         if (response) {
           const filteredBlogs = (response?.news || [])
-            .filter((blog) => blog.active && blog.language === language)
+            .filter((blog) => blog.active && blog.language === lge)
             .sort((a, b) => b.id - a.id);
 
           setAllBlogs(filteredBlogs);
@@ -44,7 +43,7 @@ const SearchPage = () => {
     };
 
     fetchBlogs();
-  }, [searchValue, language]);
+  }, [searchValue, lge]);
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       event.preventDefault(); // Prevent form submission if in a form
@@ -54,7 +53,7 @@ const SearchPage = () => {
   const handleSearch = () => {
     if (inputValue.trim()) {
       router.push(
-        language === "en" ? `/en/search/${inputValue}` : `/search/${inputValue}`
+        lge === "en" ? `/en/search/${inputValue}` : `/search/${inputValue}`
       );
     }
   };

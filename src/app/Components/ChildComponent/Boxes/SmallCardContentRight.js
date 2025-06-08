@@ -57,8 +57,7 @@ const SmallCardContentRight = ({
               alt={title} // Set alt text for accessibility
               width={150} // Set width for
               height={100} // Set height for optimization
-              className="w-full h-[100px] max-w-full group-hover:opacity-80 group-hover:scale-105 transition-transform duration-200 rounded-sm"
-              objectFit="cover" // Ensures the image covers the container
+              className="w-full h-[100px] max-w-full group-hover:opacity-80 group-hover:scale-105 object-cover transition-transform duration-200 rounded-sm"
               loading="lazy" // Lazy load for better performance
             />
           </div>

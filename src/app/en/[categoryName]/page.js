@@ -1,4 +1,3 @@
-import React from "react";
 import { Mukta } from "next/font/google";
 import CategoryPage from "../../Components/MainComponents/CategoryPage";
 
@@ -15,56 +14,53 @@ export const metadata = {
     "KrishiSanjal empowers Nepalese farmers with agricultural knowledge and resources.",
 };
 
-async function fetchData(categoryName) {
+async function fetchInitialNews(categoryName, language = "en") {
   try {
-    const [categoryResponse, subCategoryResponse] = await Promise.all([
-      fetch(
-        "https://cms.krishisanjal.com/krishi_cms/api/v1/public/category/get-category",
-        {
-          cache: "no-store",
-        }
-      ),
-      fetch(
-        "https://cms.krishisanjal.com/krishi_cms/api/v1/public/category-key/get-categoryKey",
-        {
-          cache: "no-cache",
-        }
-      ),
-    ]);
+    const response = await fetch(
+      `https://cms.krishisanjal.com/krishi_cms/api/v1/public/news/get-news-by-category?q=${encodeURIComponent(categoryName)}&language=${language}&limit=10&offset=0`,
+      {
+        next: { revalidate: 300 }, // Revalidate every 5 minutes
+      }
+    );
 
-    const categoryData = await categoryResponse.json();
-    const subCategoryData = await subCategoryResponse.json();
-    const isValidCategory =
-      categoryData.some(
-        (item) => item.category_name === decodeURIComponent(categoryName)
-      ) ||
-      subCategoryData.some(
-        (item) => item.category_key_name === decodeURIComponent(categoryName)
-      );
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    console.log(data);
+    const newsResults = data.results || [];
 
     return {
-      categoryName,
-      isValidCategory,
+      categoryName: decodeURIComponent(categoryName),
+      isValidCategory: newsResults.length > 0,
+      initialNews: newsResults,
+      hasMore: newsResults.length === 10, // If we got 10 items, there might be more
+      totalCount: data.count || newsResults.length,
     };
   } catch (error) {
-    console.error("Error fetching data:", error);
+    console.error("Error fetching initial news:", error);
     return {
-      categoryName,
+      categoryName: decodeURIComponent(categoryName),
       isValidCategory: false,
+      initialNews: [],
+      hasMore: false,
+      totalCount: 0,
     };
   }
 }
 
 export default async function Page({ params }) {
-  const { categoryName, isValidCategory } = await fetchData(
-    params.categoryName
-  );
+  const { categoryName, isValidCategory, initialNews, hasMore, totalCount } =
+    await fetchInitialNews(params.categoryName);
 
   return (
     <div className={`${mukta.className} antialiased`}>
       <CategoryPage
-        categoryName={decodeURIComponent(categoryName)}
+        categoryName={categoryName}
         isValidCategory={isValidCategory}
+        initialNews={initialNews}
+        hasMore={hasMore}
+        totalCount={totalCount}
       />
     </div>
   );

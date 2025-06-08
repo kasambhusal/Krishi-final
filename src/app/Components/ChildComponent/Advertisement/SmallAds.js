@@ -1,26 +1,49 @@
-import React from "react";
-import { useAds } from "../../Context/AdsContext";
+"use client";
+import React, { useEffect, useState } from "react";
+import { useNavigation } from "../../Context/NavigationContext";
+import { Get } from "../../Redux/API";
 import Image from "next/image"; // Import Image from Next.js
-import { usePathname } from "next/navigation";
 
 const SmallAds = ({ name }) => {
-  const { ads, loading } = useAds();
-  const pathname = usePathname();
+  const [loading, setLoading] = useState(false);
+  const { lge } = useNavigation();
+  const [filteredAd, setFilteredAd] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await Get({
+          url: `/public/advertisement/get-advertisement?language=${lge}&ads_name=${name}`,
+        });
+
+        // Set to null if response is empty or invalid
+        const adData =
+          response && response[0] && response[0].ads_image ? response[0] : null;
+        setFilteredAd(adData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setFilteredAd(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (name && lge) {
+      fetchData();
+    }
+  }, [lge, name]);
 
   const getMediaType = (url) => {
+    if (!url) return "unknown";
     const extension = url.split(".").pop().toLowerCase();
-    if (["jpg", "jpeg", "png", "gif"].includes(extension)) {
+    if (["jpg", "jpeg", "png", "gif", "webp"].includes(extension)) {
       return "image";
     } else if (["mp4", "webm", "ogg"].includes(extension)) {
       return "video";
     }
     return "unknown";
   };
-
-  const lge = pathname.includes("/en") ? "en" : "np";
-  const filteredAd = ads.find(
-    (ad) => ad.ads_name === `${name}` && ad.language === `${lge}`
-  );
 
   return (
     <div className="max-w-full max-h-[500px] overflow-hidden flex justify-center my-5">

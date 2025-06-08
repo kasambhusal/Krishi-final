@@ -1,50 +1,62 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Skeleton } from "@mui/material";
 import Breadcrumb from "../ChildComponent/Others/Breadcrumb";
 import BigCardContentRight from "../ChildComponent/Boxes/BigCardContentRight";
 import SmallCardContentBottom from "../ChildComponent/Boxes/SmallCardContentBottom";
-import { Button } from "antd";
 import TajaSamachar from "../ChildComponent/SideBarComponents/TajaSamachar";
 import NotFound from "../ErrorPage/NotFound";
-import { useNews } from "../Context/NewsContext";
 import { useTheme } from "../Context/ThemeContext";
 import { Get } from "../Redux/API";
+import { useNavigation } from "../Context/NavigationContext";
 
-const CategoryPage = ({ categoryName, isValidCategory }) => {
-  const [visibleCount, setVisibleCount] = useState(11);
-  const [filteredNews, setFilteredNews] = useState([]);
-  const { wholeNews, loading, setWholeNews } = useNews();
+const CategoryPage = ({
+  categoryName,
+  isValidCategory,
+  initialNews = [],
+  hasMore: initialHasMore = false,
+  totalCount = 0,
+}) => {
+  const [filteredNews, setFilteredNews] = useState(initialNews);
+  const [offset, setOffset] = useState(initialNews.length);
+  const [hasMore, setHasMore] = useState(initialHasMore);
+  const [loadingMore, setLoadingMore] = useState(false);
   const { bgColor } = useTheme();
-  const [localLoading, setLocalLoading] = useState(true);
-  console.log("category page :-", categoryName, isValidCategory);
+  const [loading, setLoading] = useState(false);
+  const { lge } = useNavigation();
+
+  const limit = 10; // Items per page
+
+  // Update state when props change (e.g., language change)
   useEffect(() => {
-    const fetchNews = async () => {
-      setLocalLoading(true);
-
-      if (!wholeNews.length) {
+    if (initialNews.length > 0) {
+      setFilteredNews(initialNews);
+      setOffset(initialNews.length);
+      setHasMore(initialHasMore);
+    } else if (lge && isValidCategory) {
+      // If language changed and we need to refetch
+      const fetchData = async () => {
         try {
-          const newsData = await Get({ url: "/public/news/get-news" });
-          setWholeNews(newsData);
+          setLoading(true);
+          const response = await Get({
+            url: `/public/news/get-news-by-category?q=${encodeURIComponent(categoryName)}&language=${lge}&limit=${limit}&offset=0`,
+          });
+
+          const results = response.results || [];
+          setFilteredNews(results);
+          setOffset(results.length);
+          setHasMore(results.length === limit);
+          setLoading(false);
         } catch (error) {
-          console.error("Error fetching news:", error);
+          console.error("Error fetching data:", error);
+          setFilteredNews([]);
+          setLoading(false);
         }
-      }
+      };
 
-      // Wait for wholeNews to be populated
-      if (wholeNews.length > 0) {
-        const filtered = wholeNews.filter(
-          (item) =>
-            item.category_names?.includes(categoryName) ||
-            item.sub_category_names?.includes(categoryName)
-        );
-        setFilteredNews(filtered);
-        setLocalLoading(false);
-      }
-    };
-
-    fetchNews();
-  }, [categoryName, wholeNews, isValidCategory, setWholeNews]);
+      fetchData();
+    }
+  }, [lge, categoryName, initialNews, initialHasMore, isValidCategory]);
 
   useEffect(() => {
     const scrollToTop = () => {
@@ -58,8 +70,30 @@ const CategoryPage = ({ categoryName, isValidCategory }) => {
     scrollToTop();
   }, []);
 
-  const handleLoadMore = () => {
-    setVisibleCount((prevCount) => prevCount + 10);
+  const handleLoadMore = async () => {
+    if (loadingMore || !hasMore) return;
+
+    try {
+      setLoadingMore(true);
+      const response = await Get({
+        url: `/public/news/get-news-by-category?q=${encodeURIComponent(categoryName)}&language=${lge}&limit=${limit}&offset=${offset}`,
+      });
+
+      const newResults = response.results || [];
+
+      if (newResults.length > 0) {
+        setFilteredNews((prev) => [...prev, ...newResults]);
+        setOffset((prev) => prev + newResults.length);
+        setHasMore(newResults.length === limit);
+      } else {
+        setHasMore(false);
+      }
+
+      setLoadingMore(false);
+    } catch (error) {
+      console.error("Error loading more data:", error);
+      setLoadingMore(false);
+    }
   };
 
   if (!isValidCategory) {
@@ -90,6 +124,7 @@ const CategoryPage = ({ categoryName, isValidCategory }) => {
       </div>
     </div>
   );
+
   const renderEmptyState = () => (
     <div
       className="w-full flex justify-center"
@@ -119,7 +154,7 @@ const CategoryPage = ({ categoryName, isValidCategory }) => {
     </div>
   );
 
-  if (loading || localLoading || wholeNews.length === 0) {
+  if (loading) {
     return renderLoadingState();
   }
 
@@ -135,12 +170,29 @@ const CategoryPage = ({ categoryName, isValidCategory }) => {
       <div className="w-[97%] sm:w-[90%]">
         <div className="w-full grid grid-cols-6 mt-10">
           <div className="col-span-6 md:col-span-4 px-3">
-            <Breadcrumb
-              showLinks={false}
-              myWord={categoryName}
-              addNews={false}
-            />
+            <div>
+              <Breadcrumb
+                showLinks={false}
+                myWord={categoryName}
+                addNews={false}
+              />
+            </div>
+            {/* Show total count if available */}
+            {totalCount > 0 && (
+              <div className="flex justify-end">
+                <div className="bg-white  rounded-full shadow-sm border w-[110px] h-7 flex items-center justify-center ">
+                  <div className="flex items-center gap-2 ">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span className="text-sm font-medium text-gray-700">
+                      {totalCount} News
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="mt-4">
+              {/* Featured article */}
               <BigCardContentRight
                 showParagraph={true}
                 id={filteredNews[0].id}
@@ -150,11 +202,13 @@ const CategoryPage = ({ categoryName, isValidCategory }) => {
                 created_date_ad={filteredNews[0].created_date_ad}
                 created_date_bs={filteredNews[0].created_date_bs}
               />
+
+              {/* Other articles */}
               <div className="flex flex-wrap justify-evenly gap-[15px] sm:gap-[30px] my-4">
-                {filteredNews.slice(1, visibleCount).map((item) => (
+                {filteredNews.slice(1).map((item) => (
                   <div
                     key={item.id}
-                    className="w-[95%] sm:w-[80%] xl:w-[40%]  pb-4 pt-2 px-3 bg-green-100 rounded-md"
+                    className="w-[95%] sm:w-[80%] xl:w-[40%] pb-4 pt-2 px-3 bg-green-100 rounded-md"
                     style={{
                       boxShadow: "0px 0px 10px #a8a4a3",
                     }}
@@ -175,16 +229,30 @@ const CategoryPage = ({ categoryName, isValidCategory }) => {
                   </div>
                 ))}
               </div>
-              {visibleCount < filteredNews.length && (
+
+              {/* Load More Button */}
+              {hasMore && (
                 <button
                   onClick={handleLoadMore}
-                  type="primary"
-                  block
-                  className="w-full py-1 mb-2  bg-green-500 text-white hover:bg-green-800"
-                  style={{ borderRadius: "5px" }}
+                  disabled={loadingMore}
+                  className="w-full py-3 mb-2 bg-green-500 text-white hover:bg-green-600 disabled:bg-gray-400 transition-colors duration-200 rounded-md font-medium"
                 >
-                  Load More
+                  {loadingMore ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Loading...
+                    </div>
+                  ) : (
+                    "Load More Articles"
+                  )}
                 </button>
+              )}
+
+              {/* End message */}
+              {!hasMore && filteredNews.length > 10 && (
+                <div className="text-center py-4 text-gray-500">
+                  You've reached the end of articles in this category
+                </div>
               )}
             </div>
           </div>

@@ -19,7 +19,7 @@ import { CloseOutlined } from "@mui/icons-material";
 import Link from "next/link";
 
 export default function Navigation({ open, setOpen }) {
-  const { setLge } = useNavigation();
+  const { lge, setLge } = useNavigation();
   const { setSearchValue } = useNewsSearch();
   const [search, setSearch] = useState("");
   const router = useRouter();
@@ -98,7 +98,7 @@ export default function Navigation({ open, setOpen }) {
         <SideBar setOpen={setOpen} />
       </Drawer>
       <div className="col-span-2 md:col-span-1 flex items-center justify-center">
-        <Link href="/">
+        <Link href={lge === "en" ? "/en" : "/"}>
           <Image
             src="/logo.png"
             alt="logo"

@@ -3,25 +3,35 @@ import React, { useEffect, useState } from "react";
 import SmallCardContentBottom from "../Boxes/SmallCardContentBottom";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import { useNews } from "../../Context/NewsContext"; // Adjust the import based on your file structure
+import { useNavigation } from "../../Context/NavigationContext";
+import { Get } from "../../Redux/API";
 
 const Card7 = ({ myWord }) => {
-  const { wholeNews, loading } = useNews(); // Get news and loading state from context
   const [isMobile, setIsMobile] = useState(false);
   const [news, setNews] = useState([]);
 
-  useEffect(() => {
-    const filteredResponse = wholeNews.filter(
-      (item) =>
-        (item.category_names.includes(myWord) ||
-          item.sub_category_names.includes(myWord)) &&
-        item.active === true
-      // &&          item.image != null
-    );
-    // .sort((a, b) => b.id - a.id); // Sorting in descending order by id
+  const [loading, setLoading] = useState(false);
+  const { lge } = useNavigation();
 
-    setNews(filteredResponse);
-  }, [wholeNews, myWord]); // Added wholeNews as a dependency
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await Get({
+          url: `/public/news/get-news-by-category?q=${encodeURIComponent(myWord)}&language=${lge}&limit=4`,
+        });
+
+        setNews(response.results || []);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setNews([]);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [lge, myWord]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -85,10 +95,7 @@ const Card7 = ({ myWord }) => {
         </div>
       ) : (
         <div className="h-[60vh] flex justify-center items-center">
-          <p>
-            {" "}
-            <Spin size="large" />{" "}
-          </p>
+          No news available!
         </div>
       )}
     </>

@@ -1,10 +1,9 @@
 "use client";
-import React, { useMemo } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthors } from "../../Context/AuthorContext";
-import Image from "next/image";
+import Image from "next/image"; // Import Image from next/image
 import { usePathname } from "next/navigation";
-
 const AuthorBredCrumb = ({
   textBlack = true,
   id,
@@ -16,58 +15,73 @@ const AuthorBredCrumb = ({
   const pathname = usePathname();
   const router = useRouter();
   const { authors, loading } = useAuthors();
-  const lge = pathname.includes("/en") ? "en" : "np";
-
-  const myAuthor = useMemo(() => {
-    return authors.find((author) => author.id === Number(id));
-  }, [authors, id]);
+  const myAuthor = authors.find((author) => author.id === Number(id));
+  const [lge, setLge] = useState(pathname.includes("/en") ? "en" : "np");
 
   const handleAuthorClick = (event) => {
-    event.preventDefault();
-    event.stopPropagation();
+    event.stopPropagation(); // Prevent event bubbling
     router.push(lge === "en" ? `/en/author/${id}` : `/author/${id}`);
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" }); // Scroll to top
+    }
   };
-
-  const textColorClass = textBlack ? "text-black/80" : "text-white/80";
-  const dividerColorClass = textBlack ? "bg-black/80" : "bg-white/80";
 
   return (
     <div className="flex justify-center items-center gap-3">
       <div
-        className="flex justify-center items-center gap-2 cursor-pointer"
+        className="flex justify-center items-center gap-2"
         onClick={handleAuthorClick}
       >
-        <div className="flex items-center justify-center">
-          <div className="w-9 h-9 rounded-full overflow-hidden border border-gray-300">
-            <Image
-              src={
-                myAuthor?.image ||
-                "https://media.istockphoto.com/id/827247322/vector/danger-sign-vector-icon-attention-caution-illustration-business-concept-simple-flat-pictogram.jpg?s=612x612&w=0&k=20&c=BvyScQEVAM94DrdKVybDKc_s0FBxgYbu-Iv6u7yddbs="
-              }
-              width={35}
-              height={35}
-              className="object-cover w-full h-full"
-              alt={myAuthor?.name || "Author"}
-              onError={(e) => {
-                e.target.src =
-                  "https://media.istockphoto.com/id/827247322/vector/danger-sign-vector-icon-attention-caution-illustration-business-concept-simple-flat-pictogram.jpg?s=612x612&w=0&k=20&c=BvyScQEVAM94DrdKVybDKc_s0FBxgYbu-Iv6u7yddbs=";
-              }}
-            />
-          </div>
+        <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center border border-gray-300 cursor-pointer transition-transform transform hover:scale-105">
+          <Image
+            src={
+              myAuthor
+                ? myAuthor.image
+                : "https://media.istockphoto.com/id/827247322/vector/danger-sign-vector-icon-attention-caution-illustration-business-concept-simple-flat-pictogram.jpg?s=612x612&w=0&k=20&c=BvyScQEVAM94DrdKVybDKc_s0FBxgYbu-Iv6u7yddbs="
+            }
+            alt="Author"
+            width={32}
+            height={32}
+            className="object-cover w-full h-full"
+          />
         </div>
 
         <div
-          className={`font-mukta text-[19px] font-bold hover:text-[#30873c] ${textColorClass}`}
+          className={`font-mukta cursor-pointer text-[19px] font-bold hover:text-[#0c8a30] ${
+            textBlack ? "text-black/80" : "text-white/80"
+          }`}
         >
-          {loading ? "Loading..." : myAuthor?.name || "Author Not Found"}
+          {loading
+            ? "Loading..."
+            : myAuthor
+              ? myAuthor.name
+              : "Author Not Found"}
         </div>
       </div>
-      <div className={`font-mukta h-[20px] w-[1px] ${dividerColorClass}`}></div>
-      <div className={`font-mukta ${textColorClass}`}>
+      <div
+        className={`font-mukta h-[20px] w-[1px] ${
+          textBlack ? "bg-black/80" : "bg-white/80"
+        }`}
+      ></div>
+      <div
+        className={`font-mukta ${
+          textBlack ? "text-black/80" : "text-white/80"
+        }`}
+      >
         {language === "en" ? englishDate : nepaliDate}
       </div>
-      <div className={`font-mukta h-[20px] w-[1px] ${dividerColorClass}`}></div>
-      <div className={`font-mukta ${textColorClass}`}>{category}</div>
+      <div
+        className={`font-mukta h-[20px] w-[1px] ${
+          textBlack ? "bg-black/80" : "bg-white/80"
+        }`}
+      ></div>
+      <div
+        className={`font-mukta ${
+          textBlack ? "text-black/80" : "text-white/80"
+        }`}
+      >
+        {category}
+      </div>
     </div>
   );
 };

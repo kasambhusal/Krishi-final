@@ -1,49 +1,122 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import AuthorBredCrumb from "../Others/AuthorBredCrumb";
-import { useNews } from "../../Context/NewsContext";
 import Link from "next/link";
 import { useTheme } from "../../Context/ThemeContext";
 import FormatNepaliDate from "../../JS/FormatNepaliDate";
 import { Skeleton } from "@mui/material";
-import Image from "next/image"; // Import next/image
+import Image from "next/image";
+import { Get } from "../../Redux/API";
 
 const Hero = ({ lge = "np", order }) => {
   const [news, setNews] = useState(null);
   const [nepaliDate, setNepaliDate] = useState("");
   const [englishDate, setEnglishDate] = useState("");
-  const { loading, wholeNews } = useNews();
   const { themeColor } = useTheme();
+  const [loading, setLoading] = useState(false);
 
-  // Scroll to top function
-  // const scrollToTop = () => {
-  //   if (typeof window !== "undefined") {
-  //     window.scrollTo({
-  //       top: 0,
-  //       behavior: "smooth",
-  //     });
-  //   }
-  // };
+  // Generate cache key based on parameters
+  const getCacheKey = () => `hero_news_${lge}_${order}`;
+
+  // Get data from session storage
+  const getCachedData = () => {
+    try {
+      const cached = sessionStorage.getItem(getCacheKey());
+      return cached ? JSON.parse(cached) : null;
+    } catch (error) {
+      console.error("Error reading from session storage:", error);
+      return null;
+    }
+  };
+
+  // Save data to session storage
+  const setCachedData = (data) => {
+    try {
+      sessionStorage.setItem(
+        getCacheKey(),
+        JSON.stringify({
+          news: data,
+          timestamp: Date.now(),
+        })
+      );
+    } catch (error) {
+      console.error("Error saving to session storage:", error);
+    }
+  };
+
+  // Check if cached data is still valid (optional: add expiration)
+  const isCacheValid = (cachedData) => {
+    if (!cachedData) return false;
+
+    // Optional: Add cache expiration (e.g., 30 minutes)
+    const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes in milliseconds
+    const isExpired = Date.now() - cachedData.timestamp > CACHE_DURATION;
+
+    return !isExpired;
+  };
 
   useEffect(() => {
     const fetchData = async () => {
+      // First, check if we have cached data
+      const cachedData = getCachedData();
+
+      if (cachedData && isCacheValid(cachedData)) {
+        setNews(cachedData.news);
+        return;
+      }
+
+      // If no valid cache, fetch from API
       try {
-        if (wholeNews.length > 0) {
-          const filteredResponse = wholeNews.filter(
-            (item) => item.breaking_news === true
-          );
-          setNews(filteredResponse[order]);
-        } else {
-          setNews(null);
+        setLoading(true);
+
+        const response = await Get({
+          url: `/public/news/get-news?language=${lge}&breaking_news=true&limit=1&offset=${order}`,
+        });
+
+        const newsData = response.results[0] || null;
+        setNews(newsData);
+
+        // Cache the fetched data
+        if (newsData) {
+          setCachedData(newsData);
         }
+
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
         setNews(null);
+        setLoading(false);
       }
     };
 
     fetchData();
-  }, [wholeNews, order]);
+  }, [order, lge]);
+
+  // Function to manually refresh data (optional)
+  const refreshData = async () => {
+    // Clear cache for this specific key
+    sessionStorage.removeItem(getCacheKey());
+
+    try {
+      setLoading(true);
+      const response = await Get({
+        url: `/public/news/get-news?language=${lge}&breaking_news=true&limit=1&offset=${order}`,
+      });
+
+      const newsData = response.results[0] || null;
+      setNews(newsData);
+
+      if (newsData) {
+        setCachedData(newsData);
+      }
+
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setNews(null);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (news) {
@@ -51,7 +124,9 @@ const Hero = ({ lge = "np", order }) => {
         const englishDateObj = new Date(news.self_date);
         const formattedEnglishDate = `${englishDateObj.getDate()} ${englishDateObj.toLocaleString(
           "default",
-          { month: "long" }
+          {
+            month: "long",
+          }
         )} ${englishDateObj.getFullYear()}`;
         setEnglishDate(formattedEnglishDate);
         setNepaliDate(FormatNepaliDate(news.self_date));
@@ -59,7 +134,9 @@ const Hero = ({ lge = "np", order }) => {
         const englishDateObj = new Date(news.created_date_ad);
         const formattedEnglishDate = `${englishDateObj.getDate()} ${englishDateObj.toLocaleString(
           "default",
-          { month: "long" }
+          {
+            month: "long",
+          }
         )} ${englishDateObj.getFullYear()}`;
         setEnglishDate(formattedEnglishDate);
         setNepaliDate(convertToNepaliDate(news.created_date_bs));
@@ -88,7 +165,7 @@ const Hero = ({ lge = "np", order }) => {
       const nepaliDigits = ["०", "१", "२", "३", "४", "५", "६", "७", "८", "९"];
       return num
         .toString()
-        .split(" ")
+        .split("")
         .map((digit) => nepaliDigits[digit])
         .join("");
     };
@@ -101,16 +178,15 @@ const Hero = ({ lge = "np", order }) => {
   const { news_title, news_sub_title, author_name, category_names, image, id } =
     news || {};
 
-  // Ensure the required fields are available before using them in the Link
   const generateHref = () => {
-    if (!news) return "#"; // Fallback URL if news is not available
+    if (!news) return "#";
 
     const datePart =
       lge === "en"
         ? news.created_date_ad?.split("T")[0]?.split("-").join("/")
         : news.created_date_bs?.replace(/-/g, "/");
 
-    if (!datePart || !id || !news_title) return "#"; // Fallback if any necessary data is missing
+    if (!datePart || !id || !news_title) return "#";
 
     return lge === "en"
       ? `/en/story/${datePart}/${id}/${news_title}`
@@ -134,17 +210,30 @@ const Hero = ({ lge = "np", order }) => {
             <div
               className={`my-1 flex flex-col items-center gap-[50px] cursor-pointer`}
             >
+              {/* Optional: Add refresh button for manual refresh */}
+              <button
+                onClick={refreshData}
+                className="hidden" // Hide by default, show only if needed
+                style={{
+                  position: "absolute",
+                  top: "10px",
+                  right: "10px",
+                  padding: "5px 10px",
+                  background: themeColor,
+                  color: "white",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                }}
+              >
+                Refresh
+              </button>
+
               <div className="text-center my-[10px] w-full flex flex-col gap-[10px]">
-                <Link
-                  href={generateHref()}
-                  // onClick={scrollToTop}
-                >
+                <Link href={generateHref()}>
                   <p
-                    className="text-3xl sm:text-5xl font-bold max-w-[90%] mx-auto  line-clamp-3 hover:text-[#0c8a30]"
+                    className="text-3xl sm:text-5xl font-bold max-w-[90%] mx-auto line-clamp-3 hover:text-[#0c8a30]"
                     style={{
-                      // overflowWrap: "break-word", // Ensure long words are wrapped only when necessary
-                      // wordBreak: "normal", // Prevent breaking words like "book"
-                      // whiteSpace: "normal", // Ensure proper line wrapping
                       lineHeight: "1.5",
                     }}
                   >
@@ -164,23 +253,19 @@ const Hero = ({ lge = "np", order }) => {
                   />
                 )}
               </div>
-              <Link
-                href={generateHref()}
-                className="w-full"
-                // onClick={scrollToTop}
-              >
+              <Link href={generateHref()} className="w-full">
                 <div className="w-full flex justify-center">
                   {image ? (
                     <Image
-                      src={image}
-                      width={1200} // Provide width for optimization
-                      height={650} // Provide height for optimization
+                      src={image || "/placeholder.svg"}
+                      width={1200}
+                      height={650}
                       className="w-[95%] lg:w-[90%] max-h-[650px]"
                       style={{
                         borderRadius: "10px",
                         border: `2px dotted ${themeColor}`,
                       }}
-                      alt={news_title} // Use a meaningful alt text
+                      alt={news_title}
                     />
                   ) : (
                     <div></div>

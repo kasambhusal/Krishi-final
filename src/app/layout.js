@@ -8,9 +8,8 @@ import React, { useEffect, useState } from "react";
 import ClientSideNav from "./Components/MainComponents/ClientSideNav";
 import Footer from "./Components/MainComponents/Footer";
 import { usePathname } from "next/navigation";
-import { AdsProvider } from "./Components/Context/AdsContext";
+import { CategoryProvider } from "./Components/Context/CategoryContext";
 import { NavigationProvider } from "./Components/Context/NavigationContext";
-import { NewsProvider } from "./Components/Context/NewsContext";
 import { AuthorProvider } from "./Components/Context/AuthorContext";
 import { CountProvider } from "./Components/Context/CountContext";
 import { ThemeProvider } from "./Components/Context/ThemeContext";
@@ -81,27 +80,24 @@ export default function RootLayout({ children }) {
       <body>
         <React.StrictMode>
           <NavigationProvider>
-            <AdsProvider>
+            <CountProvider>
+              <CategoryProvider>
               <AuthorProvider>
-                <CountProvider>
-                  <ThemeProvider>
-                    <NewsSearchProvider>
-                      <NewsProvider>
-                        <GoogleTagManager gtmId={GTM_ID} />{" "}
-                        {/* Insert Google Tag Manager here */}
-                        <div className="sticky top-[-201px] sm:top-[-121px] z-50">
-                          <Suspense fallback={<div>Loading...</div>}>
-                            <ClientSideNav />
-                          </Suspense>
-                        </div>
-                        <div>{children}</div>
-                        {isNav && <Footer />}
-                      </NewsProvider>
-                    </NewsSearchProvider>
-                  </ThemeProvider>
-                </CountProvider>
-              </AuthorProvider>
-            </AdsProvider>
+                <ThemeProvider>
+                  <NewsSearchProvider>
+                    <GoogleTagManager gtmId={GTM_ID} />{" "}
+                    <div className="sticky top-[-201px] sm:top-[-121px] z-50">
+                      <Suspense fallback={<div>Loading...</div>}>
+                        <ClientSideNav />
+                      </Suspense>
+                    </div>
+                    <div>{children}</div>
+                    {isNav && <Footer />}
+                  </NewsSearchProvider>
+                </ThemeProvider>
+                </AuthorProvider>
+              </CategoryProvider>
+            </CountProvider>
           </NavigationProvider>
         </React.StrictMode>
       </body>

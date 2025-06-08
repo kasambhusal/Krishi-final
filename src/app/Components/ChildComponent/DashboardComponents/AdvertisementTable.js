@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Button, Table, Modal, message } from "antd";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import AdvertisementModify from "./AdvertisementModify";
@@ -17,51 +17,70 @@ const AdvertisementTable = ({ reload, setReload }) => {
   const [ifContent, setIfContent] = useState(false);
   const [largeGifUrl, setLargeGifUrl] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
 
   const { searchValue } = useNewsSearch();
   const { lge } = useNavigation();
 
+  const fetchAdvertisements = async (
+    page = pagination.current,
+    pageSize = pagination.pageSize
+  ) => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("Token");
+      const headers = { Authorization: `Bearer ${token}` };
+      const hasContent = searchValue && /\S/.test(searchValue);
+      setIfContent(hasContent);
+
+      const offset = (page - 1) * pageSize;
+      const url = hasContent
+        ? `/search/search/?q=${searchValue}`
+        : `/advertisement/advertisement?language=${lge}&limit=${pageSize}&offset=${offset}`;
+
+      const response = await Get({
+        url,
+        headers: hasContent ? null : headers,
+      });
+
+      const responseData = hasContent
+        ? response.advertisement || []
+        : response.results || [];
+
+      if (!responseData) throw new Error("Invalid response structure");
+
+      const sortedResponse = responseData
+        .map((ad) => ({ ...ad }));
+
+      setDataSource(
+        sortedResponse.map((ad, index) => ({ ...ad, key: offset + index + 1 }))
+      );
+
+      setPagination({
+        ...pagination,
+        current: page,
+        pageSize: pageSize,
+        total: hasContent ? sortedResponse.length : response.count || 0,
+      });
+    } catch (error) {
+      message.error(error.response?.data?.code);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const token = localStorage.getItem("Token");
-    const headers = { Authorization: `Bearer ${token}` };
-
-    const fetchAdvertisements = async () => {
-      setLoading(true);
-      try {
-        const hasContent = searchValue && /\S/.test(searchValue);
-        setIfContent(hasContent);
-        const url = hasContent
-          ? `/search/search/?q=${searchValue}`
-          : "/advertisement/advertisement";
-
-        const response = await Get({
-          url,
-          headers: hasContent ? null : headers,
-        });
-
-        const responseData = hasContent
-          ? response.advertisement || []
-          : response || [];
-
-        if (!responseData) throw new Error("Invalid response structure");
-
-        const sortedResponse = responseData
-          .filter((ad) => ad.language === lge)
-          .map((ad) => ({ ...ad }))
-          .sort((a, b) => b.id - a.id);
-
-        setDataSource(
-          sortedResponse.map((ad, index) => ({ ...ad, key: index + 1 }))
-        );
-      } catch (error) {
-        message.error(error.response?.data?.code);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchAdvertisements();
     setReload(false);
-  }, [reload, searchValue, setReload, lge]);
+  }, [reload, searchValue, lge]);
+
+  const handleTableChange = (pagination) => {
+    fetchAdvertisements(pagination.current, pagination.pageSize);
+  };
 
   const showEditModal = (record) => {
     setSelectedAd(record);
@@ -157,7 +176,7 @@ const AdvertisementTable = ({ reload, setReload }) => {
       >
         {largeGifUrl && (
           <Image
-            src={largeGifUrl}
+            src={largeGifUrl || "/placeholder.svg"}
             alt="Large GIF"
             width={800}
             height={450}
@@ -179,6 +198,8 @@ const AdvertisementTable = ({ reload, setReload }) => {
       <Table
         columns={columns}
         dataSource={dataSource}
+        pagination={pagination}
+        onChange={handleTableChange}
         scroll={{ x: "max-content" }}
         loading={loading}
       />

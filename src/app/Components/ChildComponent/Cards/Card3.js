@@ -4,27 +4,34 @@ import BigCardContentRight from "../Boxes/BigCardContentRight";
 import SmallCardContentBottom from "../Boxes/SmallCardContentBottom";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import { useNews } from "../../Context/NewsContext"; // Adjust the import based on your file structure
+import { useNavigation } from "../../Context/NavigationContext";
+import { Get } from "../../Redux/API";
 
 const Card3 = ({ myWord }) => {
-  const { wholeNews, loading } = useNews(); // Get news and loading state from context
   const [news, setNews] = useState([]);
-  useEffect(() => {
-    const filteredResponse = wholeNews.filter(
-      (item) => item.category_names.includes(myWord)
-      //  && item.image != null
-    );
 
-    if (filteredResponse.length > 0) {
-      setNews(filteredResponse);
-    } else {
-      const subCategoryFiltered = wholeNews.filter(
-        (item) => item.sub_category_names.includes(myWord)
-        // (item.image || item.media_image) != null
-      );
-      setNews(subCategoryFiltered);
-    }
-  }, [wholeNews, myWord]); // Added wholeNews as a dependency
+  const [loading, setLoading] = useState(false);
+  const { lge } = useNavigation();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await Get({
+          url: `/public/news/get-news-by-category?q=${encodeURIComponent(myWord)}&language=${lge}&limit=4`,
+        });
+
+        setNews(response.results || []);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setNews([]);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [lge, myWord]);
 
   return (
     <div className="w-[98%] md:w-full">

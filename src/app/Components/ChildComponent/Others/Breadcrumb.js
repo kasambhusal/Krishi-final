@@ -1,6 +1,6 @@
 "use client";
 
-import React, {   useMemo } from "react";
+import React, { useMemo } from "react";
 import { GoArrowUpRight } from "react-icons/go";
 import { FaChevronRight, FaChevronLeft } from "react-icons/fa";
 import { usePathname } from "next/navigation";
@@ -13,7 +13,7 @@ import { useTheme } from "../../Context/ThemeContext";
 const Breadcrumb = ({ myWord, addNews = true, video = false, go = "" }) => {
   const pathname = usePathname();
   const { themeColor } = useTheme();
-  const cleanedPath = go || myWord.replace(/\//g, " ");
+  const cleanedPath = encodeURIComponent(go || myWord);
 
   const lge = useMemo(
     () => (pathname.includes("/en") ? "en" : "np"),

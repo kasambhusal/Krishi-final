@@ -22,8 +22,7 @@ export default function AboutUs() {
               src="/logo.png"
               alt="About Us"
               layout="fill"
-              objectFit="cover"
-              className="transition-transform duration-300 hover:scale-105"
+              className="transition-transform duration-300 hover:scale-105 object-contain"
             />
           </div>
           <div className="space-y-6 text-lg">
@@ -98,7 +97,10 @@ export default function AboutUs() {
             you're excited about making a difference and pushing the boundaries
             of what's possible, we'd love to hear from you.
           </p>
-          <Link href="/contact" className="bg-green-600 text-white px-10 py-4 rounded-full text-lg font-semibold transition-colors duration-300 hover:bg-green-700">
+          <Link
+            href="/contact"
+            className="bg-green-600 text-white px-10 py-4 rounded-full text-lg font-semibold transition-colors duration-300 hover:bg-green-700"
+          >
             Get in Touch
           </Link>
         </div>

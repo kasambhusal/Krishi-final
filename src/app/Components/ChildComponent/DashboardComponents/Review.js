@@ -1,19 +1,20 @@
 "use client";
 import { Table, Statistic, message } from "antd";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Get } from "../../Redux/API";
-import { useCount } from "../../Context/CountContext";
 import { useNavigation } from "../../Context/NavigationContext";
 import { formatNumber } from "../../JS/formatNumber";
 import { useRouter } from "next/navigation";
+import { useCount } from "../../Context/CountContext";
 
 export default function Review() {
   const [visitorCount, setVisitorCount] = useState(0);
   const [topNews, setTopNews] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { count } = useCount();
   const { lge } = useNavigation();
   const router = useRouter();
+  const { count } = useCount();
+
   const columns = [
     {
       title: "Title",
@@ -47,11 +48,21 @@ export default function Review() {
     fetchVisitorCount();
   }, []);
 
-  // Fetch top 5 news based on views count for the selected language
+  // Fetch top news using the new API endpoint
   useEffect(() => {
     const fetchTopNews = async () => {
       setLoading(true);
       try {
+        const token = localStorage.getItem("Token");
+        const headers = { Authorization: `Bearer ${token}` };
+
+        // Fetch popular news from the new API endpoint
+        const newsResponse = await Get({
+          url: `/news/news/get-popular-news?language=${lge}&limit=5`,
+          headers: headers,
+        });
+
+        // Get view counts from context
         const viewsResponse = await count;
 
         if (!Array.isArray(viewsResponse)) {
@@ -59,44 +70,22 @@ export default function Review() {
           return;
         }
 
-        // Log views response
-        // console.log("Views Response:", viewsResponse);
+        // Extract news data from response.results
+        const popularNews = newsResponse.results || [];
 
-        // Sort views response by visit count
-        const sortedViews = viewsResponse.sort(
-          (a, b) => b.visit_count - a.visit_count
-        );
-        const token = localStorage.getItem("Token");
-        const headers = { Authorization: `Bearer ${token}` };
-
-        const response = await Get({
-          url: "/news/news",
-          headers: headers,
+        // Create a map of view counts by news ID
+        const viewsMap = {};
+        viewsResponse.forEach((view) => {
+          viewsMap[String(view.title)] = view.visit_count || 0;
         });
-        // Log whole news response
-        // console.log("Whole News Response:", response);
-        const wholeNews = response.filter(
-          (item) => item.language === lge && item.active
-        );
 
-        // Map the sorted views to news items
-        const tableData = sortedViews
-          .map((view) => {
-            const matchingNews = wholeNews.find(
-              (news) => String(news.id) === String(view.title) // Ensure both sides are strings
-            );
-
-            return matchingNews
-              ? {
-                  key: matchingNews.id,
-                  title: matchingNews.news_title,
-                  views_count: view.visit_count,
-                  category: matchingNews.category_names[0],
-                }
-              : null;
-          })
-          .filter((item) => item !== null)
-          .slice(0, 5); // Ensure only the top 5 items are returned
+        // Map the response to the table data format with view counts
+        const tableData = popularNews.map((news) => ({
+          key: news.id,
+          title: news.news_title,
+          views_count: viewsMap[String(news.id)] || 0,
+          category: news.category_names?.[0] || "",
+        }));
 
         setTopNews(tableData);
       } catch (error) {
@@ -137,15 +126,14 @@ export default function Review() {
           Top 5 Most Viewed News
         </h2>
         <Table
-          dataSource={topNews.length > 0 ? topNews : []} // Ensure the table gets an empty array if no data
+          dataSource={topNews.length > 0 ? topNews : []}
           columns={columns}
           pagination={false}
           rowClassName="hover:bg-green-50"
           scroll={{ x: "max-content" }}
           loading={loading}
         />
-        {topNews.length === 0 && !loading && <p>Loading ...</p>}{" "}
-        {/* Display a message when there's no data */}
+        {topNews.length === 0 && !loading && <p>Loading ...</p>}
       </div>
     </div>
   );

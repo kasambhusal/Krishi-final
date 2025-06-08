@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button, Table, Modal, message, Tooltip } from "antd";
 import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
 import NewsModify from "./NewsModify";
@@ -19,68 +19,87 @@ const NewsTable = ({ reload, setReload, isActive }) => {
   const [dataSource, setDataSource] = useState([]);
   const [loading, setLoading] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [pagination, setPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    const token = localStorage.getItem("Token");
-    const headers = { Authorization: `Bearer ${token}` };
-    try {
-      const hasContent = searchValue && /\S/.test(searchValue);
-      const url = hasContent
-        ? `/search/search/?q=${searchValue}`
-        : "/news/news";
+  const fetchData = useCallback(
+    async (page = pagination.current, pageSize = pagination.pageSize) => {
+      setLoading(true);
+      const token = localStorage.getItem("Token");
+      const headers = { Authorization: `Bearer ${token}` };
+      try {
+        const hasContent = searchValue && /\S/.test(searchValue);
+        const offset = (page - 1) * pageSize;
 
-      const response = await Get({
-        url,
-        headers: hasContent ? null : headers,
-      });
+        const url = hasContent
+          ? `/search/search/?q=${searchValue}`
+          : isActive
+            ? `/news/news?language=${lge}&limit=${pageSize}&offset=${offset}&active=${isActive}`
+            : `/news/news?language=${lge}&active=${isActive}`;
 
-      const responseData = hasContent ? response.news : response;
-      const requiredData = responseData
-        .filter((item) => item.language === lge && item.active === isActive)
-        .sort((a, b) => {
-          if (b.self_date !== a.self_date) {
-            return b.self_date.localeCompare(a.self_date);
-          }
-          return b.id - a.id;
+        const response = await Get({
+          url,
+          headers: hasContent ? null : headers,
         });
-      const transformedData = requiredData.map((item) => ({
-        key: item.id,
-        language: item.language,
-        news_title: item.news_title,
-        news_sub_title: item.news_sub_title,
-        author_name: item.author_name,
-        news_post: item.news_post,
-        self_date: item.self_date,
-        image: hasContent
-          ? `https://cms.krishisanjal.com${item.media_image || item.image}`
-          : item.media_image || item.image,
-        active: item.active,
-        breaking_news: item.breaking_news,
-        pdf_document: item.pdf_document,
-        category_names: item.category_names
-          ? item.category_names.join(", ")
-          : "",
-        sub_category_names: item.sub_category_names
-          ? item.sub_category_names.join(", ")
-          : "",
-      }));
-      setDataSource(transformedData);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      if (error?.response?.data?.code === "token_not_valid") {
-        localStorage.removeItem("Token");
-        message.error("Not a valid token");
+
+        const responseData = hasContent
+          ? response.news
+          : response.results || response;
+
+        const transformedData = responseData.map((item, index) => ({
+          key: item.id,
+          serialNumber: offset + index + 1,
+          language: item.language,
+          news_title: item.news_title,
+          news_sub_title: item.news_sub_title,
+          author_name: item.author_name,
+          news_post: item.news_post,
+          self_date: item.self_date,
+          image: hasContent
+            ? `https://cms.krishisanjal.com${item.media_image || item.image}`
+            : item.media_image || item.image,
+          active: item.active,
+          breaking_news: item.breaking_news,
+          pdf_document: item.pdf_document,
+          category_names: item.category_names
+            ? item.category_names.join(", ")
+            : "",
+          sub_category_names: item.sub_category_names
+            ? item.sub_category_names.join(", ")
+            : "",
+        }));
+
+        setDataSource(transformedData);
+        setPagination({
+          ...pagination,
+          current: page,
+          pageSize: pageSize,
+          total: hasContent ? transformedData.length : response.count || 0,
+        });
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        if (error?.response?.data?.code === "token_not_valid") {
+          localStorage.removeItem("Token");
+          message.error("Not a valid token");
+        }
+      } finally {
+        setLoading(false);
       }
-    } finally {
-      setLoading(false);
-    }
-  }, [lge, searchValue, isActive]);
+    },
+    [lge, searchValue, isActive]
+  );
 
   useEffect(() => {
     fetchData();
     setReload(false);
-  }, [fetchData, setReload, reload, searchValue, isActive]);
+  }, [reload, searchValue, isActive, lge]);
+
+  const handleTableChange = (pagination) => {
+    fetchData(pagination.current, pagination.pageSize);
+  };
 
   const showModal = (news, modalType) => {
     setSelectedNews(news);
@@ -140,8 +159,7 @@ const NewsTable = ({ reload, setReload, isActive }) => {
   const columns = [
     {
       title: "S.N",
-      dataIndex: "key",
-      render: (_, __, index) => index + 1,
+      dataIndex: "serialNumber",
       width: 50,
     },
     {
@@ -161,7 +179,7 @@ const NewsTable = ({ reload, setReload, isActive }) => {
       render: (text) =>
         text ? (
           <Image
-            src={text}
+            src={text || "/placeholder.svg"}
             alt="News"
             width={80}
             height={50}
@@ -225,6 +243,8 @@ const NewsTable = ({ reload, setReload, isActive }) => {
         rowKey="key"
         loading={loading}
         scroll={{ x: "max-content" }}
+        pagination={pagination}
+        onChange={handleTableChange}
       />
       <Modal
         title="Modify News"
@@ -262,7 +282,6 @@ const NewsTable = ({ reload, setReload, isActive }) => {
         {selectedNews && (
           <div>
             <div className="flex flex-col gap-[20px] max-w-full">
-              {/* <div style={{ width: "100%" }}>{selectedNews.news_post}</div> */}
               <ArticleContent news={selectedNews} image={false} />
             </div>
           </div>

@@ -5,20 +5,34 @@ import { Button } from "antd";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import { useNews } from "../../Context/NewsContext"; // Adjust the import based on your file structure
+import { useNavigation } from "../../Context/NavigationContext";
+import { Get } from "../../Redux/API";
 
 export default function Card4({ myWord }) {
-  const { wholeNews, loading } = useNews(); // Get news and loading state from context
   const [currentIndex, setCurrentIndex] = useState(0);
   const [news, setNews] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const { lge } = useNavigation();
 
   useEffect(() => {
-    const filteredResponse = wholeNews.filter(
-      (item) => item.category_names.includes(myWord) || item.sub_category_names.includes(myWord)
-      // &&        item.image != null
-    );
-    setNews(filteredResponse);
-  }, [wholeNews, myWord]);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await Get({
+          url: `/public/news/get-news-by-category?q=${encodeURIComponent(myWord)}&language=${lge}&limit=10`,
+        });
+
+        setNews(response.results || []);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setNews([]);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [lge, myWord]);
 
   const getCardsPerSlide = () => {
     // Adjust cards per slide based on screen size
@@ -110,7 +124,7 @@ export default function Card4({ myWord }) {
           </div>
         </div>
       ) : (
-        <div className="text-center py-4 h-[60vh]"> </div>
+        <div className="text-center py-4 h-[60vh]"> No news available!</div>
       )}
     </>
   );

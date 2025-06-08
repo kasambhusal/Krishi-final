@@ -1,65 +1,100 @@
-import React from "react";
-import { useAds } from "../../Context/AdsContext";
+"use client";
+import { useState, useEffect } from "react";
 import { Skeleton } from "@mui/material";
-import Image from "next/image"; // Import Image component
-import { usePathname } from "next/navigation";
+import Image from "next/image";
+import { useNavigation } from "../../Context/NavigationContext";
+import { Get } from "../../Redux/API";
 
 const Ads = ({ name }) => {
-  const { ads, loading } = useAds();
-  const pathname = usePathname();
+  const [loading, setLoading] = useState(false);
+  const { lge } = useNavigation();
+  const [filteredAd, setFilteredAd] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await Get({
+          url: `/public/advertisement/get-advertisement?language=${lge}&ads_name=${name}`,
+        });
+
+        // Set to null if response is empty or invalid
+        const adData =
+          response && response[0] && response[0].ads_image ? response[0] : null;
+        setFilteredAd(adData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setFilteredAd(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (name && lge) {
+      fetchData();
+    }
+  }, [lge, name]);
+
   const getMediaType = (url) => {
+    if (!url) return "unknown";
     const extension = url.split(".").pop().toLowerCase();
-    if (["jpg", "jpeg", "png", "gif"].includes(extension)) {
+    if (["jpg", "jpeg", "png", "gif", "webp"].includes(extension)) {
       return "image";
     } else if (["mp4", "webm", "ogg"].includes(extension)) {
       return "video";
     }
     return "unknown";
   };
-  const lge = pathname.includes("/en") ? "en" : "np";
-  const filteredAd = ads.find((ad) => ad.ads_name === `${name}` && ad.language === `${lge}`);
+
+  // Show loading skeleton
+  if (loading) {
+    return (
+      <div className="w-full flex justify-center my-5">
+        {/* <Skeleton variant="rectangular" width="100%" height={120} /> */}
+      </div>
+    );
+  }
+
+  // Show nothing if no ad data or no image
+  if (!filteredAd || !filteredAd.ads_image) {
+    return null;
+  }
+
+  const mediaType = getMediaType(filteredAd.ads_image);
 
   return (
     <div className="w-full flex justify-center my-5">
-      {loading ? (
-        <span>
-          <Skeleton variant="rectangular" width="100%" height={120} />
-        </span>
-      ) : (
-        filteredAd && (
-          <div className="w-full flex items-center justify-center">
-            <a
-              href={filteredAd.ads_url}
-              target="_blank"
-              rel="noreferrer"
-              className="max-w-full"
-            >
-              {/* Image */}
-              {getMediaType(filteredAd.ads_image) === "image" && (
-                <Image
-                  src={filteredAd.ads_image}
-                  alt="Ad"
-                  layout="responsive" // Ensures responsive resizing
-                  width={600} // Set a base width (you can adjust based on your design)
-                  height={100} // Set a base height (adjust as needed)
-                  style={{ maxWidth: "100%", height: "auto" }} // Ensure it's responsive
-                />
-              )}
+      <div className="w-full flex items-center justify-center">
+        <a
+          href={filteredAd.ads_url}
+          target="_blank"
+          rel="noreferrer"
+          className="max-w-full block"
+        >
+          {mediaType === "image" && (
+            <Image
+              src={filteredAd.ads_image || "/placeholder.svg"}
+              alt="Advertisement"
+              width={600}
+              height={100}
+              className="w-full h-auto max-w-full"
+              style={{ objectFit: "contain" }}
+              priority={false}
+            />
+          )}
 
-              {/* Video */}
-              {getMediaType(filteredAd.ads_image) === "video" && (
-                <video
-                  src={filteredAd.ads_image}
-                  controls
-                  style={{ width: "100%", height: "auto" }}
-                >
-                  Your browser does not support the video tag.
-                </video>
-              )}
-            </a>
-          </div>
-        )
-      )}
+          {mediaType === "video" && (
+            <video
+              src={filteredAd.ads_image}
+              controls
+              className="w-full h-auto max-w-full"
+              style={{ objectFit: "contain" }}
+            >
+              Your browser does not support the video tag.
+            </video>
+          )}
+        </a>
+      </div>
     </div>
   );
 };

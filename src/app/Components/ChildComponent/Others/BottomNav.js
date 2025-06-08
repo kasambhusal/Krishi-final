@@ -6,11 +6,12 @@ import { FaAngleDown } from "react-icons/fa6";
 import { MenuOutlined, SearchOutlined } from "@ant-design/icons";
 import { Button, Drawer } from "antd";
 import { usePathname, useRouter } from "next/navigation";
-import { Get } from "../../Redux/API";
 import { useTheme } from "../../Context/ThemeContext";
 import Image from "next/image";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useCategory } from "../../Context/CategoryContext";
+import { useNavigation } from "../../Context/NavigationContext";
 
 const BottomNav = () => {
   const [searchValue, setSearchValue] = useState("");
@@ -21,11 +22,13 @@ const BottomNav = () => {
   const [open2, setOpen2] = useState(false);
   const [hoveredCategoryId, setHoveredCategoryId] = useState(null);
   const [timeoutId, setTimeoutId] = useState(null);
+  const { category } = useCategory();
   const router = useRouter();
   const [openCategoryId, setOpenCategoryId] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
   const [url, setUrl] = useState("");
-  const [lge, setLge] = useState(pathname.includes("/en") ? "en" : "np");
+  const { lge } = useNavigation();
+
   const showDrawer = () => {
     if (window.innerWidth < 1024) {
       setOpen(true);
@@ -35,7 +38,7 @@ const BottomNav = () => {
     setOpen2(true);
   };
   const handleScroll = () => {
-    if (window.scrollY > 500) {
+    if (window.scrollY > 150) {
       setIsScrolled(true);
     } else {
       setIsScrolled(false);
@@ -68,22 +71,10 @@ const BottomNav = () => {
   useEffect(() => {
     fetchData();
   }, []);
-  // useEffect(() => {
-  //   console.log('Current language:', lge);
-  // }, [lge]);
 
   const fetchData = async () => {
     try {
-      const response = await Get({ url: "/public/category/get-category" });
-      const filteredResponse = response
-        .filter(
-          (item) =>
-            item.active === true &&
-            item.language === lge &&
-            item.active === true
-        )
-        .sort((a, b) => a.display_order - b.display_order);
-      setCategories(filteredResponse);
+      setCategories(category);
     } catch (error) {
       console.log("Error fetching categories:", error);
       toast.error(error.message);
@@ -92,14 +83,6 @@ const BottomNav = () => {
       }
     }
   };
-  // const scrollToTop = () => {
-  //   if (typeof window !== "undefined") {
-  //     window.scrollTo({
-  //       top: 0,
-  //       behavior: "smooth",
-  //     });
-  //   }
-  // };
 
   const onClose = () => {
     setOpen(false);
@@ -220,7 +203,7 @@ const BottomNav = () => {
               >
                 <Link
                   className="flex items-center justify-center gap-1 text-white/90 text-[18px] font-mukta hover:text-white duration-150"
-                  href={`${url}/${category.category_name}`}
+                  href={`${url}/${encodeURIComponent(category.category_name)}`}
                 >
                   <span className="flex items-center gap-1 ">
                     {category.category_name}

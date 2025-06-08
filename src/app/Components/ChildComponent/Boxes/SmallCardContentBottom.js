@@ -63,7 +63,6 @@ const SmallCardContentBottom = ({
               width={600} // You can set width based on your design
               height={250} // Set height based on your design
               className="w-full h-[250px] group-hover:opacity-80 group-hover:scale-110 duration-150 "
-              // objectFit="cover" // Ensures the image covers the container properly without distortion
               loading="lazy" // Lazy load for better performance
             />
           </div>

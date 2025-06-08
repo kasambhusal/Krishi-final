@@ -53,8 +53,7 @@ const BigCardContentUnderImage = ({
             alt={title}
             width={600} // Set width for optimization
             height={400} // Set height for optimization
-            className="w-full h-full transition-transform duration-150"
-            objectFit="cover" // Ensure the image fills the container without distortion
+            className="w-full h-full transition-transform duration-150 object-cover"
             loading="lazy" // Lazy load the image to improve performance
           />
           <div className="absolute inset-0 bg-[rgba(0,0,0,0.04)] h-full bg-gradient-to-t to-[#9c9c9c02] from-[#000] flex flex-col items-center justify-end pb-[5%] gap-[25px]">

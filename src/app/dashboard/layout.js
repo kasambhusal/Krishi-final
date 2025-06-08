@@ -66,7 +66,7 @@ export default function RootLayout({ children }) {
   }, []);
 
   return (
-    <div className="w-[100vw] flex flex-col items-center bg-green-100">
+    <div className="w-screen flex flex-col items-center bg-green-100">
       <div className="w-[97%] md:w-[90%]">
         {isNav && <NavigationDashboard open={open} setOpen={setOpen} />}
       </div>

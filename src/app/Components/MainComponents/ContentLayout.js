@@ -9,42 +9,35 @@ import Card5 from "../ChildComponent/Cards/Card5";
 import Card6 from "../ChildComponent/Cards/Card6";
 import Card8 from "../ChildComponent/Cards/Card8";
 import Card9 from "../ChildComponent/Cards/Card9";
-import { Get } from "../Redux/API";
 import SmallAds from "../ChildComponent/Advertisement/SmallAds";
-import { usePathname } from "next/navigation";
+import { useNavigation } from "../Context/NavigationContext";
+import TajaSamachar from "../ChildComponent/SideBarComponents/TajaSamachar";
+import TrendingNews from "../ChildComponent/SideBarComponents/TrendingNews";
+import BicharBlog from "../ChildComponent/SideBarComponents/BicharBlog";
 
 const ContentLayout = ({ mukhyaShow }) => {
-  const [category, setCategory] = useState([]);
-  const pathname = usePathname();
-  const [lge, setLge] = useState(pathname.includes("/en") ? "en" : "np");
+  const { lge } = useNavigation();
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Function to check and update screen size
+  const handleResize = () => {
+    setIsMobile(window.innerWidth < 768);
+  };
 
   useEffect(() => {
-    const fetchCategory = async () => {
-      try {
-        const response = await Get({ url: "/public/category/get-category" });
-        const filteredResponse = response.filter(
-          (item) => item.language === lge
-        );
-        // console.log(filteredResponse);
-        setCategory(filteredResponse);
-      } catch (error) {
-        console.log("Error in category fetch: " + error);
-        setCategory([]); // Handle errors by resetting categories
-      }
+    handleResize(); // Run once on mount
+    window.addEventListener("resize", handleResize); // Listen on resize
+
+    return () => {
+      window.removeEventListener("resize", handleResize); // Clean up
     };
-    fetchCategory();
-  }, [lge]);
-
-  const safeCategory = (index) =>
-    category[index] || { category_name: "N/A", id: null };
-
+  }, []);
   return (
     <div className="grid grid-cols-10 gap-10 my-5">
       <div className="lg:col-span-7 col-span-10 flg:mr-5">
         <div className="h-auto ">
           <Breadcrumb
             showLinks={true}
-            go={lge === "en" ? "Livestock and Fishery" : "पशुपंक्षी र मत्स्य"}
             myWord={
               lge === "en" ? "Livestock and Fishery" : "पशुपन्छी र मत्स्य"
             }
@@ -52,7 +45,7 @@ const ContentLayout = ({ mukhyaShow }) => {
           <div className="mt-5">
             <Card9
               myWord={
-                lge === "en" ? "Livestock and Fishery" : "पशुपंक्षी र मत्स्य"
+                lge === "en" ? "Livestock and Fishery" : "पशुपन्छी र मत्स्य"
               }
             />
           </div>
@@ -63,13 +56,15 @@ const ContentLayout = ({ mukhyaShow }) => {
         <div className="h-auto mt-[20px]">
           <Breadcrumb
             showLinks={false}
-            myWord={lge === "en" ? "Opinion" : "विचार/ब्लग"}
+            myWord={lge === "en" ? "Opinion / Blog" : "विचार/ब्लग"}
           />
           <div className="my-5">
-            <Card3 myWord={lge === "en" ? "Opinion" : "विचार ब्लग"} />
+            <Card3 myWord={lge === "en" ? "Opinion / Blog" : "विचार ब्लग"} />
           </div>
           <Ads name="H_landscape_after_bicharblog" />
         </div>
+        {isMobile && <TajaSamachar />}
+
         <div className="h-auto my-5">
           <div className="my-5">
             <Breadcrumb
@@ -81,6 +76,7 @@ const ContentLayout = ({ mukhyaShow }) => {
           </div>
           <Ads name="H_landscape_after_krishakkokatha" />
         </div>
+        {isMobile && <TrendingNews />}
         {lge === "np" && (
           <div className="h-auto mt-10">
             <Breadcrumb showLinks={false} myWord="फिचर" />
@@ -95,6 +91,7 @@ const ContentLayout = ({ mukhyaShow }) => {
           />
           <Card6 myWord={lge === "en" ? "Research" : "अनुसन्धान विशेष"} />
         </div>
+        {isMobile && <BicharBlog />}
         <div className="h-auto  mb-[20px]">
           <Breadcrumb
             showLinks={false}
@@ -117,17 +114,19 @@ const ContentLayout = ({ mukhyaShow }) => {
           <Ads name="H_landscape_after_video" />
         </div>
       </div>
-      <div
-        className="col-span-10 lg:col-span-3 border-lg "
-        style={{ minHeight: "full" }}
-      >
-        <div>
-          <SideContainer mukhyaShow={mukhyaShow} />
+      {!isMobile && (
+        <div
+          className="col-span-10 lg:col-span-3 border-lg "
+          style={{ minHeight: "full" }}
+        >
+          <div>
+            <SideContainer mukhyaShow={mukhyaShow} />
+          </div>
+          <div className="sticky top-[60px] z-15">
+            <SmallAds name="H_sidebar_after_khanpin" />
+          </div>
         </div>
-        <div className="sticky top-[60px] z-15">
-          <SmallAds name="H_sidebar_after_khanpin" />
-        </div>
-      </div>
+      )}
     </div>
   );
 };

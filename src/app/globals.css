@@ -11,6 +11,7 @@
 
 body {
   font-family: var(--font-mukta);
+  background-color: #e8f5e9;
   overflow-x: hidden;
 }
 
@@ -44,10 +45,6 @@ input::-webkit-outer-spin-button {
   height: 90% !important;
 }
 
-body {
-  max-width: 1600px !important;
-  margin: 0 auto;
-}
 .grid-containerCard {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
@@ -349,19 +346,4 @@ html {
   width: fit-content;
   margin-left: auto;
   margin-right: auto;
-}
-
-.ck-content {
-  font-family: "Lato";
-  line-height: 1.6;
-  word-break: break-word;
-}
-
-.editor-container_classic-editor .editor-container__editor {
-  min-width: 50vw;
-  max-width: 80vw;
-}
-
-.ql-container {
-  min-height: 400px;
 }

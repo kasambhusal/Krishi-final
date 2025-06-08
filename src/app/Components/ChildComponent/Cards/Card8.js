@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {  Spin } from "antd";
+import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useNavigation } from "../../Context/NavigationContext";
 import { Get } from "../../Redux/API";
@@ -64,12 +64,10 @@ export default function Card8() {
 
   return (
     <div className="relative flex justify-center w-full overflow-hidden my-10">
-      <div
-        className="w-full lg:w-[95%] grid   grid-cols-3 gap-3 md:gap-1"
-      >
+      <div className="w-full lg:w-[95%] grid   grid-cols-3 gap-3 md:gap-1">
         {videos.slice(0, 3).map((video, index) => {
           return (
-            <div className=" col-span-3 lg:col-span-1">
+            <div className=" col-span-3 lg:col-span-1" key={video.id || index}>
               <iframe
                 width="100%"
                 height="220"

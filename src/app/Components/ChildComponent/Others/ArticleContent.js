@@ -53,16 +53,12 @@ const ArticleContent = React.memo(({ news, image = true }) => {
             src={news.image || news.media_image}
             alt={news.news_title}
             layout="fill"
-            objectFit="cover"
-            className="rounded-lg"
+            className="rounded-lg object-cover"
           />
         </figure>
       ) : null}
 
-      <div
-        style={{ backgroundColor: bgColor }}
-        className="p-4 rounded-lg "
-      >
+      <div style={{ backgroundColor: bgColor }} className="p-4 rounded-lg ">
         {renderHtmlContent(news.news_post)}
       </div>
 

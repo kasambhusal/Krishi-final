@@ -4,29 +4,34 @@ import BigCardContentUnderImage from "../Boxes/BigCardContentUnderImage";
 import SmallCardContentRight from "../Boxes/SmallCardContentRight";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import { useNews } from "../../Context/NewsContext";
 import { useTheme } from "../../Context/ThemeContext";
+import { Get } from "../../Redux/API";
+import { useNavigation } from "../../Context/NavigationContext";
 
 const Card1 = ({ myWord }) => {
-  const { wholeNews, loading } = useNews(); // Get news and loading state from context
   const [news, setNews] = useState([]);
   const { themeColor } = useTheme();
+  const [loading, setLoading] = useState(false);
+  const { lge } = useNavigation();
+
   useEffect(() => {
-    const filteredResponse = wholeNews.filter(
-      (item) => item.category_names.includes(myWord)
-      // && item.image != null
-    );
-    if (filteredResponse.length > 0) {
-      setNews(filteredResponse);
-    } else {
-      const subCategoryFiltered = wholeNews.filter(
-        (item) => item.sub_category_names.includes(myWord) && item.active === true
-        // (item.image || item.media_image) != null
-      );
-      // .sort((a, b) => b.id - a.id);
-      setNews(subCategoryFiltered);
-    }
-  }, [wholeNews, myWord]); // Added wholeNews as a dependency
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await Get({
+          url: `/public/news/get-news-by-category?q=${encodeURIComponent(myWord)}&language=${lge}&limit=4`,
+        });
+        setNews(response.results || []);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setNews([]);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [lge, myWord]);
 
   return (
     <div>
@@ -75,7 +80,7 @@ const Card1 = ({ myWord }) => {
                 />
               ))
           ) : (
-            <div className="h-[60vh]"> </div> // Fallback for no additional news
+            <div className="h-[60vh]"> No news available! </div> // Fallback for no additional news
           )}
         </div>
       </div>

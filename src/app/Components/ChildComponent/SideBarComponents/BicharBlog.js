@@ -1,9 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import BicharBlogBox from "./BicharBlogBox";
-import { useNews } from "../../Context/NewsContext";
 import Breadcrumb from "../Others/Breadcrumb";
-import { usePathname } from "next/navigation";
+import { useNavigation } from "../../Context/NavigationContext";
+import { Get } from "../../Redux/API";
 
 // Define Nepali numbers
 const nepaliNumbers = ["०", "१", "२", "३", "४", "५", "६", "७", "८", "९"];
@@ -16,28 +16,29 @@ const toNepaliNumber = (num) => {
 };
 
 const BicharBlog = () => {
-  const { wholeNews } = useNews(); // Fetch news from context
   const [filteredNews, setFilteredNews] = useState([]);
-  const pathname = usePathname();
-  const [loading, setLoading] = useState(true); // Loading state
-  const [lge, setLge] = useState(pathname.includes("/en") ? "en" : "np");
+  const { lge } = useNavigation(); // Get the current language from context
+  const myWord = lge === "en" ? "Opinion" : "खानपान";
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const filterNews = () => {
-      const news = wholeNews.filter((item) =>
-        item.category_names.includes(lge === "en" ? "Opinion" : "खानपान")
-      );
-      setFilteredNews(news.slice(0, 5)); // Limit to 4 items
-      setLoading(false); // Set loading to false after filtering
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await Get({
+          url: `/public/news/get-news-by-category?q=${encodeURIComponent(myWord)}&language=${lge}&limit=4`,
+        });
+        setFilteredNews(response.results || []);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setFilteredNews([]);
+        setLoading(false);
+      }
     };
 
-    if (wholeNews.length) {
-      filterNews();
-    } else {
-      setLoading(true); // Set loading while waiting for news
-    }
-  }, [wholeNews, lge]); // <-- Added `lge` to the dependency array
-
+    fetchData();
+  }, [lge, myWord]);
   return (
     <div className="flex flex-col gap-5 w-full" style={{ padding: "5px 5px" }}>
       {filteredNews.length > 0 && (

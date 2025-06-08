@@ -3,37 +3,34 @@ import React, { useEffect, useState } from "react";
 import SmallCardContentBottom from "../Boxes/SmallCardContentBottom";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import { useNews } from "../../Context/NewsContext"; 
+import { useNavigation } from "../../Context/NavigationContext";
+import { Get } from "../../Redux/API";
 
 const Card9 = ({ myWord }) => {
-  const { wholeNews, loading } = useNews(); 
   const [isMobile, setIsMobile] = useState(false);
   const [news, setNews] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const { lge } = useNavigation();
 
   useEffect(() => {
-    const filteredResponse = wholeNews.filter(
-      (item) =>
-        (item.category_names.includes(myWord) || item.sub_category_names.includes(myWord)) &&
-        item.active === true
-      //  &&          item.image != null
-    );
-    // console.log(filteredResponse);
-    // .sort((a, b) => b.id - a.id); // Sorting in descending order by id
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await Get({
+          url: `/public/news/get-news-by-category?q=${encodeURIComponent(myWord)}&language=${lge}&limit=3`,
+        });
 
-    setNews(filteredResponse);
-  }, [wholeNews, myWord]); // Added wholeNews as a dependency
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 640);
+        setNews(response.results || []);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setNews([]);
+        setLoading(false);
+      }
     };
 
-    handleResize(); // Check on initial load
-    window.addEventListener("resize", handleResize); // Add event listener
-    return () => {
-      window.removeEventListener("resize", handleResize); // Cleanup
-    };
-  }, []);
+    fetchData();
+  }, [lge, myWord]);
 
   return (
     <>
@@ -46,7 +43,7 @@ const Card9 = ({ myWord }) => {
           <div className="w-full">
             <div className="flex flex-col gap-[30px] my-10">
               <div className="flex flex-col items-center sm:flex-row gap-10">
-                {news.slice(0, 3).map((item) => (
+                {news.map((item) => (
                   <div key={item.id} className="w-[90%] lg:w-[32%] ">
                     <SmallCardContentBottom
                       id={item.id}
@@ -64,27 +61,11 @@ const Card9 = ({ myWord }) => {
                   </div>
                 ))}
               </div>
-              {/* {!isMobile && news[3] && (
-                <div className="flex gap-10 flex-col sm:flex-row">
-                  <SmallCardContentBottom
-                    key={news[3].id} // Unique key
-                    lineClampTitle={2}
-                    lineClampDes={2}
-                    textBlack={true}
-                    showParagraph={false}
-                    showDate={false}
-                    title={news[3].news_title}
-                    sub_title={news[3].news_sub_title}
-                    created_date_ad={news[3].created_date_ad}
-                    created_date_bs={news[3].created_date_bs}
-                  />
-                </div>
-              )} */}
             </div>
           </div>
         </div>
       ) : (
-        <div className="h-[60vh] text-center"></div>
+        <div className="h-[60vh] text-center">No news available!</div>
       )}
     </>
   );

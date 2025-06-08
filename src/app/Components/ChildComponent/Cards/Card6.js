@@ -3,39 +3,34 @@ import React, { useEffect, useState } from "react";
 import SmallCardContentRight from "../Boxes/SmallCardContentRight";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import { useNews } from "../../Context/NewsContext"; // Adjust the import based on your file structure
+import { useNavigation } from "../../Context/NavigationContext";
+import { Get } from "../../Redux/API";
 
 const Card6 = ({ myWord }) => {
-  const { wholeNews, loading } = useNews(); // Get news and loading state from context
-  const [phone, setPhone] = useState(false);
   const [news, setNews] = useState([]);
 
-  useEffect(() => {
-    const filteredResponse = wholeNews.filter(
-      (item) =>
-        item.category_names.includes(myWord) ||
-        item.sub_category_names.includes(myWord)
-      // &&        item.image != null
-    );
-
-    setNews(filteredResponse);
-  }, [wholeNews, myWord]); // Added wholeNews as a dependency
+  const [loading, setLoading] = useState(false);
+  const { lge } = useNavigation();
 
   useEffect(() => {
-    const handleResize = () => {
-      if (typeof window !== "undefined") {
-        setPhone(window.innerWidth < 640);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await Get({
+          url: `/public/news/get-news-by-category?q=${encodeURIComponent(myWord)}&language=${lge}&limit=4`,
+        });
+
+        setNews(response.results || []);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setNews([]);
+        setLoading(false);
       }
     };
 
-    handleResize();
-    if (typeof window !== "undefined") {
-      window.addEventListener("resize", handleResize); // Add event listener
-      return () => {
-        window.removeEventListener("resize", handleResize); // Cleanup
-      };
-    }
-  }, []);
+    fetchData();
+  }, [lge, myWord]);
 
   return (
     <>
@@ -85,7 +80,7 @@ const Card6 = ({ myWord }) => {
           {/* )} */}
         </div>
       ) : (
-        <div className="h-[60vh] text-center"></div>
+        <div className="h-[60vh] text-center">No news available!</div>
       )}
     </>
   );

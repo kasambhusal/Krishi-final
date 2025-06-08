@@ -7,12 +7,12 @@ import Image from "next/image";
 import Gallery from "./Gallery";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import CkEditor from "./QuillEditor";
-import QuillEditor from "./QuillEditor";
+import TextEditor from "nextjs-rich-text-editor";
 
 const { Option } = Select;
 
 export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
+  console.log("modifyObj", modifyObj);
   const [form] = Form.useForm();
   const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
@@ -341,7 +341,7 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
       </div>
       <Form.Item label="Content">
         <div className="my-7">
-          <QuillEditor value={disData} onChange={handleEditorChange} />
+          <TextEditor value={disData} onChange={handleEditorChange} />
         </div>
       </Form.Item>
       <div className="w-full flex  justify-between">
@@ -371,16 +371,16 @@ export default function NewsModify({ modifyObj, handleCancel2, fetchData }) {
       {imagePreview && (
         <div style={{ marginTop: "10px" }}>
           <h2 className="text-green-800 font-bold">Image Preview :</h2>
-          <Image
+          <Button onClick={removeImage} className="mt-2">
+            Remove Image
+          </Button>
+            <Image
             src={imagePreview || "/placeholder.svg"}
             alt="Preview"
             width={300}
             height={200}
             style={{ objectFit: "cover" }}
           />
-          <Button onClick={removeImage} className="mt-2">
-            Remove Image
-          </Button>
         </div>
       )}
       {pdfPreview && (

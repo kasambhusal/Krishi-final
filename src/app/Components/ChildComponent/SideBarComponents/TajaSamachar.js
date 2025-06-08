@@ -1,12 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import TajaSamacharBox from "./TajaSamacharBox";
-import { useNews } from "../../Context/NewsContext";
 import Breadcrumb from "../Others/Breadcrumb";
 import { useTheme } from "../../Context/ThemeContext";
 import { Skeleton } from "@mui/material";
-import { usePathname } from "next/navigation";
 import { useNavigation } from "../../Context/NavigationContext";
+import { Get } from "../../Redux/API";
 
 const nepaliNumbers = ["०", "१", "२", "३", "४", "५", "६", "७", "८", "९"];
 
@@ -19,16 +18,25 @@ const toNepaliNumber = (num) => {
 
 export default function TajaSamachar() {
   const { themeColor } = useTheme();
-  const pathname = usePathname();
-  const { wholeNews, loading: newsLoading } = useNews(); // Fetch news and loading state from context
+  const [loading, setLoading] = useState(true);
   const [filteredNews, setFilteredNews] = useState([]);
   const { lge } = useNavigation();
 
   useEffect(() => {
-    const filteredResponse = wholeNews;
-
-    setFilteredNews(filteredResponse);
-  }, [wholeNews, lge]); 
+    const fetchNews = async () => {
+      try {
+        const response = await Get({
+          url: `/public/news/get-news?language=${lge}&limit=6&offset=0`,
+        });
+        setFilteredNews(response.results);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching news:", error);
+        setLoading(false);
+      }
+    };
+    fetchNews();
+  }, [lge]);
 
   return (
     <div
@@ -41,7 +49,7 @@ export default function TajaSamachar() {
         myWord={lge === "en" ? "Recent news" : "ताजा समाचार"}
         addNews={false}
       />
-      {newsLoading ? (
+      {loading ? (
         <div className="flex flex-col items-center my-4 gap-[5px]">
           <Skeleton variant="rectangular" width="90%" height={60} />
           <hr className="bg-[#d1d1cf] mx-2 h-[2px]" />

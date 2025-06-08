@@ -9,15 +9,15 @@ import ContentLayout from "../app/Components/MainComponents/ContentLayout";
 import RoadBlocking from "../app/Components/ChildComponent/Advertisement/RoadBlocking"; // Import your RoadBlocking component
 import { useTheme } from "../app/Components/Context/ThemeContext";
 import { usePathname } from "next/navigation";
+import { useNavigation } from "./Components/Context/NavigationContext";
 
 const Main = () => {
   const { bgColor } = useTheme();
-  const pathname = usePathname();
-  const [lge, setLge] = useState(pathname.includes("/en") ? "en" : "np");
+  const { lge } = useNavigation();
 
   return (
     <div
-      className="w-full flex justify-center "
+      className="w-screen flex justify-center "
       style={{ backgroundColor: bgColor }}
     >
       <div className="min-h-[400px] w-[97%] sm:w-[90%] mx-auto">

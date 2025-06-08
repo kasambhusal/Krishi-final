@@ -1,21 +1,46 @@
 import React, { useEffect, useState } from "react";
-import { useAds } from "../../Context/AdsContext";
+
 import Image from "next/image"; // Import Image from next/image
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Get } from "../../Redux/API";
+import { useNavigation } from "../../Context/NavigationContext";
 
 const RoadBlocking = ({ name }) => {
-  const { ads, loading: adsLoading } = useAds();
   const [isVisible, setIsVisible] = useState(false);
-  const pathname = usePathname();
+  const [loading, setLoading] = useState(false);
+  const { lge } = useNavigation();
+  const [filteredAd, setFilteredAd] = useState(null);
 
-  const handleClose = () => {
-    setIsVisible(false);
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await Get({
+          url: `/public/advertisement/get-advertisement?language=${lge}&ads_name=${name}`,
+        });
+
+        // Set to null if response is empty or invalid
+        const adData =
+          response && response[0] && response[0].ads_image ? response[0] : null;
+        setFilteredAd(adData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setFilteredAd(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (name && lge) {
+      fetchData();
+    }
+  }, [lge, name]);
 
   const getMediaType = (url) => {
+    if (!url) return "unknown";
     const extension = url.split(".").pop().toLowerCase();
-    if (["jpg", "jpeg", "png", "gif"].includes(extension)) {
+    if (["jpg", "jpeg", "png", "gif", "webp"].includes(extension)) {
       return "image";
     } else if (["mp4", "webm", "ogg"].includes(extension)) {
       return "video";
@@ -23,10 +48,10 @@ const RoadBlocking = ({ name }) => {
     return "unknown";
   };
 
-  const lge = pathname.includes("/en") ? "en" : "np";
-  const filteredAd = ads.find(
-    (ads) => ads.ads_name === `${name}` && ads.language === `${lge}`
-  );
+  const handleClose = () => {
+    setIsVisible(false);
+  };
+
   // Set visibility with a delay if an ad is found
   useEffect(() => {
     let timer;

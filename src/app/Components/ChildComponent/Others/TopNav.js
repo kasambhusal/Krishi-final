@@ -1,17 +1,18 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { NepaliDate } from "@zener/nepali-datepicker-react";
-import { useAds } from "../../Context/AdsContext";
 import { Skeleton } from "@mui/material";
 import Image from "next/image"; // Import next/image
+import { useNavigation } from "../../Context/NavigationContext";
+import { Get } from "../../Redux/API";
 
 const TopNav = () => {
-  const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { lge } = useNavigation();
+  const [filteredAd, setFilteredAd] = useState(null);
 
-  const [lge, setLge] = useState(pathname.includes("/en") ? "en" : "np");
   // Function to convert English month name to Nepali
   const getNepaliMonthName = (monthName) => {
     const nepaliMonths = [
@@ -113,22 +114,43 @@ const TopNav = () => {
 
   const formattedEnglishDate = getEnglishDate();
 
-  const { ads, loading } = useAds(); // Adjusted for useAds context
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await Get({
+          url: `/public/advertisement/get-advertisement?language=${lge}&ads_name=H_landscape_top_header`,
+        });
+        // Set to null if response is empty or invalid
+        const lastResponse = response[response.length - 1];
+        const adData =
+          response && lastResponse && lastResponse.ads_image
+            ? lastResponse
+            : null;
+        setFilteredAd(adData);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setFilteredAd(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (lge) {
+      fetchData();
+    }
+  }, [lge]);
 
   const getMediaType = (url) => {
+    if (!url) return "unknown";
     const extension = url.split(".").pop().toLowerCase();
-    if (["jpg", "jpeg", "png", "gif"].includes(extension)) {
+    if (["jpg", "jpeg", "png", "gif", "webp"].includes(extension)) {
       return "image";
     } else if (["mp4", "webm", "ogg"].includes(extension)) {
       return "video";
     }
     return "unknown";
   };
-
-  const filteredAd = ads.find(
-    (ads) =>
-      ads.ads_name === "H_landscape_top_header" && ads.language === `${lge}`
-  );
 
   const handleScroll = () => {
     if (window.scrollY > 600) {
@@ -144,6 +166,7 @@ const TopNav = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
   return (
     <div className="h-[200px] sm:h-[120px] bg-transparent py-2 w-full">
       <div className="bg-red-30  w-full h-full grid grid-cols-10 justify-between items-center gap-[10px] sm:gap-[10px]">

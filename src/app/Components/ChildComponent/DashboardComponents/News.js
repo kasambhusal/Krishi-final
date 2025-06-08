@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import { Button, Modal, Switch } from "antd";
 import NewsAdd from "./NewsAdd";
 import NewsTable from "./NewsTable";
-import { useRouter } from "next/navigation";
 import { useTheme } from "../../Context/ThemeContext";
+import CustomLoader from "../Others/CustomLoader";
 
 export default function News() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -32,17 +32,19 @@ export default function News() {
     <div className="flex justify-center items-center">
       <div style={{ width: "95%" }}>
         <div className="w-full flex justify-between items-center my-3">
-          <div className="mr-4 flex items-center">
-            <h2>Active / Draft : </h2>
-            <Switch
-              defaultChecked
-              onChange={handleFilterChange}
-              checkedChildren="Active"
-              unCheckedChildren="Draft"
-              style={{
-                backgroundColor: themeColor, // Dark green color when checked
-              }}
-            />
+          <div className="flex items-center flex-wrap">
+            <div className=" flex items-center">
+              <h2 className="mr-2">Active / Draft : </h2>
+              <Switch
+                defaultChecked
+                onChange={handleFilterChange}
+                checkedChildren="Active"
+                unCheckedChildren="Draft"
+                style={{
+                  backgroundColor: themeColor, // Dark green color when checked
+                }}
+              />
+            </div>
           </div>
           <Button
             style={{ color: "white", backgroundColor: "#0d2914" }}

@@ -6,7 +6,6 @@ import CategoryModify from "./CategoryModify";
 import { useNavigation } from "../../Context/NavigationContext";
 import { useNewsSearch } from "../../Context/searchNewsContext";
 import { Get, Delete } from "../../Redux/API";
-import { Route } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 
 const columns = (showModal, handleDelete) => [

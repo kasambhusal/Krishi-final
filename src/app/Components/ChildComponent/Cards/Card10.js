@@ -3,33 +3,35 @@ import React, { useEffect, useState } from "react";
 import SmallCardContentBottom from "../Boxes/SmallCardContentBottom";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import { useNews } from "../../Context/NewsContext"; // Adjust the import based on your file structure
+import { useNavigation } from "../../Context/NavigationContext";
+import { Get } from "../../Redux/API";
 
 const Card10 = ({ myWord, id }) => {
-  const { wholeNews, loading } = useNews(); // Get news and loading state from context
-  const [isMobile, setIsMobile] = useState(false);
   const [news, setNews] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const { lge } = useNavigation();
 
   useEffect(() => {
-    const filteredResponse = wholeNews.filter(
-      (item) =>
-        (item.category_names.includes(myWord) || item.sub_category_names.includes(myWord)) &&
-        item.id != id
-    );
-    setNews(filteredResponse);
-  }, [wholeNews, myWord]);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 640);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await Get({
+          url: `/public/news/get-news-by-category?q=${encodeURIComponent(myWord)}&language=${lge}&limit=7`,
+        });
+        const filteredResponse = response.results.filter(
+          (item) => item.id != id
+        );
+        setNews(filteredResponse);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setNews([]);
+        setLoading(false);
+      }
     };
 
-    handleResize(); // Check on initial load
-    window.addEventListener("resize", handleResize); // Add event listener
-    return () => {
-      window.removeEventListener("resize", handleResize); // Cleanup
-    };
-  }, []);
+    fetchData();
+  }, [lge, myWord]);
 
   return (
     <>
@@ -62,7 +64,7 @@ const Card10 = ({ myWord, id }) => {
           </div>
         </div>
       ) : (
-        <div className="h-[60vh] text-center"></div>
+        <div className="h-[60vh] text-center">No news available!</div>
       )}
     </>
   );

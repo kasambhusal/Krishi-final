@@ -3,30 +3,33 @@ import React, { useEffect, useState } from "react";
 import BigCardContentUnderImage from "../Boxes/BigCardContentUnderImage";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import { useNews } from "../../Context/NewsContext";
+import { useNavigation } from "../../Context/NavigationContext";
+import { Get } from "../../Redux/API";
 
 const Card2 = ({ myWord }) => {
-  const { wholeNews, loading } = useNews(); // Get news and loading state from context
   const [news, setNews] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const { lge } = useNavigation();
 
   useEffect(() => {
-    const filteredResponse = wholeNews.filter(
-      (item) => item.category_names.includes(myWord)
-      // && item.image != null
-    );
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await Get({
+          url: `/public/news/get-news-by-category?q=${encodeURIComponent(myWord)}&language=${lge}&limit=3`,
+        });
 
-    if (filteredResponse.length > 0) {
-      setNews(filteredResponse);
-    } else {
-      const subCategoryFiltered = wholeNews.filter(
-        (item) =>
-          item.sub_category_names.includes(myWord)
-          // (item.image || item.media_image) != null
-      );
-      // .sort((a, b) => b.id - a.id);
-      setNews(subCategoryFiltered);
-    }
-  }, [wholeNews, myWord]); // Added wholeNews as a dependency
+        setNews(response.results || []);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setNews([]);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [lge, myWord]);
 
   return (
     <div className="w-full h-[auto]">
@@ -36,7 +39,7 @@ const Card2 = ({ myWord }) => {
         </div>
       ) : news.length > 0 ? (
         <div className="w-full h-full flex flex-wrap gap-10 justify-center">
-          {news.slice(0, 3).map((item) => (
+          {news.map((item) => (
             <div
               key={item.id}
               className="h-[250px] sm:h-[320px] w-[95%] lg:w-[45%] xl:w-[30%]"
@@ -55,7 +58,7 @@ const Card2 = ({ myWord }) => {
           ))}
         </div>
       ) : (
-        <div className="text-center py-4 h-[60vh]"></div>
+        <div className="text-center py-4 h-[60vh]"> No news available!</div>
       )}
     </div>
   );

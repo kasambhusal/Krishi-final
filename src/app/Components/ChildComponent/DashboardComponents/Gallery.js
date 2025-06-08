@@ -154,8 +154,7 @@ const Gallery = ({ handleGalleryUpload, handleCancel }) => {
                   src={image.image_url}
                   alt={image.news_title || "Gallery Image"}
                   layout="fill"
-                  objectFit="cover"
-                  className="transition-transform duration-300 hover:scale-110"
+                  className="transition-transform duration-300 hover:scale-110 object-cover"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition-opacity duration-300 flex items-center justify-center">
                   <span className="text-white text-opacity-0 hover:text-opacity-100 transition-opacity duration-300">

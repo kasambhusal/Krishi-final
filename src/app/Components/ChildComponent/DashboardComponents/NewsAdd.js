@@ -1,6 +1,15 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Form, Input, Button, Modal, Select, Checkbox, message } from "antd";
+import {
+  Form,
+  Input,
+  Button,
+  Modal,
+  Select,
+  Checkbox,
+  message,
+  Progress,
+} from "antd";
 import dayjs from "dayjs";
 import { useNavigation } from "../../Context/NavigationContext";
 import { Get, Post } from "../../Redux/API";
@@ -9,7 +18,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Gallery from "./Gallery";
 import Image from "next/image";
-import QuillEditor from "./QuillEditor";
+import TextEditor from "nextjs-rich-text-editor";
+import axios from "axios";
 const { Option } = Select;
 
 export default function NewsAdd({ handleCancel2, setReload }) {
@@ -26,6 +36,7 @@ export default function NewsAdd({ handleCancel2, setReload }) {
   const [galleryImage, setGalleryImage] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPdf, setSelectedPdf] = useState(null);
+  const [progress, setProgress] = useState(0);
 
   const token = localStorage.getItem("Token");
   const headers = { Authorization: `Bearer ${token}` };
@@ -164,6 +175,7 @@ export default function NewsAdd({ handleCancel2, setReload }) {
         setReload(true);
       }
     } catch (error) {
+      setLoading(false);
       if (error.response && error.response.data) {
         Object.entries(error.response.data).forEach(([key, value]) => {
           const messages = Array.isArray(value) ? value : [value];
@@ -295,7 +307,7 @@ export default function NewsAdd({ handleCancel2, setReload }) {
         name="content"
         rules={[{ required: true, message: "This field can't be empty" }]}
       >
-        <QuillEditor value={editorData} onChange={setEditorData} />
+        <TextEditor value={editorData} onChange={setEditorData} />
       </Form.Item>
       <div className="flex flex-wrap justify-between">
         <Form.Item label="Upload Image">
@@ -330,6 +342,9 @@ export default function NewsAdd({ handleCancel2, setReload }) {
       {imagePreview && (
         <div>
           <h3>Image Preview:</h3>
+          <Button onClick={removeImage} className="my-2">
+            Remove Image
+          </Button>
           <Image
             src={imagePreview || "/placeholder.svg"}
             alt="Preview"
@@ -337,9 +352,6 @@ export default function NewsAdd({ handleCancel2, setReload }) {
             height={200}
             style={{ objectFit: "cover" }}
           />
-          <Button onClick={removeImage} className="my-2">
-            Remove Image
-          </Button>
         </div>
       )}
       {selectedPdf && (
@@ -356,6 +368,12 @@ export default function NewsAdd({ handleCancel2, setReload }) {
           Submit
         </Button>
       </Form.Item>
+      {progress > 0 && (
+        <div>
+          <h3>Upload Progress:</h3>
+          <Progress percent={progress} />
+        </div>
+      )}
     </Form>
   );
 }
