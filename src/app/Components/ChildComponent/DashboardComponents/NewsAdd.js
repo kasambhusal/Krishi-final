@@ -139,34 +139,9 @@ export default function NewsAdd({ handleCancel2, setReload }) {
         headers,
       });
 
+      setLoading(false);
+
       if (response) {
-        const sharePayload = {
-          title: response.id.toString(),
-          visit_count: 0,
-        };
-
-        const response2 = await Post({
-          url: "/count/posts/4/",
-          data: JSON.stringify(sharePayload),
-          headers: {
-            ...headers,
-            "Content-Type": "application/json",
-          },
-        });
-        const myShare = {
-          id: response.id,
-          share_count: 100,
-        };
-
-        const shareResponse = await Post({
-          url: `/count/share/${response2.id}/store_share_count/`,
-          data: JSON.stringify(myShare),
-          headers: {
-            ...headers,
-            "Content-Type": "application/json",
-          },
-        });
-
         toast.success(response.message);
         setTimeout(() => {
           window.location.reload();

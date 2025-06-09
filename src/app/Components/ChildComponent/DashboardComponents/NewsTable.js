@@ -39,7 +39,6 @@ const NewsTable = ({ reload, setReload, isActive }) => {
           : isActive
             ? `/news/news?language=${lge}&limit=${pageSize}&offset=${offset}&active=${isActive}`
             : `/news/news?language=${lge}&active=${isActive}`;
-
         const response = await Get({
           url,
           headers: hasContent ? null : headers,
