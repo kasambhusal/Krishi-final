@@ -18,7 +18,7 @@ const toNepaliNumber = (num) => {
 const BicharBlog = () => {
   const [filteredNews, setFilteredNews] = useState([]);
   const { lge } = useNavigation(); // Get the current language from context
-  const myWord = lge === "en" ? "Opinion" : "खानपान";
+  const myWord = lge === "en" ? "Healthy diet" : "खानपान";
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
