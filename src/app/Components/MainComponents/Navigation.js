@@ -12,7 +12,7 @@ const mukta = Mukta({
 const Navigation = () => {
   const { bgColor } = useTheme();
   return (
-    <div className="w-screen flex flex-col items-center">
+    <div className="w-full flex flex-col items-center">
       <div
         className="w-full flex flex-col items-center"
         style={{ backgroundColor: bgColor }}

@@ -189,33 +189,29 @@ const TopNav = () => {
         </div>
         <div className="col-span-10 sm:col-span-8 h-full  flex justify-center sm:justify-end font-mukta items-end text-xl order-1 sm:order-2">
           {/* Media Section */}
-          {loading ? (
-            <Skeleton variant="rectangular" width="100%" height="100%" />
-          ) : (
-            filteredAd && (
-              <div className="flex items-center justify-end">
-                <a href={filteredAd.ads_url} target="_blank">
-                  {getMediaType(filteredAd.ads_image) === "image" && (
-                    <Image
-                      src={filteredAd.ads_image}
-                      alt="Advertisement"
-                      width={filteredAd.ads_image_width || 750} // You can adjust the width here
-                      height={filteredAd.ads_image_height || 100} // You can adjust the height here
-                      style={{ minWidth: "100%", maxHeight: "100px" }}
-                    />
-                  )}
-                  {getMediaType(filteredAd.ads_image) === "video" && (
-                    <video
-                      src={filteredAd.ads_image}
-                      controls
-                      style={{ maxWidth: "100%", maxHeight: "70px" }}
-                    >
-                      Your browser does not support the video tag.
-                    </video>
-                  )}
-                </a>
-              </div>
-            )
+          {!loading && filteredAd && (
+            <div className="flex items-center justify-end">
+              <a href={filteredAd.ads_url} target="_blank">
+                {getMediaType(filteredAd.ads_image) === "image" && (
+                  <Image
+                    src={filteredAd.ads_image}
+                    alt="Advertisement"
+                    width={filteredAd.ads_image_width || 750} // You can adjust the width here
+                    height={filteredAd.ads_image_height || 100} // You can adjust the height here
+                    style={{ minWidth: "100%", maxHeight: "100px" }}
+                  />
+                )}
+                {getMediaType(filteredAd.ads_image) === "video" && (
+                  <video
+                    src={filteredAd.ads_image}
+                    controls
+                    style={{ maxWidth: "100%", maxHeight: "70px" }}
+                  >
+                    Your browser does not support the video tag.
+                  </video>
+                )}
+              </a>
+            </div>
           )}
         </div>
       </div>

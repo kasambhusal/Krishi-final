@@ -6,7 +6,7 @@ import Navigation from "./Navigation";
 import ScrollToTop from "../ChildComponent/Others/ScrollToTop";
 
 export default function ClientSideNav() {
-  const [isNav, setIsNav] = useState(false);
+  const [isNav, setIsNav] = useState(true);
   const pathname = usePathname();
 
   useEffect(() => {

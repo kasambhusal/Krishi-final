@@ -8,7 +8,6 @@ import React, { useEffect, useState } from "react";
 import ClientSideNav from "./Components/MainComponents/ClientSideNav";
 import Footer from "./Components/MainComponents/Footer";
 import { usePathname } from "next/navigation";
-import { CategoryProvider } from "./Components/Context/CategoryContext";
 import { NavigationProvider } from "./Components/Context/NavigationContext";
 import { AuthorProvider } from "./Components/Context/AuthorContext";
 import { CountProvider } from "./Components/Context/CountContext";
@@ -77,11 +76,10 @@ export default function RootLayout({ children }) {
         />
         <meta name="robots" content="index, follow" />
       </Head>
-      <body>
+      <body >
         <React.StrictMode>
           <NavigationProvider>
             <CountProvider>
-              <CategoryProvider>
               <AuthorProvider>
                 <ThemeProvider>
                   <NewsSearchProvider>
@@ -95,8 +93,7 @@ export default function RootLayout({ children }) {
                     {isNav && <Footer />}
                   </NewsSearchProvider>
                 </ThemeProvider>
-                </AuthorProvider>
-              </CategoryProvider>
+              </AuthorProvider>
             </CountProvider>
           </NavigationProvider>
         </React.StrictMode>

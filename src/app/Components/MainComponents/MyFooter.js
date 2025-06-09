@@ -8,15 +8,6 @@ import { useTheme } from "../Context/ThemeContext";
 import Image from "next/image";
 
 const MyFooter = () => {
-  // const scrollToTop = () => {
-  //   if (typeof window !== "undefined") {
-  //     window.scrollTo({
-  //       top: 0,
-  //       behavior: "smooth", // Smooth scrolling
-  //     });
-  //   }
-  // };
-
   const router = useRouter();
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -65,7 +56,7 @@ const MyFooter = () => {
   };
 
   return (
-    <div style={{ width: "100%" }}>
+    <div className="w-full">
       <hr
         className="my-10"
         style={{

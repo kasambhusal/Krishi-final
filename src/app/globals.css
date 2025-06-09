@@ -12,7 +12,6 @@
 body {
   font-family: var(--font-mukta);
   background-color: #e8f5e9;
-  overflow-x: hidden;
 }
 
 /* Additional specific elements */

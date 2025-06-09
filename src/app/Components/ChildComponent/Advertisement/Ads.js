@@ -1,6 +1,5 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Skeleton } from "@mui/material";
 import Image from "next/image";
 import { useNavigation } from "../../Context/NavigationContext";
 import { Get } from "../../Redux/API";
@@ -46,17 +45,8 @@ const Ads = ({ name }) => {
     return "unknown";
   };
 
-  // Show loading skeleton
-  if (loading) {
-    return (
-      <div className="w-full flex justify-center my-5">
-        {/* <Skeleton variant="rectangular" width="100%" height={120} /> */}
-      </div>
-    );
-  }
-
-  // Show nothing if no ad data or no image
-  if (!filteredAd || !filteredAd.ads_image) {
+  // Show nothing if loading or no ad data
+  if (loading || !filteredAd || !filteredAd.ads_image) {
     return null;
   }
 
@@ -64,7 +54,7 @@ const Ads = ({ name }) => {
 
   return (
     <div className="w-full flex justify-center my-5">
-      <div className="w-full flex items-center justify-center">
+      <div className="w-full flex items-center justify-center min-h-[120px]">
         <a
           href={filteredAd.ads_url}
           target="_blank"

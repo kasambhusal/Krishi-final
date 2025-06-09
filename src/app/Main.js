@@ -17,7 +17,7 @@ const Main = () => {
 
   return (
     <div
-      className="w-screen flex justify-center "
+      className="w-full flex justify-center "
       style={{ backgroundColor: bgColor }}
     >
       <div className="min-h-[400px] w-[97%] sm:w-[90%] mx-auto">

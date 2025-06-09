@@ -63,7 +63,7 @@ const Login = () => {
   };
 
   return (
-    <div className="absolute top-0 left-0 min-h-screen w-[100vw] bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center p-4">
+    <div className="absolute top-0 left-0 min-h-screen w-screen bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md">
         <div className="flex justify-center mb-8">
           <Image src="/logo.png" width={200} height={80} alt="logo" priority />

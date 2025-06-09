@@ -47,34 +47,30 @@ const SmallAds = ({ name }) => {
 
   return (
     <div className="max-w-full max-h-[500px] overflow-hidden flex justify-center my-5">
-      {loading ? (
-        <span>Loading...</span>
-      ) : (
-        filteredAd && (
-          <div className="flex items-center justify-center my-5">
-            <a href={filteredAd.ads_url} rel="noreferrer" target="_blank">
-              {getMediaType(filteredAd.ads_image) === "image" && (
-                <Image
-                  src={filteredAd.ads_image}
-                  alt="Ad"
-                  width={700} // Set width for optimization (can be adjusted as needed)
-                  height={450} // Set height for optimization (can be adjusted as needed)
-                  style={{ objectFit: "contain", maxHeight: "500px" }} // Ensures image maintains its aspect ratio
-                  loading="lazy" // Lazy load the image for better performance
-                />
-              )}
-              {getMediaType(filteredAd.ads_image) === "video" && (
-                <video
-                  src={filteredAd.ads_image}
-                  controls
-                  style={{ maxWidth: "100%", maxHeight: "450px" }}
-                >
-                  Your browser does not support the video tag.
-                </video>
-              )}
-            </a>
-          </div>
-        )
+      {!loading && filteredAd && filteredAd.ads_image && (
+        <div className="flex items-center justify-center my-5">
+          <a href={filteredAd.ads_url} rel="noreferrer" target="_blank">
+            {getMediaType(filteredAd.ads_image) === "image" && (
+              <Image
+                src={filteredAd.ads_image}
+                alt="Ad"
+                width={700} // Set width for optimization (can be adjusted as needed)
+                height={450} // Set height for optimization (can be adjusted as needed)
+                style={{ objectFit: "contain", maxHeight: "500px" }} // Ensures image maintains its aspect ratio
+                loading="lazy" // Lazy load the image for better performance
+              />
+            )}
+            {getMediaType(filteredAd.ads_image) === "video" && (
+              <video
+                src={filteredAd.ads_image}
+                controls
+                style={{ maxWidth: "100%", maxHeight: "450px" }}
+              >
+                Your browser does not support the video tag.
+              </video>
+            )}
+          </a>
+        </div>
       )}
     </div>
   );

@@ -306,7 +306,7 @@ export default function IndividualAuthor({
           </div>
 
           <div className="col-span-7 lg:col-span-3 space-y-6">
-            <div className="sticky top-4 space-y-6">
+            <div className="sticky top-[60px] space-y-6">
               <TajaSamachar />
               <TrendingNews />
             </div>

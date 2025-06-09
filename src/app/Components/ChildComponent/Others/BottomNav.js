@@ -31,7 +31,6 @@ const BottomNav = () => {
   // Simplified category fetching
   const fetchCategories = async () => {
     try {
-      setLoading(true);
       const response = await Get({
         url: `/public/category/get-category?language=${lge}`,
       });
@@ -149,18 +148,7 @@ const BottomNav = () => {
     setOpenCategoryId((prevId) => (prevId === categoryId ? null : categoryId));
   };
 
-  // Show loading state
-  if (loading) {
-    return (
-      <div
-        className={`top-0 z-50 h-[60px] w-full flex items-center justify-center`}
-        style={{ backgroundColor: themeColor }}
-      >
-        <div className="text-white">Loading ...</div>
-      </div>
-    );
-  }
-
+  // Always render the navigation - no loading state
   return (
     <div
       className={`top-0 z-50 h-[60px] w-full flex items-center ${
@@ -195,6 +183,7 @@ const BottomNav = () => {
           isScrolled ? "w-[80%]" : "w-full"
         }`}
       >
+        {/* Always show Home link */}
         <li className="hidden lg:flex">
           <Link
             href={lge === "en" ? "/en" : "/"}
@@ -203,6 +192,7 @@ const BottomNav = () => {
             {lge === "en" ? <p>Home</p> : <p>होमपेज</p>}
           </Link>
         </li>
+
         {isScrolled && (
           <div
             style={{
@@ -225,63 +215,82 @@ const BottomNav = () => {
             />
           </div>
         )}
-        <div className="relative flex w-full justify-evenly h-full">
-          {categories.slice(0, 6).map((category, index) => (
-            <React.Fragment key={category.id}>
-              <li
-                className="relative group hidden lg:flex h-full"
-                onMouseEnter={() => handleMouseEnter(category.id)}
-                onMouseLeave={handleMouseLeave}
-              >
-                <Link
-                  className="flex items-center justify-center gap-1 text-white/90 text-[18px] font-mukta hover:text-white duration-150"
-                  href={`${url}/${encodeURIComponent(category.category_name)}`}
-                >
-                  <span className="flex items-center gap-1">
-                    {category.category_name}
-                    {category.category_key &&
-                      category.category_key.length > 0 && (
-                        <FaAngleDown className="ml-1" />
-                      )}
-                  </span>
-                </Link>
 
-                {/* Subcategories */}
-                {hoveredCategoryId === category.id &&
-                  category.category_key &&
-                  category.category_key.length > 0 && (
-                    <div className="absolute top-[50px] left-0 z-20 min-w-[200px] bg-green-100 rounded-md shadow-lg mt-2">
-                      <ul className="flex flex-col">
-                        {category.category_key
-                          .filter((subcategory) => subcategory.active === true)
-                          .map((subcategory) => (
-                            <li key={subcategory.id}>
-                              <Link
-                                href={`${url}/${subcategory.category_key_name}`}
-                                className="text-black/90 text-center text-[16px] hover:text-white px-2 py-1 hover:bg-[#12801e] block"
-                              >
-                                {subcategory.category_key_name}
-                              </Link>
-                            </li>
-                          ))}
-                      </ul>
-                    </div>
-                  )}
-              </li>
-              {index === 3 && (
-                <li className="relative group hidden lg:flex h-full">
-                  <Link
-                    href={lge === "en" ? "/en/table" : "/table"}
-                    className="flex items-center justify-center text-white/90 text-[18px] font-mukta hover:text-white duration-150"
-                  >
-                    {lge === "en" ? <p>Market</p> : <p>बजार</p>}
-                  </Link>
+        {/* Categories section - show placeholder or actual categories */}
+        <div className="relative flex w-full justify-evenly h-full">
+          {loading ? (
+            // Show placeholder items while loading
+            <>
+              {[1, 2, 3, 4, 5, 6].map((item) => (
+                <li key={item} className="relative group hidden lg:flex h-full">
+                  <div className="flex items-center justify-center gap-1 text-white/70 text-[18px] font-mukta">
+                    <div className="w-16 h-4 bg-white/20 rounded animate-pulse"></div>
+                  </div>
                 </li>
-              )}
-            </React.Fragment>
-          ))}
+              ))}
+            </> 
+          ) : (
+            // Show actual categories when loaded
+            categories.slice(0, 6).map((category, index) => (
+              <React.Fragment key={category.id}>
+                <li
+                  className="relative group hidden lg:flex h-full"
+                  onMouseEnter={() => handleMouseEnter(category.id)}
+                  onMouseLeave={handleMouseLeave}
+                >
+                  <Link
+                    className="flex items-center justify-center gap-1 text-white/90 text-[18px] font-mukta hover:text-white duration-150"
+                    href={`${url}/${encodeURIComponent(category.category_name)}`}
+                  >
+                    <span className="flex items-center gap-1">
+                      {category.category_name}
+                      {category.category_key &&
+                        category.category_key.length > 0 && (
+                          <FaAngleDown className="ml-1" />
+                        )}
+                    </span>
+                  </Link>
+
+                  {/* Subcategories */}
+                  {hoveredCategoryId === category.id &&
+                    category.category_key &&
+                    category.category_key.length > 0 && (
+                      <div className="absolute top-[50px] left-0 z-20 min-w-[200px] bg-green-100 rounded-md shadow-lg mt-2">
+                        <ul className="flex flex-col">
+                          {category.category_key
+                            .filter(
+                              (subcategory) => subcategory.active === true
+                            )
+                            .map((subcategory) => (
+                              <li key={subcategory.id}>
+                                <Link
+                                  href={`${url}/${subcategory.category_key_name}`}
+                                  className="text-black/90 text-center text-[16px] hover:text-white px-2 py-1 hover:bg-[#12801e] block"
+                                >
+                                  {subcategory.category_key_name}
+                                </Link>
+                              </li>
+                            ))}
+                        </ul>
+                      </div>
+                    )}
+                </li>
+                {index === 3 && (
+                  <li className="relative group hidden lg:flex h-full">
+                    <Link
+                      href={lge === "en" ? "/en/table" : "/table"}
+                      className="flex items-center justify-center text-white/90 text-[18px] font-mukta hover:text-white duration-150"
+                    >
+                      {lge === "en" ? <p>Market</p> : <p>बजार</p>}
+                    </Link>
+                  </li>
+                )}
+              </React.Fragment>
+            ))
+          )}
         </div>
 
+        {/* Always show search and language toggle */}
         <li>
           <div className="hidden lg:flex items-center">
             <div
@@ -326,6 +335,8 @@ const BottomNav = () => {
           </div>
         </li>
       </ul>
+
+      {/* Search Drawer */}
       <Drawer
         placement="top"
         closable={false}
@@ -351,6 +362,8 @@ const BottomNav = () => {
           </div>
         </div>
       </Drawer>
+
+      {/* Menu Drawer */}
       <Drawer
         title={lge === "en" ? "Menu" : "मेनु"}
         onClose={onClose}
