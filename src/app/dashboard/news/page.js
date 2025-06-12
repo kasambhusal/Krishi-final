@@ -6,7 +6,7 @@ const News = dynamic(
   () => import("../../Components/ChildComponent/DashboardComponents/News"),
   {
     ssr: false,
-    loading: () => <p>Loading...</p>,
+    loading: () => <p>Loading....</p>,
   }
 );
 import { Mukta } from "next/font/google";
