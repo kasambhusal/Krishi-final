@@ -32,7 +32,7 @@ const TopNav = () => {
     const englishMonths = [
       "Baisakh",
       "Jestha",
-      "Ashar",
+      "Asar",
       "Shrawan",
       "Bhadra",
       "Aswin",
