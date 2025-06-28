@@ -265,6 +265,7 @@ const Hero = ({ lge = "np", order }) => {
                         borderRadius: "10px",
                         border: `2px dotted ${themeColor}`,
                       }}
+                      priority
                       alt={news_title}
                     />
                   ) : (

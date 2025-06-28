@@ -97,7 +97,7 @@ const RoadBlocking = ({ name }) => {
           alt="logo"
           height={50}
           width={200}
-          loading="lazy"
+          priority
         />
       </Link>
       <div className="flex w-full justify-center">
@@ -117,7 +117,7 @@ const RoadBlocking = ({ name }) => {
                 alt="Ad"
                 width={700} // Set width and height for optimization
                 height={500} // Set height as per your design
-                loading="lazy"
+                priority
                 className="max-h-[500px] max-w-full md:max-w-[700px] md:max-h-[700px]"
                 unoptimized
               />
@@ -128,7 +128,7 @@ const RoadBlocking = ({ name }) => {
               <video
                 src={filteredAd.ads_image}
                 controls
-                loading="lazy"
+                priority
                 className="max-h-[500px] max-w-full md:max-w-[700px] md:max-h-[700px]"
               >
                 Your browser does not support the video tag.
@@ -143,7 +143,7 @@ const RoadBlocking = ({ name }) => {
             width={30}
             height={30}
             alt="Close"
-            loading="lazy"
+            priority
             style={{ borderRadius: "100%" }}
           />
         </div>

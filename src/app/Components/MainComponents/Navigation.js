@@ -3,6 +3,7 @@ import TopNav from "../ChildComponent/Others/TopNav";
 import BottomNav from "../ChildComponent/Others/BottomNav";
 import { useTheme } from "../Context/ThemeContext";
 import { Mukta } from "next/font/google";
+
 const mukta = Mukta({
   weight: ["200", "300", "400", "500", "600", "700", "800"],
   subsets: ["devanagari", "latin"],

@@ -6,7 +6,7 @@ import { Get, Delete } from "../../Redux/API";
 import MemberModify from "./MemberModify";
 import { useNavigation } from "../../Context/NavigationContext";
 import { useNewsSearch } from "../../Context/searchNewsContext";
-
+import Image from "next/image";
 const columns = (showModal, handleDelete) => [
   {
     title: "S.N",
@@ -40,9 +40,7 @@ const columns = (showModal, handleDelete) => [
   {
     title: "Image",
     dataIndex: "img",
-    render: (text) => (
-      <img src={text} alt="Member" style={{ width: 50, height: 50 }} />
-    ),
+    render: (text) => <Image src={text} alt="Member" width={50} height={50} />,
   },
   {
     title: "Action",

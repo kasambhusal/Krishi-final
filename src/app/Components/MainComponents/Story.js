@@ -16,6 +16,7 @@ import ArticleContent from "../ChildComponent/Others/ArticleContent";
 import StorySideBar from "../ChildComponent/Others/StorySideBar";
 
 const Story = ({ news }) => {
+  console.log("my news:", news);
   const { bgColor } = useTheme();
   const { count } = useCount();
   const [scrolled, setScrolled] = useState(false);

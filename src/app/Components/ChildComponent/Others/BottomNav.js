@@ -183,6 +183,7 @@ const BottomNav = () => {
           isScrolled ? "w-[80%]" : "w-full"
         }`}
       >
+        
         {/* Always show Home link */}
         <li className="hidden lg:flex">
           <Link
