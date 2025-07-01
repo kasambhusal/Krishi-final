@@ -26,19 +26,14 @@ const ArticleContent = React.memo(({ news, image = true }) => {
     if (!htmlString) return <p>No content to display.</p>;
 
     const sanitizedHtml = DOMPurify.sanitize(htmlString, {
-      ADD_TAGS: ["iframe"],
-      ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling"],
+      // No need to add iframe
+      ADD_TAGS: [],
+      ADD_ATTR: [],
     });
-
-    // Replace YouTube links with embeds
-    const contentWithEmbeds = sanitizedHtml.replace(
-      /(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+/g,
-      (match) => renderYouTubeEmbed(match)
-    );
 
     return (
       <div
-        dangerouslySetInnerHTML={{ __html: contentWithEmbeds }}
+        dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
         className="content prose prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none"
         style={{ lineHeight: "1.6", wordWrap: "break-word" }}
       />

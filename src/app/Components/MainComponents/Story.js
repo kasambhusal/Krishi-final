@@ -56,7 +56,6 @@ const Story = ({ news }) => {
     const fetchAndPostViews = async () => {
       try {
         const response = await count;
-        console.log("all response :-", response);
         const filteredResponse = response.find(
           (item) => item.title === String(news?.id)
         );
