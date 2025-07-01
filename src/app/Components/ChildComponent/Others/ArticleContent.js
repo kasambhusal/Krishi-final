@@ -7,21 +7,6 @@ import { useTheme } from "../../Context/ThemeContext";
 const ArticleContent = React.memo(({ news, image = true }) => {
   const { bgColor } = useTheme();
 
-  const renderYouTubeEmbed = (url) => {
-    const videoId = url.split("v=")[1];
-    return (
-      <div className="aspect-w-16 aspect-h-9 my-4">
-        <iframe
-          src={`https://www.youtube.com/embed/${videoId}`}
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          className="w-full h-full"
-        ></iframe>
-      </div>
-    );
-  };
-
   const renderHtmlContent = (htmlString) => {
     if (!htmlString) return <p>No content to display.</p>;
 
@@ -47,7 +32,7 @@ const ArticleContent = React.memo(({ news, image = true }) => {
           <Image
             src={news.image || news.media_image}
             alt={news.news_title}
-            layout="fill"
+            fill
             className="rounded-lg object-cover"
           />
         </figure>

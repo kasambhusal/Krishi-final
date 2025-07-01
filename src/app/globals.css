@@ -259,9 +259,13 @@ html {
   border-collapse: collapse;
 }
 .content a {
-  color: #0a5a13;
+  color: #12801e !important;
+  text-decoration: none !important;
   font-weight: bold;
+  font-style: italic;
+  font-size: 18px !important;
 }
+
 .content th,
 .content td {
   border: 1px solid #abaaaa;
