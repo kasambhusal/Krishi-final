@@ -2,7 +2,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useTheme } from "../Context/ThemeContext";
 import { useCount } from "../Context/CountContext";
-import { usePathname } from "next/navigation";
 import { Get } from "../Redux/API";
 import FormatNepaliDate from "../JS/FormatNepaliDate";
 import FormatEnglishDate from "../JS/FormatEnglishDate";
@@ -14,18 +13,15 @@ import Breadcrumb from "../ChildComponent/Others/Breadcrumb";
 import Card10 from "../ChildComponent/Cards/Card10";
 import ArticleContent from "../ChildComponent/Others/ArticleContent";
 import StorySideBar from "../ChildComponent/Others/StorySideBar";
+import { useNavigation } from "../Context/NavigationContext";
 
 const Story = ({ news }) => {
-  console.log("my news:", news);
   const { bgColor } = useTheme();
-  const { count } = useCount();
   const [scrolled, setScrolled] = useState(false);
   const [nepaliDate, setNepaliDate] = useState("");
   const [englishDate, setEnglishDate] = useState("");
-  const [viewsId, setViewsId] = useState(null);
   const [shareCount, setShareCount] = useState(0);
-  const pathname = usePathname();
-  const [lge, setLge] = useState(pathname.includes("/en") ? "en" : "np");
+  const { lge } = useNavigation();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -55,27 +51,17 @@ const Story = ({ news }) => {
   useEffect(() => {
     const fetchAndPostViews = async () => {
       try {
-        const response = await count;
-        const filteredResponse = response.find(
-          (item) => item.title === String(news?.id)
-        );
-        console.log("filtered :-", filteredResponse);
-        if (filteredResponse) {
-          const response2 = await Get({
-            url: `/count/posts/${filteredResponse.id}/`,
-          });
-          if (response2) {
-            setShareCount(response2.shares[0]?.share_count);
-            setViewsId(response2.id);
-          }
-        }
+        const response = await Get({
+          url: `/count/posts/${news.id}/`,
+        });
+        setShareCount(response.shares[0]?.share_count);
       } catch (error) {
         console.error("Error fetching views:", error);
       }
     };
 
     fetchAndPostViews();
-  }, [count, news.id]);
+  }, [news.id]);
 
   return (
     <div
@@ -86,7 +72,7 @@ const Story = ({ news }) => {
         <div className="fixed top-[150px] left-[2%] z-50 hidden md:block">
           <Share
             newsTitle={news.news_title}
-            id={viewsId}
+            id={news.id}
             shareCount={shareCount}
             vertical={true}
           />
@@ -140,7 +126,7 @@ const Story = ({ news }) => {
             <span className="flex gap-[15px] justify-end w-full lg:w-auto">
               <Share
                 newsTitle={news.news_title}
-                id={viewsId}
+                id={news.id}
                 shareCount={shareCount}
               />
             </span>
