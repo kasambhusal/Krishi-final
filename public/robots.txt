@@ -1,0 +1,15 @@
+User-agent: *
+Disallow: /login
+Disallow: /dashboard
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
