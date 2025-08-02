@@ -331,6 +331,7 @@ html {
     /* color: #fff; Ensure text is readable */
   }
 }
+
 #sticky {
   position: -webkit-sticky; /* Safari */
   position: sticky !important;

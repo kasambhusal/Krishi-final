@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState, useCallback } from "react";
 import { useTheme } from "../Context/ThemeContext";
-import { useCount } from "../Context/CountContext";
 import { Get } from "../Redux/API";
 import FormatNepaliDate from "../JS/FormatNepaliDate";
 import FormatEnglishDate from "../JS/FormatEnglishDate";

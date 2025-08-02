@@ -19,7 +19,6 @@ import "react-toastify/dist/ReactToastify.css";
 import Gallery from "./Gallery";
 import Image from "next/image";
 import TextEditor from "nextjs-rich-text-editor";
-import axios from "axios";
 const { Option } = Select;
 
 export default function NewsAdd({ handleCancel2, setReload }) {
@@ -282,7 +281,11 @@ export default function NewsAdd({ handleCancel2, setReload }) {
         name="content"
         rules={[{ required: true, message: "This field can't be empty" }]}
       >
-        <TextEditor value={editorData} onChange={setEditorData} />
+        <TextEditor
+          value={editorData}
+          onChange={setEditorData}
+          className="h-[600px]"
+        />
       </Form.Item>
       <div className="flex flex-wrap justify-between">
         <Form.Item label="Upload Image">

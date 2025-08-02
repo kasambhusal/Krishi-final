@@ -1,6 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import DOMPurify from "isomorphic-dompurify";
+import he from "he"; // Make sure to install it: npm install he
 import PDFViewer from "../Others/PDFViewer";
 import { useTheme } from "../../Context/ThemeContext";
 
@@ -10,10 +11,30 @@ const ArticleContent = React.memo(({ news, image = true }) => {
   const renderHtmlContent = (htmlString) => {
     if (!htmlString) return <p>No content to display.</p>;
 
-    const sanitizedHtml = DOMPurify.sanitize(htmlString, {
-      // No need to add iframe
-      ADD_TAGS: [],
-      ADD_ATTR: [],
+    // Step 1: Decode HTML entities
+    const decodedHtml = he.decode(htmlString);
+
+    // Step 2: Add inline styles to iframe
+    const styledHtml = decodedHtml.replace(
+      /<iframe/g,
+      '<iframe style="max-width:100%; max-height:400px; width:100%; border-radius:10px;"'
+    );
+
+    // Step 3: Sanitize HTML allowing iframe and necessary attributes
+    const sanitizedHtml = DOMPurify.sanitize(styledHtml, {
+      ADD_TAGS: ["iframe"],
+      ADD_ATTR: [
+        "allow",
+        "allowfullscreen",
+        "frameborder",
+        "scrolling",
+        "src",
+        "height",
+        "width",
+        "title",
+        "style",
+        "referrerpolicy",
+      ],
     });
 
     return (
